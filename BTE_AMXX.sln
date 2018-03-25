@@ -31,7 +31,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE Weapon", "BTE Weapon", 
 	ProjectSection(SolutionItems) = preProject
 		BTE Weapon\bte.inc = BTE Weapon\bte.inc
 		BTE Weapon\BTE_Other.sma = BTE Weapon\BTE_Other.sma
-		BTE Weapon\BTE_Weapon2.amxx = BTE Weapon\BTE_Weapon2.amxx
 		BTE Weapon\BTE_Weapon2.sma = BTE Weapon\BTE_Weapon2.sma
 		BTE Weapon\cdll_dll.h = BTE Weapon\cdll_dll.h
 		BTE Weapon\const.h = BTE Weapon\const.h
