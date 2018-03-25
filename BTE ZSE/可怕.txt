@@ -1,0 +1,29 @@
+首先来介绍这些分别代表什么
+EscapeStart 回合的最后多少秒逃脱点出现
+Defence 需要防守多少秒
+Model 逃生点模型
+Angle 最初角度（后续角度会根据速度算）
+Maxs Mins 大小
+SpawnOrigin TargetOrigin TargetOrigin2 LeaveOrigin 逃生点模型移动轨迹 会停在TargetOrigin2的位置
+Speed 在以上几点间移动速度
+CameraOrigin 人类胜利时 成功逃脱人类位置（理解成那里有个摄像机就好）
+CameraAngle 角度
+ExplosionOrigin 爆炸效果位置
+ExplosionScale 爆炸效果缩放
+
+下面来演示如何添加一个逃生点（你可以参考cs_assault.ini）
+首先选一张喜欢的地图，以竞技模式进入，选择观察者
+自己构想好逃生点出现路径
+分别移动到这几个位置，控制台showpos，前3个值就是origin，分别填入对应位置
+大部分时候TargetOrigin TargetOrigin2可以填一样的
+如果发现模型不对多调整试试就行
+在最后人类视角处 将自己的视角调整成和希望的视角一样，showpos的第789个数填入CameraAngle
+然后让我们任选队伍，控制台escape_test测试一下逃生点是否工作正常（exp_test是产生爆炸效果）
+每次escape_test会重新读取数据并随机一个位置生成逃生点
+关于maxs mins可以理解成下图那样
+自己改改数值试试就知道了
+如果有多个逃生点，使用[Escape] [Escape2] 等等，最多5个
+
+如果你能提供设定文件就太好了 0.0 不是自带地图更好 0.0 当然很遮眼的地图就不要了
+需要新插件配合，下面给出下载地址（就是update11+ 0.0）
+http://pan.baidu.com/s/1eQCHoQY

@@ -1,0 +1,303 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE DeathMatch", "BTE DeathMatch", "{68B612A1-2733-4332-AC40-0D1F330240EB}"
+	ProjectSection(SolutionItems) = preProject
+		BTE DeathMatch\bte.inc = BTE DeathMatch\bte.inc
+		BTE DeathMatch\BTE_API.inc = BTE DeathMatch\BTE_API.inc
+		BTE DeathMatch\BTE_DeathMatch.sma = BTE DeathMatch\BTE_DeathMatch.sma
+		BTE DeathMatch\BTE_TeamDeathMatch.sma = BTE DeathMatch\BTE_TeamDeathMatch.sma
+		BTE DeathMatch\cdll_dll.h = BTE DeathMatch\cdll_dll.h
+		BTE DeathMatch\metahook.inc = BTE DeathMatch\metahook.inc
+		BTE DeathMatch\offset.inc = BTE DeathMatch\offset.inc
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE Ghost", "BTE Ghost", "{4CE36BF7-4355-4594-9479-45C63ED80C24}"
+	ProjectSection(SolutionItems) = preProject
+		BTE Ghost\BTE_GhostBotSupport.sma = BTE Ghost\BTE_GhostBotSupport.sma
+		BTE Ghost\BTE_GhostHostagePunishment.sma = BTE Ghost\BTE_GhostHostagePunishment.sma
+		BTE Ghost\BTE_GhostItem.sma = BTE Ghost\BTE_GhostItem.sma
+		BTE Ghost\BTE_GhostMode.inc = BTE Ghost\BTE_GhostMode.inc
+		BTE Ghost\BTE_GhostMode.sma = BTE Ghost\BTE_GhostMode.sma
+		BTE Ghost\cdll_dll.h = BTE Ghost\cdll_dll.h
+		BTE Ghost\offset.inc = BTE Ghost\offset.inc
+		BTE Ghost\util.h = BTE Ghost\util.h
+		BTE Ghost\util.sma = BTE Ghost\util.sma
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE Weapon", "BTE Weapon", "{4AB1D56A-C9BD-4660-8A7E-EF745913FC10}"
+	ProjectSection(SolutionItems) = preProject
+		BTE Weapon\bte.inc = BTE Weapon\bte.inc
+		BTE Weapon\BTE_Other.sma = BTE Weapon\BTE_Other.sma
+		BTE Weapon\BTE_Weapon2.amxx = BTE Weapon\BTE_Weapon2.amxx
+		BTE Weapon\BTE_Weapon2.sma = BTE Weapon\BTE_Weapon2.sma
+		BTE Weapon\cdll_dll.h = BTE Weapon\cdll_dll.h
+		BTE Weapon\const.h = BTE Weapon\const.h
+		BTE Weapon\offset.inc = BTE Weapon\offset.inc
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bte", "bte", "{72F00DBB-6793-4384-B78E-9DB0D0AB0398}"
+	ProjectSection(SolutionItems) = preProject
+		BTE Weapon\bte\BTE_Delay_Knives.sma = BTE Weapon\bte\BTE_Delay_Knives.sma
+		BTE Weapon\bte\BTE_EntityTouch.sma = BTE Weapon\bte\BTE_EntityTouch.sma
+		BTE Weapon\bte\BTE_EventCmd.sma = BTE Weapon\bte\BTE_EventCmd.sma
+		BTE Weapon\bte\BTE_Forward.sma = BTE Weapon\bte\BTE_Forward.sma
+		BTE Weapon\bte\BTE_Ham.sma = BTE Weapon\bte\BTE_Ham.sma
+		BTE Weapon\bte\BTE_Natives.sma = BTE Weapon\bte\BTE_Natives.sma
+		BTE Weapon\bte\BTE_Public.sma = BTE Weapon\bte\BTE_Public.sma
+		BTE Weapon\bte\BTE_ReadFile.sma = BTE Weapon\bte\BTE_ReadFile.sma
+		BTE Weapon\bte\BTE_Stocks.sma = BTE Weapon\bte\BTE_Stocks.sma
+		BTE Weapon\bte\BTE_Task.sma = BTE Weapon\bte\BTE_Task.sma
+		BTE Weapon\bte\BTE_Util.sma = BTE Weapon\bte\BTE_Util.sma
+		BTE Weapon\bte\BTE_ValueDef.sma = BTE Weapon\bte\BTE_ValueDef.sma
+		BTE Weapon\bte\BTE_Vars.sma = BTE Weapon\bte\BTE_Vars.sma
+		BTE Weapon\bte\BTE_WpnEffect.sma = BTE Weapon\bte\BTE_WpnEffect.sma
+		BTE Weapon\bte\BTE_WpnEffect_Backup.txt = BTE Weapon\bte\BTE_WpnEffect_Backup.txt
+		BTE Weapon\bte\BTE_WpnEffect_Knife.sma = BTE Weapon\bte\BTE_WpnEffect_Knife.sma
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "weapons", "weapons", "{A08B3AD5-82AC-4305-9593-4BC622EE5987}"
+	ProjectSection(SolutionItems) = preProject
+		BTE Weapon\bte\weapons\augex.sma = BTE Weapon\bte\weapons\augex.sma
+		BTE Weapon\bte\weapons\balrog11.sma = BTE Weapon\bte\weapons\balrog11.sma
+		BTE Weapon\bte\weapons\balrog7.sma = BTE Weapon\bte\weapons\balrog7.sma
+		BTE Weapon\bte\weapons\balrog9.sma = BTE Weapon\bte\weapons\balrog9.sma
+		BTE Weapon\bte\weapons\blockar.sma = BTE Weapon\bte\weapons\blockar.sma
+		BTE Weapon\bte\weapons\blocksmg.sma = BTE Weapon\bte\weapons\blocksmg.sma
+		BTE Weapon\bte\weapons\bloodhunter.sma = BTE Weapon\bte\weapons\bloodhunter.sma
+		BTE Weapon\bte\weapons\bow.sma = BTE Weapon\bte\weapons\bow.sma
+		BTE Weapon\bte\weapons\buffawp.sma = BTE Weapon\bte\weapons\buffawp.sma
+		BTE Weapon\bte\weapons\cannon.sma = BTE Weapon\bte\weapons\cannon.sma
+		BTE Weapon\bte\weapons\cannonex.sma = BTE Weapon\bte\weapons\cannonex.sma
+		BTE Weapon\bte\weapons\chainsaw.sma = BTE Weapon\bte\weapons\chainsaw.sma
+		BTE Weapon\bte\weapons\crow1.sma = BTE Weapon\bte\weapons\crow1.sma
+		BTE Weapon\bte\weapons\crow7.sma = BTE Weapon\bte\weapons\crow7.sma
+		BTE Weapon\bte\weapons\crow9.sma = BTE Weapon\bte\weapons\crow9.sma
+		BTE Weapon\bte\weapons\desperado.sma = BTE Weapon\bte\weapons\desperado.sma
+		BTE Weapon\bte\weapons\dragonsword.sma = BTE Weapon\bte\weapons\dragonsword.sma
+		BTE Weapon\bte\weapons\dualsword.sma = BTE Weapon\bte\weapons\dualsword.sma
+		BTE Weapon\bte\weapons\gauss.sma = BTE Weapon\bte\weapons\gauss.sma
+		BTE Weapon\bte\weapons\guillotine.sma = BTE Weapon\bte\weapons\guillotine.sma
+		BTE Weapon\bte\weapons\hammer.sma = BTE Weapon\bte\weapons\hammer.sma
+		BTE Weapon\bte\weapons\infinity.sma = BTE Weapon\bte\weapons\infinity.sma
+		BTE Weapon\bte\weapons\janus1.sma = BTE Weapon\bte\weapons\janus1.sma
+		BTE Weapon\bte\weapons\janus7.sma = BTE Weapon\bte\weapons\janus7.sma
+		BTE Weapon\bte\weapons\janus9.sma = BTE Weapon\bte\weapons\janus9.sma
+		BTE Weapon\bte\weapons\janusmk5.sma = BTE Weapon\bte\weapons\janusmk5.sma
+		BTE Weapon\bte\weapons\jknife.sma = BTE Weapon\bte\weapons\jknife.sma
+		BTE Weapon\bte\weapons\katana.sma = BTE Weapon\bte\weapons\katana.sma
+		BTE Weapon\bte\weapons\knife.sma = BTE Weapon\bte\weapons\knife.sma
+		BTE Weapon\bte\weapons\m134hero.sma = BTE Weapon\bte\weapons\m134hero.sma
+		BTE Weapon\bte\weapons\runeblade.sma = BTE Weapon\bte\weapons\runeblade.sma
+		BTE Weapon\bte\weapons\sfsword.sma = BTE Weapon\bte\weapons\sfsword.sma
+		BTE Weapon\bte\weapons\skullaxe.sma = BTE Weapon\bte\weapons\skullaxe.sma
+		BTE Weapon\bte\weapons\speargun.sma = BTE Weapon\bte\weapons\speargun.sma
+		BTE Weapon\bte\weapons\sterlingbayonet.sma = BTE Weapon\bte\weapons\sterlingbayonet.sma
+		BTE Weapon\bte\weapons\stormgiant.sma = BTE Weapon\bte\weapons\stormgiant.sma
+		BTE Weapon\bte\weapons\thanatos5.sma = BTE Weapon\bte\weapons\thanatos5.sma
+		BTE Weapon\bte\weapons\thanatos7.sma = BTE Weapon\bte\weapons\thanatos7.sma
+		BTE Weapon\bte\weapons\thanatos9.sma = BTE Weapon\bte\weapons\thanatos9.sma
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE ZombieEscape", "BTE ZombieEscape", "{ADCE5ED5-1092-4F56-88A8-DDD3850AE264}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bte", "bte", "{D199CAEB-A9C3-4B26-B085-C22EBD0345BA}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZombieEscape\BTE_ZombieEscape.sma = BTE ZombieEscape\BTE_ZombieEscape.sma
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZombieEscape", "ZombieEscape", "{9BA20399-588D-4743-99C2-CC024C90C9D7}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZombieEscape\bte\ZombieEscape\Forward.sma = BTE ZombieEscape\bte\ZombieEscape\Forward.sma
+		BTE ZombieEscape\bte\ZombieEscape\Ham.sma = BTE ZombieEscape\bte\ZombieEscape\Ham.sma
+		BTE ZombieEscape\bte\ZombieEscape\Public.sma = BTE ZombieEscape\bte\ZombieEscape\Public.sma
+		BTE ZombieEscape\bte\ZombieEscape\ReadFile.sma = BTE ZombieEscape\bte\ZombieEscape\ReadFile.sma
+		BTE ZombieEscape\bte\ZombieEscape\Stocks.sma = BTE ZombieEscape\bte\ZombieEscape\Stocks.sma
+		BTE ZombieEscape\bte\ZombieEscape\ValueDef.sma = BTE ZombieEscape\bte\ZombieEscape\ValueDef.sma
+		BTE ZombieEscape\bte\ZombieEscape\Vars.sma = BTE ZombieEscape\bte\ZombieEscape\Vars.sma
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE ZombieMod", "BTE ZombieMod", "{265FDB90-C374-4C9A-9512-4817CB883AF4}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZombieMod\BTE_API.inc = BTE ZombieMod\BTE_API.inc
+		BTE ZombieMod\BTE_ZM.inc = BTE ZombieMod\BTE_ZM.inc
+		BTE ZombieMod\BTE_Zombie_Mod1.sma = BTE ZombieMod\BTE_Zombie_Mod1.sma
+		BTE ZombieMod\offset.inc = BTE ZombieMod\offset.inc
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE ZombieMod3", "BTE ZombieMod3", "{5B69C5C7-3012-4CD9-95E1-3E189C6B5CE2}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZombieMod3\animation.inc = BTE ZombieMod3\animation.inc
+		BTE ZombieMod3\BTE_API.inc = BTE ZombieMod3\BTE_API.inc
+		BTE ZombieMod3\BTE_HumanSkill.sma = BTE ZombieMod3\BTE_HumanSkill.sma
+		BTE ZombieMod3\bte_zb3.inc = BTE ZombieMod3\bte_zb3.inc
+		BTE ZombieMod3\BTE_ZbClass.sma = BTE ZombieMod3\BTE_ZbClass.sma
+		BTE ZombieMod3\BTE_ZbClass_Boomer.sma = BTE ZombieMod3\BTE_ZbClass_Boomer.sma
+		BTE ZombieMod3\BTE_ZbClass_China.sma = BTE ZombieMod3\BTE_ZbClass_China.sma
+		BTE ZombieMod3\BTE_ZbClass_Deimos.sma = BTE ZombieMod3\BTE_ZbClass_Deimos.sma
+		BTE ZombieMod3\BTE_ZbClass_Heal.sma = BTE ZombieMod3\BTE_ZbClass_Heal.sma
+		BTE ZombieMod3\BTE_ZbClass_Heavy.sma = BTE ZombieMod3\BTE_ZbClass_Heavy.sma
+		BTE ZombieMod3\BTE_ZbClass_Resident.sma = BTE ZombieMod3\BTE_ZbClass_Resident.sma
+		BTE ZombieMod3\BTE_ZbClass_Speed.sma = BTE ZombieMod3\BTE_ZbClass_Speed.sma
+		BTE ZombieMod3\BTE_ZbClass_Tank.sma = BTE ZombieMod3\BTE_ZbClass_Tank.sma
+		BTE ZombieMod3\BTE_ZbClass_UnderTaker.sma = BTE ZombieMod3\BTE_ZbClass_UnderTaker.sma
+		BTE ZombieMod3\BTE_ZbClass_Witch.sma = BTE ZombieMod3\BTE_ZbClass_Witch.sma
+		BTE ZombieMod3\BTE_Zombie_Mod3.sma = BTE ZombieMod3\BTE_Zombie_Mod3.sma
+		BTE ZombieMod3\cdll_dll.h = BTE ZombieMod3\cdll_dll.h
+		BTE ZombieMod3\metahook.inc = BTE ZombieMod3\metahook.inc
+		BTE ZombieMod3\offset.inc = BTE ZombieMod3\offset.inc
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZombieMod3", "ZombieMod3", "{961FD5B7-0790-40A8-9B2F-7ECF9E554717}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZombieMod3\ZombieMod3\bits.inc = BTE ZombieMod3\ZombieMod3\bits.inc
+		BTE ZombieMod3\ZombieMod3\DNA.sma = BTE ZombieMod3\ZombieMod3\DNA.sma
+		BTE ZombieMod3\ZombieMod3\EventCmd.sma = BTE ZombieMod3\ZombieMod3\EventCmd.sma
+		BTE ZombieMod3\ZombieMod3\Forward.sma = BTE ZombieMod3\ZombieMod3\Forward.sma
+		BTE ZombieMod3\ZombieMod3\Ham.sma = BTE ZombieMod3\ZombieMod3\Ham.sma
+		BTE ZombieMod3\ZombieMod3\inc.inc = BTE ZombieMod3\ZombieMod3\inc.inc
+		BTE ZombieMod3\ZombieMod3\Menu.sma = BTE ZombieMod3\ZombieMod3\Menu.sma
+		BTE ZombieMod3\ZombieMod3\Natives.sma = BTE ZombieMod3\ZombieMod3\Natives.sma
+		BTE ZombieMod3\ZombieMod3\Public.sma = BTE ZombieMod3\ZombieMod3\Public.sma
+		BTE ZombieMod3\ZombieMod3\ReadFile.sma = BTE ZombieMod3\ZombieMod3\ReadFile.sma
+		BTE ZombieMod3\ZombieMod3\Stocks.sma = BTE ZombieMod3\ZombieMod3\Stocks.sma
+		BTE ZombieMod3\ZombieMod3\SupplyBox.sma = BTE ZombieMod3\ZombieMod3\SupplyBox.sma
+		BTE ZombieMod3\ZombieMod3\Task.sma = BTE ZombieMod3\ZombieMod3\Task.sma
+		BTE ZombieMod3\ZombieMod3\Util.sma = BTE ZombieMod3\ZombieMod3\Util.sma
+		BTE ZombieMod3\ZombieMod3\Vars.sma = BTE ZombieMod3\ZombieMod3\Vars.sma
+		BTE ZombieMod3\ZombieMod3\ZbClassBuff.sma = BTE ZombieMod3\ZombieMod3\ZbClassBuff.sma
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE ZombieMod4", "BTE ZombieMod4", "{AE2A664B-8E30-4BFD-9020-6788D57D9C15}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZombieMod4\animation.inc = BTE ZombieMod4\animation.inc
+		BTE ZombieMod4\BTE_API.inc = BTE ZombieMod4\BTE_API.inc
+		BTE ZombieMod4\BTE_MapConfig.sma = BTE ZombieMod4\BTE_MapConfig.sma
+		BTE ZombieMod4\BTE_RemoveObjects.sma = BTE ZombieMod4\BTE_RemoveObjects.sma
+		BTE ZombieMod4\BTE_Zb4_API.inc = BTE ZombieMod4\BTE_Zb4_API.inc
+		BTE ZombieMod4\BTE_Zb4Class_Heavy.sma = BTE ZombieMod4\BTE_Zb4Class_Heavy.sma
+		BTE ZombieMod4\BTE_Zb4Class_Hide.sma = BTE ZombieMod4\BTE_Zb4Class_Hide.sma
+		BTE ZombieMod4\BTE_Zb4Class_Humpback.sma = BTE ZombieMod4\BTE_Zb4Class_Humpback.sma
+		BTE ZombieMod4\BTE_Zb4Class_Light.sma = BTE ZombieMod4\BTE_Zb4Class_Light.sma
+		BTE ZombieMod4\BTE_Zb4Class_Normal.sma = BTE ZombieMod4\BTE_Zb4Class_Normal.sma
+		BTE ZombieMod4\BTE_Zb4HumanSkill.sma = BTE ZombieMod4\BTE_Zb4HumanSkill.sma
+		BTE ZombieMod4\BTE_Zb4ZombieKnife.sma = BTE ZombieMod4\BTE_Zb4ZombieKnife.sma
+		BTE ZombieMod4\BTE_Zombie_Mod4.sma = BTE ZombieMod4\BTE_Zombie_Mod4.sma
+		BTE ZombieMod4\BTE_Zombie_Mod4_2.sma = BTE ZombieMod4\BTE_Zombie_Mod4_2.sma
+		BTE ZombieMod4\BTE_ZombieAnimation.sma = BTE ZombieMod4\BTE_ZombieAnimation.sma
+		BTE ZombieMod4\BTE_ZombieBleed.sma = BTE ZombieMod4\BTE_ZombieBleed.sma
+		BTE ZombieMod4\inc.inc = BTE ZombieMod4\inc.inc
+		BTE ZombieMod4\offset.inc = BTE ZombieMod4\offset.inc
+		BTE ZombieMod4\resources.inc = BTE ZombieMod4\resources.inc
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE ZombieMod5", "BTE ZombieMod5", "{02A5288F-F0AF-4398-B5A9-A46B8696B0EF}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZombieMod5\animation.inc = BTE ZombieMod5\animation.inc
+		BTE ZombieMod5\BTE_API.inc = BTE ZombieMod5\BTE_API.inc
+		BTE ZombieMod5\BTE_Zb5HumanSkill.sma = BTE ZombieMod5\BTE_Zb5HumanSkill.sma
+		BTE ZombieMod5\BTE_Zb5ZombieSkill.sma = BTE ZombieMod5\BTE_Zb5ZombieSkill.sma
+		BTE ZombieMod5\BTE_ZbClass.sma = BTE ZombieMod5\BTE_ZbClass.sma
+		BTE ZombieMod5\BTE_Zombie_Mod5.sma = BTE ZombieMod5\BTE_Zombie_Mod5.sma
+		BTE ZombieMod5\cdll_dll.h = BTE ZombieMod5\cdll_dll.h
+		BTE ZombieMod5\metahook.inc = BTE ZombieMod5\metahook.inc
+		BTE ZombieMod5\offset.inc = BTE ZombieMod5\offset.inc
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ZombieMod5", "ZombieMod5", "{35233BA7-C5F1-4E3F-84A8-5EE39B015A10}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZombieMod5\ZombieMod5\EventCmd.sma = BTE ZombieMod5\ZombieMod5\EventCmd.sma
+		BTE ZombieMod5\ZombieMod5\Forward.sma = BTE ZombieMod5\ZombieMod5\Forward.sma
+		BTE ZombieMod5\ZombieMod5\Ham.sma = BTE ZombieMod5\ZombieMod5\Ham.sma
+		BTE ZombieMod5\ZombieMod5\inc.inc = BTE ZombieMod5\ZombieMod5\inc.inc
+		BTE ZombieMod5\ZombieMod5\Menu.sma = BTE ZombieMod5\ZombieMod5\Menu.sma
+		BTE ZombieMod5\ZombieMod5\Natives.sma = BTE ZombieMod5\ZombieMod5\Natives.sma
+		BTE ZombieMod5\ZombieMod5\Public.sma = BTE ZombieMod5\ZombieMod5\Public.sma
+		BTE ZombieMod5\ZombieMod5\ReadFile.sma = BTE ZombieMod5\ZombieMod5\ReadFile.sma
+		BTE ZombieMod5\ZombieMod5\Stocks.sma = BTE ZombieMod5\ZombieMod5\Stocks.sma
+		BTE ZombieMod5\ZombieMod5\Task.sma = BTE ZombieMod5\ZombieMod5\Task.sma
+		BTE ZombieMod5\ZombieMod5\Util.sma = BTE ZombieMod5\ZombieMod5\Util.sma
+		BTE ZombieMod5\ZombieMod5\Vars.sma = BTE ZombieMod5\ZombieMod5\Vars.sma
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BTE ZSE", "BTE ZSE", "{15DC4C76-C8F0-4577-BD70-B2567313EF07}"
+	ProjectSection(SolutionItems) = preProject
+		BTE ZSE\bte.inc = BTE ZSE\bte.inc
+		BTE ZSE\BTE_API.inc = BTE ZSE\BTE_API.inc
+		BTE ZSE\BTE_Zombie_Breakout.sma = BTE ZSE\BTE_Zombie_Breakout.sma
+		BTE ZSE\BTE_Zombie_Breakout_2.sma = BTE ZSE\BTE_Zombie_Breakout_2.sma
+		BTE ZSE\BTE_ZSE_API.inc = BTE ZSE\BTE_ZSE_API.inc
+		BTE ZSE\BTE_ZSEClass_Tank.sma = BTE ZSE\BTE_ZSEClass_Tank.sma
+		BTE ZSE\BTE_ZSEEscape.sma = BTE ZSE\BTE_ZSEEscape.sma
+		BTE ZSE\BTE_ZSERespawn.sma = BTE ZSE\BTE_ZSERespawn.sma
+		BTE ZSE\BTE_ZSEZombieKnife.sma = BTE ZSE\BTE_ZSEZombieKnife.sma
+		BTE ZSE\cdll_dll.h = BTE ZSE\cdll_dll.h
+		BTE ZSE\inc.inc = BTE ZSE\inc.inc
+		BTE ZSE\offset.inc = BTE ZSE\offset.inc
+		BTE ZSE\util.sma = BTE ZSE\util.sma
+		BTE ZSE\可怕.txt = BTE ZSE\可怕.txt
+		BTE ZSE\新建 TXT File.txt = BTE ZSE\新建 TXT File.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "other", "other", "{E7AE8B83-ED4A-43B7-82BD-049C484B78B5}"
+	ProjectSection(SolutionItems) = preProject
+		other\BTE_ChangeMode.sma = other\BTE_ChangeMode.sma
+		other\BTE_PlayerTraceAttackFix.sma = other\BTE_PlayerTraceAttackFix.sma
+		other\BTE_RadioLocationFix.sma = other\BTE_RadioLocationFix.sma
+		other\BTE_VoteKick.sma = other\BTE_VoteKick.sma
+		other\BTE_VoteKick_en.sma = other\BTE_VoteKick_en.sma
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AMXX", "AMXX", "{A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}"
+	ProjectSection(SolutionItems) = preProject
+		bte.inc = bte.inc
+		BTE_API.inc = BTE_API.inc
+		BTE_Base.sma = BTE_Base.sma
+		BTE_ChnID.sma = BTE_ChnID.sma
+		BTE_Connection.sma = BTE_Connection.sma
+		BTE_DeathInfo.sma = BTE_DeathInfo.sma
+		BTE_DeathRun.sma = BTE_DeathRun.sma
+		BTE_Fun.sma = BTE_Fun.sma
+		BTE_GunDeath.sma = BTE_GunDeath.sma
+		BTE_GunDropEffect.sma = BTE_GunDropEffect.sma
+		BTE_ModHelp_None.sma = BTE_ModHelp_None.sma
+		BTE_RandomSpawn.sma = BTE_RandomSpawn.sma
+		BTE_TIP.sma = BTE_TIP.sma
+		bte_wpn2.inc = bte_wpn2.inc
+		BTE_ZombieKnife.sma = BTE_ZombieKnife.sma
+		cdll_dll.h = cdll_dll.h
+		cycler_mdl.sma = cycler_mdl.sma
+		func_breakable.sma = func_breakable.sma
+		func_wall_toggle.sma = func_wall_toggle.sma
+		offset.inc = offset.inc
+		RoundControl.sma = RoundControl.sma
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{68B612A1-2733-4332-AC40-0D1F330240EB} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{4CE36BF7-4355-4594-9479-45C63ED80C24} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{4AB1D56A-C9BD-4660-8A7E-EF745913FC10} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{72F00DBB-6793-4384-B78E-9DB0D0AB0398} = {4AB1D56A-C9BD-4660-8A7E-EF745913FC10}
+		{A08B3AD5-82AC-4305-9593-4BC622EE5987} = {72F00DBB-6793-4384-B78E-9DB0D0AB0398}
+		{ADCE5ED5-1092-4F56-88A8-DDD3850AE264} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{D199CAEB-A9C3-4B26-B085-C22EBD0345BA} = {ADCE5ED5-1092-4F56-88A8-DDD3850AE264}
+		{9BA20399-588D-4743-99C2-CC024C90C9D7} = {D199CAEB-A9C3-4B26-B085-C22EBD0345BA}
+		{265FDB90-C374-4C9A-9512-4817CB883AF4} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{5B69C5C7-3012-4CD9-95E1-3E189C6B5CE2} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{961FD5B7-0790-40A8-9B2F-7ECF9E554717} = {5B69C5C7-3012-4CD9-95E1-3E189C6B5CE2}
+		{AE2A664B-8E30-4BFD-9020-6788D57D9C15} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{02A5288F-F0AF-4398-B5A9-A46B8696B0EF} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{35233BA7-C5F1-4E3F-84A8-5EE39B015A10} = {02A5288F-F0AF-4398-B5A9-A46B8696B0EF}
+		{15DC4C76-C8F0-4577-BD70-B2567313EF07} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+		{E7AE8B83-ED4A-43B7-82BD-049C484B78B5} = {A4B6FE5C-FFBA-4F5E-8392-96F2FC4872B1}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FAB035A8-815A-4656-8F0E-0CB079787732}
+	EndGlobalSection
+EndGlobal

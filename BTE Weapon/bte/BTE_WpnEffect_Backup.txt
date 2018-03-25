@@ -1,0 +1,2024 @@
+
+public WpnEffect(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+
+	if (g_bCanReload[id] == FALSE)
+		set_pev(id, pev_button, pev(id, pev_button) & ~IN_RELOAD);
+
+#if defined ENABLE_SKULLAXE_BUG
+
+	new item = get_pdata_cbase(id, m_rgpPlayerItems + 3);
+
+	if (pev_valid(item) && iId != CSW_KNIFE)
+	{
+		new iHitResult;
+		if (c_iSpecial[iBteWpn] == SPECIAL_SKULLAXE || c_iSpecial[iBteWpn] == SPECIAL_DRAGONSWORD)
+		{
+			new Float:flAttack;
+			pev(item, pev_fuser4, flAttack);
+
+			if (flAttack <= get_gametime() && pev(item, pev_iuser1))
+			{
+				new bStab = pev(item, pev_iuser2)?true:false;
+				if (!bStab)
+				{
+					iHitResult = KnifeAttack(id, false, c_flDistance[iBteWpn][0], WEAPON_DAMAGE[iId] /*15.0*/);
+
+					switch (iHitResult)
+					{
+						case RESULT_HIT_PLAYER : SendKnifeSound(id, 2, pev(item, pev_iuser4));
+						case RESULT_HIT_WORLD : SendKnifeSound(id, 3, pev(item, pev_iuser4));
+					}
+				}
+				else
+				{
+
+					if (!c_flAngle[iBteWpn][0])
+						iHitResult = KnifeAttack(id, true, c_flDistance[iBteWpn][1], WEAPON_DAMAGE[iId] * c_k_damage2[iBteWpn] /*65.0*/);
+					else
+						iHitResult = KnifeAttack2(id, true, c_flDistance[iBteWpn][1], c_flAngle[iBteWpn][0], WEAPON_DAMAGE[iId] * c_k_damage2[iBteWpn] /*55.0*/);
+
+					switch (iHitResult)
+					{
+						case RESULT_HIT_PLAYER : SendKnifeSound(id, 5, pev(item, pev_iuser4));
+						case RESULT_HIT_WORLD : SendKnifeSound(id, 3, pev(item, pev_iuser4));
+					}
+
+				}
+				set_pev(item, pev_iuser1, 0);
+			}
+		}
+	}
+#endif
+
+
+	else if (c_iType[iBteWpn] == WEAPONS_FG)
+	{
+		WE_FG(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iType[iBteWpn] == WEAPONS_FLAMETHROWER)
+	{
+		WE_FlameThrower(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_MUSKET)
+	{
+		WE_Musket(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_COILGUN)
+	{
+		WE_Coilgun(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_CATAPULT)
+	{
+		WE_Catapult(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_CANNON)
+	{
+		WE_Cannon(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_VIOLIN)
+	{
+		WE_Volin(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_BALROG1)
+	{
+		WE_Balrog1(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_CHAINSAW)
+	{
+		WE_Chainsaw(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else
+	else if (c_iSpecial[iBteWpn] == SPECIAL_TKNIFE)
+	{
+		WE_Tknife(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5)
+	{
+		WE_Jaunsmk5(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_BOW)
+	{
+		WE_Bow(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_JANUS7)
+	{
+		WE_Jauns7(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_DGUN)
+	{
+		WE_DGUN(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_M2)
+	{
+		WE_M2(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}
+
+
+
+
+
+}
+
+
+
+public WE_M2(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton;
+	if (get_pdata_float(iEnt, m_flNextPrimaryAttack) <= 0.0)
+	{
+		iButton = pev(id, pev_button);
+
+		if (iButton & IN_ATTACK2)
+		{
+			// A->B 4.7 B->A 4.1
+			new Float:vecVAngle[3];
+			pev(id, pev_v_angle, vecVAngle);
+			if ((vecVAngle[0] > 30.0 || vecVAngle[0] < -30.0) && !g_iWeaponMode[id][1] || iButton & IN_JUMP)
+				return;
+
+			set_pdata_float(iEnt, m_flNextPrimaryAttack, g_iWeaponMode[id][1]?4.1:4.7);
+			set_pdata_float(iEnt, m_flNextSecondaryAttack, g_iWeaponMode[id][1]?4.1:4.7);
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, g_iWeaponMode[id][1]?4.1:4.7);
+
+			if (iClip)
+				SendWeaponAnim(id, g_iWeaponMode[id][1]?M2_changeB:M2_changeA);
+			else
+				SendWeaponAnim(id, g_iWeaponMode[id][1]?M2_changeB_empty:M2_changeA_empty);
+
+			set_pev(iEnt, pev_iuser4, 1);
+
+			//set_pev(iEnt, pev_fuser1, get_gametime() + 2.3);
+			set_pdata_float(id, m_flNextAttack, 2.3);
+
+			if (g_iWeaponMode[id][1]) // B->A
+			{
+				MH_SendZB3Data(id, 15, 0);
+			}
+			else
+			{
+				g_iBlockSwitchDrop[id] = 1;
+				g_fPlrMaxspeed[id] = 120.0;
+				client_cmd(id, "+duck;-jump");
+			}
+		}
+	}
+	// 2.3 maxspeed
+	if (get_pdata_float(id, m_flNextAttack) <= 0.0 && pev(iEnt, pev_iuser4) == 1)
+	{
+		g_fPlrMaxspeed[id] = g_iWeaponMode[id][1]?180.0:0.1;
+		set_pdata_float(id, m_flNextAttack, g_iWeaponMode[id][1]?1.8:2.4);
+		set_pev(iEnt, pev_iuser4, 2);
+		if (!g_iWeaponMode[id][1])
+		{
+			client_cmd(id, "+duck;-jump");
+			MH_SendZB3Data(id, 15, 1); // jump duck v_angle
+		}
+		else
+		{
+			client_cmd(id, "-duck");
+		}
+	}
+	if (get_pdata_float(id, m_flNextAttack) <= 0.0 && pev(iEnt, pev_iuser4) == 2)
+	{
+		g_iWeaponMode[id][1] = 1 - g_iWeaponMode[id][1];
+		g_fPlrMaxspeed[id] = c_flMaxSpeed[g_weapon[id][1]][g_iWeaponMode[id][1]];
+		set_pev(iEnt, pev_iuser4, 0);
+		g_iBlockSwitchDrop[id] = g_iWeaponMode[id][1];
+		//set_pev(g_p_modelent[id], pev_body, c_p_body[g_weapon[id][1]] + g_iWeaponMode[id][1]);
+		set_pev(id, pev_weaponmodel2, g_iWeaponMode[id][1]?"models/p_m2_2.mdl":c_sModel_P[g_weapon[id][1]]);
+	}
+}
+
+
+public WE_DGUN(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	new Float:flNextPrimaryAttack; pev(iEnt, pev_fuser1, flNextPrimaryAttack);
+
+	new Float:fCurTime;
+	global_get(glb_time, fCurTime);
+
+	if (flNextPrimaryAttack > fCurTime)
+		return;
+
+	if (!Stock_Can_Attack())
+		return;
+
+	new iButton, Float:fOrigin[3], Float:fVelocity[3],Float:fAngle[3]
+	iButton = pev(id,pev_button)
+	if (iClip)
+	{
+		if (!(iButton & IN_ATTACK))
+			return;
+
+		new Float:vPunchangle[3];
+		pev(id, pev_punchangle, vPunchangle);
+		vPunchangle[0] -= 4.0;
+		set_pev(id, pev_punchangle, vPunchangle);
+
+		SendWeaponShootSound(id, false, true);
+
+		iClip--
+		set_pdata_int(iEnt, m_iClip, iClip, 4)
+		//set_pdata_int(iEnt, m_flNextPrimaryAttack, c_flAttackInterval[iBteWpn][0], 4)
+		set_pev(iEnt, pev_fuser1, fCurTime + c_flAttackInterval[iBteWpn][0]);
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.03, 4)
+
+		SendWeaponAnim(id, 1)
+
+		new iArrow = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"))
+		Stock_Get_Postion(id, c_l_forward[iBteWpn], c_l_right[iBteWpn], c_l_up[iBteWpn], fOrigin)
+
+		new Float:fEnd[3]
+		Stock_Get_Aiming(id, fEnd);
+		Stock_GetSpeedVector(fOrigin, fEnd, DGUN_VELOCITY, fVelocity);
+
+		set_pev(iArrow, pev_classname, "d_drillgun")
+		engfunc(EngFunc_SetModel, iArrow, "models/drillgun_nail.mdl")
+		engfunc(EngFunc_SetSize, iArrow, {-0.1, -0.1, -0.1}, {0.1, 0.1, 0.1});
+
+		set_pev(iArrow, pev_origin, fOrigin)
+		set_pev(iArrow, pev_movetype, MOVETYPE_PUSHSTEP)
+
+		set_pev(iArrow, pev_solid, SOLID_BBOX)
+		set_pev(iArrow, pev_owner, id)
+		set_pev(iArrow, pev_gravity, DGUN_GRAVITY)
+		set_pev(iArrow, pev_velocity, fVelocity)
+		Stock_Get_Velocity_Angle(iArrow, fAngle)
+		set_pev(iArrow, pev_angles, fAngle)
+		Set_Ent_Data(iArrow, DEF_ENTID, iBteWpn)
+		Set_Ent_Data(iArrow, DEF_ENTCLASS, ENTCLASS_DGUN)
+		set_pev(iArrow, pev_nextthink, get_gametime()+0.02)
+
+		set_pev(iArrow, pev_iuser1, 9999);
+		set_pev(iArrow, pev_iuser2, 5); // 穿透次数
+
+		set_pev(iArrow, pev_fuser1, 1.0);
+
+		message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
+		write_byte(TE_BEAMFOLLOW)
+		write_short(iArrow)
+		write_short(g_cache_trail)
+		write_byte(1)
+		write_byte(1)
+		write_byte(244)
+		write_byte(244)
+		write_byte(244)
+		write_byte(100)
+		message_end()
+
+		iButton &= ~IN_ATTACK;
+		set_pev(id, pev_button, iButton)
+	}
+	else
+	{
+		if (pev(iEnt, pev_iuser1))
+		{
+			set_pdata_int(iEnt, m_iClip, 1, 4);
+			set_pev(iEnt, pev_iuser1, 0);
+			Stock_Config_User_Bpammo(id, iId, iBpAmmo - 1, 1);
+		}
+		else
+		{
+			if (iBpAmmo)
+			{
+				SendWeaponAnim(id, 2);
+				set_pev(iEnt, pev_iuser1, 1);
+				set_pev(iEnt, pev_fuser1, fCurTime + c_flReload[iBteWpn][0]);
+				set_pdata_float(iEnt, m_flTimeWeaponIdle, c_flReload[iBteWpn][0], 4)
+			}
+		}
+
+	}
+}
+
+public WE_Jauns7(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	new Float:flNextPrimaryAttack; pev(iEnt, pev_fuser2, flNextPrimaryAttack); // 用这个来替代原先的m_flNextPrimaryAttack
+
+	new Float:fCurTime;
+	global_get(glb_time, fCurTime);
+
+	if (flNextPrimaryAttack > fCurTime)
+		return;
+
+	new iState = pev(iEnt, pev_iuser1);
+	if (!iState)    return;
+
+	new Float:fNextReset; pev(iEnt, pev_fuser1, fNextReset);
+
+
+	if (fCurTime > fNextReset && fNextReset)
+	{
+		if (iState == JANUSMK5_CANUSE) // 超过了可变形时间
+		{
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 0.0, 4);
+			SendWeaponAnim(id, 0);
+		}
+		if (iState == JANUSMK5_USING) // 变形时间结束了
+		{
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.7, 4);
+			set_pdata_float(iEnt, m_flNextSecondaryAttack, 1.7);
+			set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.7);
+			SendWeaponAnim(id, 11);
+
+			SetCanReload(id, TRUE);
+		}
+
+		iState = 0;
+		fNextReset = 0.0;
+		flNextPrimaryAttack = 0.0;
+		MH_SpecialEvent(id, 50 + iState); // 让外挂获知一些信息
+		set_pev(iEnt, pev_iuser1, iState);
+		set_pev(iEnt, pev_fuser1, fNextReset);
+		set_pev(iEnt, pev_fuser2, flNextPrimaryAttack);
+		return;
+	}
+
+	new iButton;
+	iButton = pev(id,pev_button);
+	if (iButton & IN_ATTACK2 && iState == JANUSMK5_CANUSE) // 开始变形
+	{
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 2.03);
+		set_pdata_float(iEnt, m_flNextPrimaryAttack, 9999.0); // 禁止原先的攻击
+		SendWeaponAnim(id, 6);
+
+		iState = JANUSMK5_USING;
+		fNextReset = fCurTime + JANUS7_CHARGE_TIME;
+		MH_SpecialEvent(id, 50 + iState); // 让外挂获知一些信息
+		set_pev(iEnt, pev_iuser1, iState);
+		set_pev(iEnt, pev_iuser2, 0); // 清除计数
+		set_pev(iEnt, pev_fuser1, fNextReset);
+		set_pev(iEnt, pev_fuser2, fCurTime + 2.03);
+		set_pev(iEnt, pev_iuser4, 0);
+
+		SetCanReload(id, FALSE);
+	}
+
+	if (iButton & IN_ATTACK && iState == JANUSMK5_USING)
+	{
+		new Float:vPunchangle[3];
+		pev(id, pev_punchangle, vPunchangle);
+		vPunchangle[0] += random_float(-1.0,1.0);
+		vPunchangle[1] += random_float(-1.0,1.0);
+		set_pev(id, pev_punchangle, vPunchangle);
+
+		flNextPrimaryAttack = fCurTime + c_flAttackInterval[iBteWpn][0];
+		set_pev(iEnt, pev_fuser2, flNextPrimaryAttack);
+
+		SendWeaponAnim(id, random_num(9, 10));
+
+		//engfunc(EngFunc_EmitSound, id, CHAN_WEAPON, JANUS7_CHARGE_SHOOT_SOUND, 1.0, ATTN_NORM, 0, 94 + random_num(0, 15));
+		SendWeaponShootSound(id, true, true);
+
+		new Float:fOrigin[3];
+		pev(id, pev_origin, fOrigin);
+		new Float:fEnd[3];
+		new iVic = pev(iEnt, pev_iuser4);
+		Stock_Get_Origin(iVic, fEnd);
+
+		if (get_distance_f(fOrigin, fEnd) > JANUS7_CHARGE_RANGE || !Janus7_Can_Attack(id, iVic))
+		{
+			iVic = 0;
+
+			new Float:fDistance = 9999.0;
+			new iVictim = -1;
+			while ((iVictim = engfunc(EngFunc_FindEntityInSphere, iVictim, fOrigin, JANUS7_CHARGE_RANGE)) != 0)
+			{
+				if (!Janus7_Can_Attack(id, iVictim)) continue;
+
+				new Float:fOrigin2[3];
+				Stock_Get_Origin(iVictim, fOrigin2);
+
+				if (!fm_is_in_viewcone(id, fOrigin2)) continue;
+
+				new Float:fNewDistance;
+				fNewDistance = get_distance_f(fOrigin, fOrigin2);
+				if (fNewDistance < fDistance)
+				{
+					fDistance = fNewDistance;
+					iVic = iVictim;
+				}
+			}
+			set_pev(iEnt, pev_iuser4, iVic);
+		}
+
+
+		Stock_Get_Postion(id,28.0,4.5,-5.0,fOrigin);
+
+		if (iVic)
+		{
+			ExecuteHamB(Ham_TakeDamage, iVic, id, id, g_modruning == BTE_MOD_ZB1 ? 45.6 : 27.0, DMG_EXPLOSION);
+
+			Stock_Get_Origin(iVic, fEnd);
+			engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, fOrigin, 0);
+			write_byte(TE_SPRITE);
+			engfunc(EngFunc_WriteCoord, fEnd[0]);
+			engfunc(EngFunc_WriteCoord, fEnd[1]);
+			engfunc(EngFunc_WriteCoord, fEnd[2]);
+			write_short(g_cache_janus7_hit);
+			write_byte(4);
+			write_byte(255);
+			message_end();
+
+			engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, fOrigin, 0);
+			write_byte(TE_BEAMPOINTS);
+			engfunc(EngFunc_WriteCoord, fEnd[0]);
+			engfunc(EngFunc_WriteCoord, fEnd[1]);
+			engfunc(EngFunc_WriteCoord, fEnd[2]);
+			engfunc(EngFunc_WriteCoord, fOrigin[0]);
+			engfunc(EngFunc_WriteCoord, fOrigin[1]);
+			engfunc(EngFunc_WriteCoord, fOrigin[2]);
+			write_short(g_cache_lgtning);
+			write_byte(0); // byte (starting frame)
+			write_byte(10); // byte (frame rate in 0.1's)
+			write_byte(2); // byte (life in 0.1's)
+			write_byte(55); // byte (line width in 0.1's)
+			write_byte(17); // byte (noise amplitude in 0.01's)
+			write_byte(255); // byte,byte,byte (color)
+			write_byte(174);
+			write_byte(14);
+			write_byte(255); // byte (brightness)
+			write_byte(10); // byte (scroll speed in 0.1's)
+			message_end();
+
+			//Stock_Fake_KnockBack(id, iVic, JANUS7_CHARGE_KNOCKBACK);
+
+			if (1 <= iVic <= 32)
+			{
+				new Float:vAttacker[3], Float:vVictim[3];
+
+				pev(id,pev_origin,vAttacker);
+				pev(iVic,pev_origin,vVictim);
+
+				xs_vec_sub(vVictim, vAttacker, vVictim);
+				new Float:fDistance;
+				fDistance = xs_vec_len(vVictim);
+				xs_vec_mul_scalar(vVictim, 1 / fDistance, vVictim);
+
+				xs_vec_mul_scalar(vVictim, JANUS7_CHARGE_KNOCKBACK, vVictim);
+				xs_vec_mul_scalar(vVictim, g_knockback[iVic], vVictim);
+
+				set_pev(iVic,pev_velocity,vVictim)
+			}
+
+		}
+		else
+		{
+			Stock_Get_Aiming(id, fEnd);
+
+			engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, fOrigin, 0);
+			write_byte(TE_BEAMPOINTS);
+			engfunc(EngFunc_WriteCoord, fOrigin[0]);
+			engfunc(EngFunc_WriteCoord, fOrigin[1]);
+			engfunc(EngFunc_WriteCoord, fOrigin[2]);
+			engfunc(EngFunc_WriteCoord, fEnd[0]);
+			engfunc(EngFunc_WriteCoord, fEnd[1]);
+			engfunc(EngFunc_WriteCoord, fEnd[2]);
+			write_short(g_cache_lgtning);
+			write_byte(0); // byte (starting frame)
+			write_byte(10); // byte (frame rate in 0.1's)
+			write_byte(2); // byte (life in 0.1's)
+			write_byte(55); // byte (line width in 0.1's)
+			write_byte(17); // byte (noise amplitude in 0.01's)
+			write_byte(255); // byte,byte,byte (color)
+			write_byte(174);
+			write_byte(14);
+			write_byte(255); // byte (brightness)
+			write_byte(10); // byte (scroll speed in 0.1's)
+			message_end();
+
+		}
+	}
+}
+
+
+public WE_Jaunsmk5(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	if (get_pdata_float(iEnt,m_flNextPrimaryAttack) > 0.0)
+		return;
+
+	new Float:fCurTime;
+	global_get(glb_time, fCurTime);
+
+	new iState = pev(iEnt, pev_iuser1);
+	new Float:fNextReset; pev(iEnt, pev_fuser1, fNextReset);
+
+	if (!iState)
+		return;
+
+	if (fCurTime > fNextReset && fNextReset)
+	{
+		if (iState == JANUSMK5_CANUSE)
+		{
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 0.0, 4);
+		}
+		if (iState == JANUSMK5_USING)
+		{
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.67, 4);
+			set_pdata_float(iEnt, m_flNextSecondaryAttack, 1.67);
+			set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.67);
+			SendWeaponAnim(id, 11);
+
+			SetCanReload(id, TRUE);
+		}
+
+		iState = 0;
+		fNextReset = 0.0;
+		MH_SpecialEvent(id, 50 + iState);
+		set_pev(iEnt, pev_iuser1, iState);
+		set_pev(iEnt, pev_fuser1, fNextReset);
+		return;
+	}
+
+	new iButton;
+	iButton = pev(id,pev_button);
+	if (iButton & IN_ATTACK2 && iState == JANUSMK5_CANUSE)
+	{
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 2.0);
+		set_pdata_float(iEnt, m_flNextSecondaryAttack, 2.0);
+		set_pdata_float(iEnt, m_flNextPrimaryAttack, 2.0);
+		SendWeaponAnim(id, 5);
+
+		iState = JANUSMK5_USING;
+		fNextReset = fCurTime + 11.0;
+		MH_SpecialEvent(id, 50 + iState);
+		set_pev(iEnt, pev_iuser1, iState);
+		set_pev(iEnt, pev_fuser1, fNextReset);
+		set_pev(iEnt, pev_iuser2, 0);
+
+		SetCanReload(id, FALSE);
+	}
+}
+public WE_Tknife(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton;
+	static Float:flNextPrimaryAttack, Float:flNextSecondaryAttack, Float:flTimeWeaponIdle, Float:flAttack;
+	static iWpn;
+	iWpn = iBteWpn;
+
+	iButton = pev(id,pev_button);
+	pev(iEnt, pev_fuser1, flNextPrimaryAttack);
+	pev(iEnt, pev_fuser2, flNextSecondaryAttack);
+	pev(iEnt, pev_fuser3, flTimeWeaponIdle);
+	pev(iEnt, pev_fuser4, flAttack);
+
+	new Float:fCurTime;
+	global_get(glb_time, fCurTime);
+
+	if (fCurTime <= flAttack)
+	{
+		set_pev(iEnt, pev_fuser4, 0.0);
+
+		new Float:vecStart[3], Float:vecEnd[3],Float:vecViewOfs[3];
+		new trRes;
+		pev(id, pev_origin, vecStart);
+		pev(id, pev_view_ofs, vecViewOfs);
+		xs_vec_add(vecStart, vecViewOfs, vecStart);
+
+		new Float:angle[3],Float:Forw[3];
+		pev(id,pev_v_angle,angle);
+		engfunc(EngFunc_MakeVectors,angle);
+		global_get(glb_v_forward,Forw);
+		xs_vec_mul_scalar(Forw,c_k_distance2[iWpn],Forw);
+
+		xs_vec_add(vecStart, Forw, vecEnd);
+		engfunc(EngFunc_TraceLine, vecStart, vecEnd, 0, id, trRes);
+
+		new pHit = get_tr2(trRes, TR_pHit);
+
+		new Float:endPos[3];
+		get_tr2(trRes,TR_vecEndPos,endPos);
+
+		new Float:flFraction
+		get_tr2(trRes, TR_flFraction, flFraction)
+
+		if (pev_valid(pHit))
+		{
+			new Float:fDamage;
+			if (is_user_alive(pHit))
+			{
+				new iBody = get_tr2(trRes, TR_iHitgroup);
+				set_pdata_int(pHit, 75, iBody);
+
+				fDamage = 55.0 * c_k_damage2[iWpn] * Stock_Get_Body_Dmg(iBody);
+				ExecuteHamB(Ham_TakeDamage,pHit,id,id,fDamage,DMG_CLUB);
+				Stock_Fake_KnockBack(id,pHit,c_knockback[iWpn]);
+
+				if (can_damage(id, pHit)) Stock_BloodEffect(endPos, 7);
+
+				engfunc(EngFunc_EmitSound, id, CHAN_ITEM, "weapons/axe_hit1.wav", 1.0, ATTN_NORM, 0, PITCH_NORM);
+			}
+			else
+			{
+				new sound[32];
+				switch (random_num(0,1))
+				{
+					case 0 : format(sound, charsmax(sound), "weapons/tknife_metal1.wav");
+					case 1 : format(sound, charsmax(sound), "weapons/tknife_metal2.wav");
+					//case 2 : format(sound, charsmax(sound), "weapons/tknife_metal3.wav");
+				}
+				engfunc(EngFunc_EmitSound, id, CHAN_ITEM, sound, 1.0, ATTN_NORM, 0, PITCH_NORM);
+
+				if (!(pev(pHit,pev_spawnflags) & SF_BREAK_TRIGGER_ONLY))
+				{
+					fDamage = 55.0 * c_k_damage2[iWpn];
+					ExecuteHamB(Ham_TakeDamage,pHit,id,id,fDamage,DMG_CLUB);
+				}
+			}
+		}
+		else if (flFraction != 1.0) // 保证打到了东西
+		{
+			new pTextureName[64];
+			engfunc(EngFunc_TraceTexture, 0, vecStart, vecEnd, pTextureName, charsmax(pTextureName));
+			new iTtextureType = dllfunc(DLLFunc_PM_FindTextureType, pTextureName);
+
+			new sound[32];
+			if (iTtextureType == 'M' || iTtextureType == 'V' || iTtextureType == 'P')
+			{
+				switch (random_num(0,1))
+				{
+					case 0 : format(sound, charsmax(sound), "weapons/tknife_metal1.wav");
+					case 1 : format(sound, charsmax(sound), "weapons/tknife_metal2.wav");
+					//case 2 : format(sound, charsmax(sound), "weapons/tknife_metal3.wav");
+				}
+			}
+			else if (iTtextureType == 'W')
+			{
+				switch (random_num(0,1))
+				{
+					case 0 : format(sound, charsmax(sound), "weapons/tknife_wood1.wav");
+					case 1 : format(sound, charsmax(sound), "weapons/tknife_wood2.wav");
+				}
+			}
+			else/* if (iTtextureType == 'D' || iTtextureType == 'T' || iTtextureType == 'N')*/
+			{
+				switch (random_num(0,1))
+				{
+					case 0 : format(sound, charsmax(sound), "weapons/tknife_stone1.wav");
+					case 1 : format(sound, charsmax(sound), "weapons/tknife_stone2.wav");
+				}
+			}
+			engfunc(EngFunc_EmitSound, id, CHAN_ITEM, sound, 1.0, ATTN_NORM, 0, PITCH_NORM);
+		}
+		free_tr2(trRes);
+	}
+
+
+
+	if (fCurTime > flTimeWeaponIdle)
+	{
+		SendWeaponAnim(id, 0);
+		set_pev(iEnt, pev_fuser3, 9999.0 + fCurTime);
+	}
+
+	if (fCurTime < flNextPrimaryAttack || fCurTime < flNextSecondaryAttack) return;
+
+	if (iButton & IN_ATTACK2)
+	{
+		SendWeaponAnim(id, 3);
+		//PlaySeqence(id,c_seq[iBteWpn]+1);
+		OrpheuCall(handleSetAnimation, id, PLAYER_ATTACK1);
+		// 0.27 tknife/tknifeex  0.2 tknifeex2
+		set_pev(iEnt, pev_fuser4, c_k_delay2[iWpn] + fCurTime);
+
+		set_pev(iEnt, pev_fuser1, c_speed[iWpn] + fCurTime);
+		set_pev(iEnt, pev_fuser2, c_speed[iWpn] + fCurTime);
+		set_pev(iEnt, pev_fuser3, 1.0 + fCurTime); //from model
+
+		new sound[64];
+		format(sound, 63, "weapons/%s-2.wav",c_sModel[iWpn]);
+		engfunc(EngFunc_EmitSound, id, CHAN_WEAPON, sound, 1.0, ATTN_NORM, 0, PITCH_NORM);
+
+		return;
+	}
+
+	if (iButton & IN_ATTACK && iClip)
+	{
+		SendWeaponAnim(id, 1);
+
+
+		iClip--
+		set_pdata_int(iEnt, m_iClip, iClip, 4);
+
+		new Float:fVelocity[3],Float:fAngle[3],Float:fOrigin[3],Float:v_angle[3];
+		new sName[32];
+		format(sName,31,"d_%s",c_sModel[iBteWpn]);
+		//velocity_by_aim(id, 1800, fVelocity);
+
+		OrpheuCall(handleSetAnimation, id, PLAYER_ATTACK1);
+
+
+		static Float:vVel[3],Float:fSpeed
+		pev(id,pev_velocity,vVel)
+		fSpeed = vector_length(vVel)
+
+		pev(id, pev_v_angle, v_angle);
+
+		Stock_Velocity_By_Aim(v_angle,0.0,2400.0,fVelocity);
+
+		/*new iOrigin[3],Float:fOrigin2[3];
+		get_user_origin(id,iOrigin,3);
+		IVecFVec(iOrigin,fOrigin2);*/
+		new Float:max
+		if (equal(c_sModel[iWpn],"tknifeex2"))
+			max = 1.0;
+		else if (equal(c_sModel[iWpn],"tknifeex"))
+			max = 0.5;
+		else
+			max = 0.0;
+
+		for (new Float:i=-max;i<=max;i++)
+		{
+		Stock_Get_Postion(id,3.0, random_float(-4.0, 4.0) * i * (1 + fSpeed / 130), random_float(-5.5, 5.5) * (1 + fSpeed / 130), fOrigin);
+
+		new iKnife = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
+
+		set_pev(iKnife, pev_classname, sName);
+
+		engfunc(EngFunc_SetModel, iKnife, "models/tknife.mdl");
+
+
+		set_pev(iKnife, pev_origin, fOrigin);
+		set_pev(iKnife, pev_mins, {-0.02, -0.02, -0.02})
+		set_pev(iKnife, pev_maxs, {0.02, 0.02, 0.02})
+		engfunc(EngFunc_SetSize, iKnife, {-0.1, -0.1, -0.1}, {0.1, 0.1, 0.1});
+		set_pev(iKnife, pev_movetype, MOVETYPE_BOUNCE);
+
+		set_pev(iKnife, pev_solid, SOLID_BBOX);
+		set_pev(iKnife, pev_owner, id);
+		set_pev(iKnife, pev_sequence, 1);
+		set_pev(iKnife, pev_framerate, 1.0);
+		if (equal(c_sModel[iWpn],"tknifeex2"))
+			set_pev(iKnife, pev_body, 1);
+		else
+			set_pev(iKnife, pev_body, 0);
+		set_pev(iKnife,pev_gravity,0.3);
+		set_pev(iKnife,pev_velocity,fVelocity);
+		set_pev(iKnife, pev_iuser1, 0);
+		Stock_Get_Velocity_Angle(iKnife, fAngle);
+		set_pev(iKnife, pev_angles, fAngle);
+		Set_Ent_Data(iKnife,DEF_ENTID,iBteWpn);
+		Set_Ent_Data(iKnife,DEF_ENTCLASS,ENTCLASS_TKNIFE);
+		set_pev(iEnt,pev_nextthink,get_gametime()+0.03);
+
+		message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
+		write_byte(TE_BEAMFOLLOW);
+		write_short(iKnife);
+		write_short(g_cache_trail);
+		write_byte(3);
+		write_byte(1);
+		write_byte(244);
+		write_byte(244);
+		write_byte(244);
+		write_byte(200);
+		message_end();
+		}
+		set_pev(iEnt, pev_fuser1, c_k_speed2[iWpn] + fCurTime);
+		set_pev(iEnt, pev_fuser2, c_k_speed2[iWpn] + fCurTime);
+		set_pev(iEnt, pev_fuser3, 1.0 + fCurTime); //from model
+		return;
+	}
+}
+
+
+
+public WE_Spas12(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+
+	if (c_iSpecial[iBteWpn] == SPECIAL_SPAS12EX)
+	{
+		static iButton
+		iButton  = pev(id,pev_button)
+
+		/*if (get_pdata_float(iEnt, m_flTimeWeaponIdle, 4)<0.1)
+		{
+			new model[32]
+			//PRINT("@ %d",g_spas12_stat[id])
+			format(model,31,"models/v_%s_2.mdl",c_sModel[iBteWpn])
+			set_pev(id,pev_viewmodel2,g_spas12_stat[id]?model:c_model_v[iBteWpn])
+			SendWeaponAnim(id,0)
+		}*/
+		if (iButton & IN_ATTACK2)
+		{
+			if (g_bl1_change_timer[id] > get_gametime()) return
+			g_spas12_stat[id] = 1 - g_spas12_stat[id]
+			SendWeaponAnim(id,7)
+			set_pdata_float(iEnt,m_flNextPrimaryAttack,2.0,4)
+			set_pdata_float(iEnt,m_flTimeWeaponIdle,2.0,4)
+			g_bl1_change_timer[id] = get_gametime() + 2.0
+			new model[32]
+			format(model,31,"models/v_%s_2.mdl",c_sModel[iBteWpn])
+			set_pev(id,pev_viewmodel2,g_spas12_stat[id]?model:c_model_v[iBteWpn])
+			return
+		}
+	}
+}
+
+public WE_Balrog3(id,iEnt,iId)
+{
+	static iBpAmmo, iClip
+	iBpAmmo = Stock_Config_User_Bpammo(id, iId, 0, 0)
+	iClip = get_pdata_int(iEnt,m_iClip)
+
+	if (get_gametime()-g_bl3_timer[id]>c_flAttackInterval[iBteWpn][0]+0.15) g_bl3_num[id] = 0
+	g_bl3_num[id] += 1
+	g_bl3_timer[id] = get_gametime()
+	//MH_SpecialEvent(id,10)
+	if (g_bl3_num[id] > 15 && iBpAmmo)
+	{
+		set_pdata_int(iEnt,m_iClip,iClip+1)
+		Stock_Config_User_Bpammo(id, iId, iBpAmmo-1, 1)
+		//g_bl3_anim[id] = 1 - g_bl3_anim[id]
+		//SendWeaponAnim(id, g_bl3_anim[id]+6)
+		//MH_SpecialEvent(id,11)
+	}
+	if (!iBpAmmo) g_bl3_num[id] = 0
+}
+
+public WE_Chainsaw(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+
+
+	/*if (g_chainsaw_timer[id]<=get_gametime()-1.533 && g_chainsaw_stat[id]==3)
+	{
+		//SendWeaponAnim(id,3)
+		g_chainsaw_stat[id]=0
+		g_chainsaw_timer[id]=get_gametime()
+	}
+	if (iClip==0 && g_chainsaw_stat[id]==1)
+	{
+		g_chainsaw_stat[id]=3
+		g_chainsaw_timer[id]=get_gametime()
+		SendWeaponAnim(id,5)
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.533, 4)
+	}
+	if (iButton & IN_ATTACK)
+	{
+		set_pev(id,pev_button,(iButton & ~ IN_ATTACK))
+		if (!Stock_Can_Attack()) return
+		if (g_chainsaw_timer[id]<=get_gametime() && g_chainsaw_stat[id]==0 && iClip>0)
+		{
+			SendWeaponAnim(id,3)
+			g_chainsaw_stat[id]=1
+			g_chainsaw_timer[id]=get_gametime()
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.0, 4)
+			set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.0, 4)
+			set_pev(iEnt,pev_iuser1,0)
+		}
+		if (g_chainsaw_stat[id]==1 && g_chainsaw_timer[id]<=get_gametime()-0.533 && g_chainsaw_timer2[id]<=get_gametime()-c_flAttackInterval[iBteWpn][0] && iClip>0)
+		{
+			//Pub_Shake(id)
+			set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.533, 4)
+			if (!pev(iEnt,pev_iuser1))
+			{
+				SendWeaponAnim(id,4)
+				set_pev(iEnt,pev_iuser1,1)
+			}
+			//g_chainsaw_timer[id]=get_gametime()-0.633
+			g_chainsaw_timer2[id]=get_gametime()+c_flAttackInterval[iBteWpn][0]
+			iClip--
+			set_pdata_int(iEnt,m_iClip,iClip)
+			new iCallBack
+
+			iCallBack = Pub_Fake_Melee_Attack2(id, c_flDistance[iBteWpn][0],30.0 * c_damage[iBteWpn],1)
+			if (iCallBack==FAKE_RESULT_HIT_PLAYER) emit_sound(id,CHAN_WEAPON,"weapons/chainsaw_hit1.wav",1.0, ATTN_NORM, 0, PITCH_NORM)
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.54, 4)
+		}
+		set_pev(id,pev_button,iButton &~ IN_ATTACK)
+	}
+	else
+	{
+		if (g_chainsaw_stat[id] == 1)
+		{
+			g_chainsaw_stat[id]=3
+			g_chainsaw_timer[id]=get_gametime()
+			SendWeaponAnim(id,5)
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.533, 4)
+			set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.533, 4)
+			set_pev(iEnt,pev_iuser1,0)
+			//PRINT("STOP")
+		}
+	}
+	if (iButton & IN_ATTACK2 && g_chainsaw_timer3[id]<=get_gametime()-c_speed2[iBteWpn] && g_chainsaw_stat[id]==0)
+	{
+		new iCallBack2
+		iCallBack2=Pub_Fake_Melee_Attack(id, c_flDistance[iBteWpn][1], c_flAngle[iBteWpn][0],2,55.0 * c_k_dmgzb2[iBteWpn],c_knockback2[iBteWpn],1)
+
+		g_chainsaw_anim[id] = 1 - g_chainsaw_anim[id]
+		if (iClip==0)
+		{
+			SendWeaponAnim(id,g_chainsaw_anim[id]?9:10)
+			if (iCallBack2==FAKE_RESULT_HIT_PLAYER)
+			{
+				emit_sound(id,CHAN_WEAPON,random_num(0,1)?"weapons/chainsaw_hit3.wav":"weapons/chainsaw_hit4.wav",1.0, ATTN_NORM, 0, PITCH_NORM)
+			}
+		}
+		else
+		{
+			SendWeaponAnim(id,g_chainsaw_anim[id]?7:8)
+			if (iCallBack2==FAKE_RESULT_HIT_PLAYER)
+			{
+				emit_sound(id,CHAN_WEAPON,random_num(0,1)?"weapons/chainsaw_hit1.wav":"weapons/chainsaw_hit2.wav",1.0, ATTN_NORM, 0, PITCH_NORM)
+			}
+		}
+		g_chainsaw_timer3[id]=get_gametime()
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.53, 4)
+		set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.53, 4)
+	}
+
+	if (iButton & IN_RELOAD && (g_chainsaw_stat[id] == 1 || g_chainsaw_stat[id] == 3))
+	{
+		set_pev(id,pev_button,(iButton & ~ IN_RELOAD))
+	}*/
+}
+public WE_Balrog1(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton,Float:vOrigin[3]
+	iButton = pev(id,pev_button)
+	static Float:time[2]
+	time[0]=1.21
+	time[1]=2.02
+	if (get_pdata_float(iEnt, m_flTimeWeaponIdle, 4)<0.1)
+	{
+		set_pev(id,pev_viewmodel2,g_bl1_mode[id]?"models/v_balrog1_2.mdl":c_model_v[iBteWpn])
+		SendWeaponAnim(id,0)
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 7.0,4)
+	}
+	if (iButton & IN_ATTACK2)
+	{
+		if (g_bl1_change_timer[id] > get_gametime()) return
+		g_bl1_mode[id] = 1 - g_bl1_mode[id]
+		SendWeaponAnim(id,6)
+		set_pdata_float(iEnt,m_flNextPrimaryAttack,time[g_bl1_mode[id]],4)
+		set_pdata_float(iEnt,m_flTimeWeaponIdle,time[g_bl1_mode[id]],4)
+		g_bl1_change_timer[id] = get_gametime() + time[g_bl1_mode[id]]
+		return
+	}
+	if (g_bl1_mode[id]==1)
+	{
+		if (iButton & IN_ATTACK && iClip>0 && get_gametime()>g_bl1_change_timer[id])
+		{
+			if (!Stock_Can_Attack()) return
+			new vOri[3],Float:fVec[3]
+			static Float:fRadius,Float:fDistance
+			fRadius = 180.0
+			get_user_origin(id,vOri,3)
+			IVecFVec(vOri,fVec)
+			new iVictim = -1
+			while ((iVictim = engfunc(EngFunc_FindEntityInSphere, iVictim, fVec, fRadius)) != 0)
+			{
+				if (!pev_valid(iVictim)) continue
+				if (iVictim == id) continue
+				Stock_Get_Origin(iVictim, vOrigin)
+				fDistance = get_distance_f(fVec, vOrigin)
+				if (fDistance>fRadius) continue
+				if (!can_damage(id, iVictim)) continue
+				if (task_exists(iVictim+TASK_BALROG1))
+				{
+					remove_task(iVictim+TASK_BALROG1)
+					set_task(1.00,"Task_Balrog1",iVictim+TASK_BALROG1,"",0,"a",10)
+				}
+				else
+				{
+					set_task(1.00,"Task_Balrog1",iVictim+TASK_BALROG1,"",0,"a",10)
+				}
+			}
+			message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
+			write_byte(TE_EXPLOSION)
+			write_coord(vOri[0])
+			write_coord(vOri[1])
+			write_coord(vOri[2])
+			write_short(g_cache_barlog1exp)
+			write_byte(10)
+			write_byte(18)
+			write_byte(TE_EXPLFLAG_NONE)
+			message_end()
+
+			set_pev(id,pev_button,iButton &~ IN_ATTACK)
+			ExecuteHam(Ham_Weapon_PrimaryAttack,iEnt)
+			SendWeaponAnim(id,1)
+			set_pdata_float(iEnt,m_flNextPrimaryAttack,3.04,4)
+			set_pdata_float(iEnt,m_flTimeWeaponIdle,3.04,4)
+			g_bl1_change_timer[id] = get_gametime() + 3.04
+			//emit_sound(id,CHAN_WEAPON,"weapons/balrog1-2.wav",1.0, ATTN_NORM, 0, PITCH_NORM)
+			//SendWeaponShootSound(id, true, false);
+			g_bl1_mode[id] = 1 - g_bl1_mode[id]
+		}
+	}
+}
+
+
+public Float:WE_Balrog5(iAttacker,iVictim)
+{
+	if (iVictim != g_bl5_lastVictim[iAttacker])
+	{
+
+		g_bl5_shoottime[iAttacker] = 1
+		g_bl5_lastVictim[iAttacker]= iVictim
+		return 1.0
+	}
+	else
+	{
+		g_bl5_shoottime[iAttacker] += 1
+		if (g_bl5_shoottime[iAttacker]>=16)
+		{
+			static Float:head_origin[3], Float:angles[3]
+
+			engfunc(EngFunc_GetBonePosition, iVictim, PLAYERBONE_HEAD, head_origin, angles)
+
+			engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, head_origin, 0);
+			write_byte(TE_SPRITE)
+			engfunc(EngFunc_WriteCoord,head_origin[0]);
+			engfunc(EngFunc_WriteCoord,head_origin[1]);
+			engfunc(EngFunc_WriteCoord,head_origin[2] + 20.0);
+			write_short(g_cache_barlog5exp)
+			write_byte(5)
+			write_byte(255)
+			message_end()
+
+			//g_bl5_anim[iAttacker] = 1 - g_bl5_anim[iAttacker]
+			//SendWeaponAnim(iAttacker,g_bl5_anim[iAttacker]?6:7)
+		}
+		if (g_bl5_shoottime[iAttacker]>=3)
+		{
+
+			if (g_bl5_shoottime[iAttacker]<=16)
+			{
+				return 1.0+(g_bl5_shoottime[iAttacker]-2)*0.01
+			}
+			else
+			{
+				return 1.15
+			}
+
+		}
+		else
+		{
+			return 1.00
+		}
+
+	}
+	return 1.0
+}
+public WE_Balrog7(id)
+{
+	if (g_bl7_timer[id] > get_gametime())
+	{
+		g_bl7_timer[id] = get_gametime() + 0.5
+		g_bl7_shoottime[id] ++
+		if (g_bl7_shoottime[id]>4)
+		{
+			if (Stock_GetProbability(g_bl7_shoottime[id]-5))
+			{
+				g_anim[id] = 1 - g_anim[id]
+				//SendWeaponAnim(id, WEAPON_TOTALANIM[c_iId[iBteWpn]] + g_anim[id])
+
+				g_bl7_shoottime[id] = 0
+
+				// Explosion
+				static vOri[3],Float:fVec[3],Float:vOrigin[3]
+				static Float:fRadius,Float:fDistance,Float:fDamage
+
+
+
+				fRadius=100.0
+				static Float:fRadiusDmg
+				fRadiusDmg= 120.0
+				get_user_origin(id,vOri,3)
+				IVecFVec(vOri,fVec)
+				// Damage
+				new iVictim = -1
+				while ((iVictim = engfunc(EngFunc_FindEntityInSphere, iVictim, fVec, fRadius)) != 0)
+				{
+					if (!pev_valid(iVictim) || !is_user_alive(iVictim)) continue;
+					if (iVictim == id) continue
+					if (!can_damage(iVictim, id)) continue;
+
+					Stock_Get_Origin(iVictim, vOrigin)
+					fDistance = get_distance_f(fVec, vOrigin)
+					if (fDistance>fRadius) continue
+					fDamage = fRadiusDmg - floatmul(fRadiusDmg, floatdiv(fDistance, fRadius)) //get the damage value
+					fDamage *= Stock_Adjust_Damage(fVec, iVictim, 0) //adjust
+					if (fDamage<1.0) fDamage = 1.0
+					//Pub_Fake_Damage_Guns(id,iVictim,fDamage,FAKE_TYPE_GENER_HEAD,9999.0,0,0,DMG_EXPLOSION)
+				}
+				// Effect
+				/*message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
+				write_byte(TE_EXPLOSION)
+				write_coord(vOri[0])
+				write_coord(vOri[1])
+				write_coord(vOri[2])
+				write_short(g_cache_explo)
+				write_byte(10)
+				write_byte(16)
+				write_byte(TE_EXPLFLAG_NOPARTICLES)
+				message_end()
+
+				message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
+				write_byte(TE_EXPLOSION)
+				write_coord(vOri[0])
+				write_coord(vOri[1])
+				write_coord(vOri[2]+20)
+				write_short(g_cache_barlog7exp)
+				write_byte(5)
+				write_byte(1)
+				write_byte(TE_EXPLFLAG_NONE)
+				message_end()*/
+				fVec[2] += 20;
+				engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, id, WEAPON_EVENT[CSW_KNIFE], 0.0, fVec, {0.0, 0.0, 0.0}, 0.0 , 0.0, (1<<3), 1, false, false);
+
+				// TODO Muz
+			}
+		}
+	}
+	else
+	{
+		g_bl7_timer[id] = get_gametime() + 0.5
+		g_bl7_shoottime[id] = 1
+	}
+}
+public WE_Volin(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iPlay[33]
+	static Float:fIdle
+	fIdle = get_pdata_float(iEnt, m_flTimeWeaponIdle,4)
+	if (10.0<fIdle<11.0 && !iPlay[id])
+	{
+		iPlay[id] = 1
+		SendWeaponAnim(id, WEAPON_TOTALANIM[iId]);
+	}
+	else if (fIdle<10.0 || fIdle>11.0)
+	{
+		iPlay[id] = 0
+	}
+}
+public WE_Cannon(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton,Float:fOrigin[3],Float:vRec[3],Float:vStart[3],Float:vPlrAngle[3],Float:iAngle[3],iFlame,Float:vVelocity[3]
+	iButton  = pev(id,pev_button)
+	set_pdata_float(iEnt,m_flNextPrimaryAttack,1.0)
+	if (iButton & IN_ATTACK && g_cannon_timer[id]<get_gametime() && iBpAmmo )
+	{
+		if (!Stock_Can_Attack()) return
+		Pub_Shake(id)
+		Stock_Weapon_ShootSound(id)
+		g_cannon_timer[id] = get_gametime()+3.2
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 3.53,4)
+		SendWeaponAnim(id,1)
+		iBpAmmo --
+		//MH_DrawExtraAmmo(id,WEAPON_AMMOID[iId])
+		Stock_Config_User_Bpammo(id,iId,iBpAmmo,1)
+		//Stock_Send_WeaponID_Msg(id,CSW_KNIFE,-1)
+		Stock_Get_Postion(id,10.0,0.0,-10.0,fOrigin)
+		message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
+		write_byte(TE_EXPLOSION)
+		engfunc(EngFunc_WriteCoord, fOrigin[0])
+		engfunc(EngFunc_WriteCoord, fOrigin[1])
+		engfunc(EngFunc_WriteCoord, fOrigin[2])
+		write_short(g_cache_musket_smoke)
+		write_byte(1)
+		write_byte(20)
+		write_byte(TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOSOUND |TE_EXPLFLAG_NOPARTICLES)
+		message_end()
+		vRec[0] = -c_recoil[iBteWpn]
+		set_pev(id,pev_punchangle,vRec)
+		//Stock_Weapon_ShootSound(id)
+		// Effect
+		Stock_Get_Postion(id,55.0,2.0,-1.0,vStart)
+		pev(id,pev_v_angle,vPlrAngle)
+		vPlrAngle[1] -= 18.0
+		new Float:fSpeed = 320.0
+		for(new i = 0;i<6;i++)
+		{
+			vPlrAngle[1] += random_float(2.0,10.0)
+
+			angle_vector(vPlrAngle,ANGLEVECTOR_FORWARD,vVelocity)
+			xs_vec_mul_scalar(vVelocity,fSpeed,vVelocity)
+
+			iFlame = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"))
+			set_pev(iFlame, pev_origin, vStart)
+			set_pev(iFlame, pev_classname, "bte_cannonflame")
+			set_pev(iFlame, pev_rendermode, kRenderTransAdd)
+			set_pev(iFlame, pev_renderamt, 254.0)
+
+			set_pev(iFlame, pev_animtime, get_gametime())
+			set_pev(iFlame,pev_frame,0.0)
+			set_pev(iFlame, pev_scale, 1.6)
+			engfunc(EngFunc_SetModel, iFlame, "sprites/flame_puff01.spr")
+			dllfunc(DLLFunc_Spawn, iFlame)
+			iAngle[2] -= random_num(1, 360)
+			iAngle[0] = random_float(-180.0,180.0)
+			iAngle[1] = random_float(-180.0,180.0)
+			set_pev(iFlame, pev_angles, iAngle)
+			set_pev(iFlame, pev_movetype, MOVETYPE_FLY)
+			set_pev(iFlame, pev_mins, Float:{-1.0, -1.0, -1.0})
+			set_pev(iFlame, pev_maxs, Float:{1.0, 1.0, 1.0})
+			set_pev(iFlame, pev_solid, SOLID_NOT)
+			Set_Ent_Data(iFlame,DEF_ENTCLASS,ENTCLASS_CANNON)
+			set_pev(iFlame,pev_velocity,vVelocity)
+			set_pev(iFlame, pev_owner, id)
+			set_pev(iFlame,pev_ltime,get_gametime()+1.2)
+			set_pev(iFlame, pev_nextthink, get_gametime()+0.05)
+		}
+		// Effect End
+		new iVictim = -1
+		while ((iVictim = engfunc(EngFunc_FindEntityInSphere, iVictim, vStart, 350.0)) != 0)
+		{
+			if (id==iVictim || !pev_valid(iVictim)) continue;
+			if (iVictim>33)
+			{
+				if (!pev(iVictim,pev_takedamage)) continue
+				if (pev(iVictim,pev_spawnflags)&SF_BREAK_TRIGGER_ONLY) continue
+				//Pub_Fake_Damage_Guns(id,iVictim,30.0,0,350.0,id,0,DMG_CLUB)
+			}
+			else
+			{
+				if (!can_damage(id, iVictim)) continue;
+				if (  Stock_BTE_CheckAngle(id,iVictim) > floatcos(float(40),degrees) && Stock_Is_Direct(id,iVictim))  // 24 degree
+				{
+					Stock_Buff(iVictim,0,g_cache_flameburn,10)
+
+					if (/*!is_user_bot(id) && */bte_hms_get_skillstat(id) & (1<<1) && !bte_zb3_is_boomer_skilling(iVictim))
+					{
+						//Pub_Fake_Damage_Guns(id,iVictim,40.0,FAKE_TYPE_HITHEAD|FAKE_TYPE_TRACEBLEED,350.0,id,0,DMG_CLUB)
+					}
+					else
+					{
+						//Pub_Fake_Damage_Guns(id,iVictim,40.0,FAKE_TYPE_GENER_HEAD|FAKE_TYPE_TRACEBLEED,350.0,id,0,DMG_CLUB)
+						//PRINT("do damage")
+					}
+					//Pub_Fake_KnockBack(id,iVictim,c_knockback[iBteWpn])
+					if (is_user_alive(iVictim))
+						Stock_Fake_KnockBack(id,iVictim,c_knockback[iBteWpn])
+				}
+			}
+		}
+	}
+	iButton&=~IN_ATTACK
+	set_pev(id,pev_button,iButton)
+}
+public WE_Catapult(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton,Float:vAngle[3],vOrigin[3],vOri[3]
+	iButton  = pev(id,pev_button)
+	set_pdata_float(iEnt,m_flNextPrimaryAttack,1.0)
+
+	if (!Stock_Can_Attack()) return
+
+
+	if (iButton & IN_ATTACK && g_cp_timer[id]<get_gametime() && iBpAmmo && g_cp_stat[id] == MUSKET_IDLE)
+	{
+		g_cp_timer[id] = get_gametime()+0.5
+		g_cp_stat[id] = MUSKET_PREFIRE
+		SendWeaponAnim(id,3)
+	}
+	else if (g_cp_timer[id]<get_gametime() && g_cp_stat[id] == MUSKET_PREFIRE )
+	{
+		if (iButton & IN_ATTACK)
+		{
+			SendWeaponAnim(id,2)
+		}
+		else
+		{
+			Pub_Shake(id)
+			Stock_Weapon_ShootSound(id)
+			iBpAmmo--
+			//MH_DrawExtraAmmo(id,WEAPON_AMMOID[iId])
+			pev(id,pev_origin,vOrigin)
+			pev(id,pev_angles,vAngle)
+			engfunc(EngFunc_PlaybackEvent, (1<<1), id, 17, 0, vOrigin, vAngle, 0.0, 0.0, 0, 0, 0, 0) // CSW_DEAGLE
+			SendWeaponAnim(id,iBpAmmo?4:5)
+			g_cp_stat[id] = MUSKET_IDLE
+			Stock_Config_User_Bpammo(id,iId,iBpAmmo,1)
+			//Stock_Send_WeaponID_Msg(id,CSW_KNIFE,-1)
+			g_cp_timer[id]= get_gametime() + c_flAttackInterval[iBteWpn][0]
+			//Stock_Weapon_ShootSound(id)
+			new iEnemy,iBody
+			get_user_aiming(id,iEnemy,iBody)
+			//Pub_Fake_Damage_Guns(id,iEnemy,80.0,FAKE_TYPE_TRACEBLEED|FAKE_TYPE_CHECKPHIT,9999.0)
+			Stock_Fake_KnockBack(id,iEnemy,c_knockback[iBteWpn])
+			get_user_origin(id,vOri,3)
+			message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
+			write_byte(TE_EXPLOSION)
+			write_coord(vOri[0])
+			write_coord(vOri[1])
+			write_coord(vOri[2])
+			write_short(g_cache_cp_smoke)
+			write_byte(8)
+			write_byte(10)
+			write_byte(TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOSOUND |TE_EXPLFLAG_NOPARTICLES)
+			message_end()
+			//recoil
+			new Float:vRec[3]
+			vRec[0] = -c_recoil[iBteWpn]
+			set_pev(id,pev_punchangle,vRec)
+		}
+	}
+	iButton &=~ IN_ATTACK
+	set_pev(id,pev_button,iButton)
+}
+
+
+public WE_Coilgun(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton,Float:fOrigin[3], Float:fVelocity[3],Float:fAngle[3]
+	iButton  = pev(id,pev_button)
+	if (iButton & IN_ATTACK)
+	{
+		if (iClip && g_crossbow_timer[id] < get_gametime() /*&& !get_pdata_int(iEnt, m_fInReload,4)*/)
+		{
+			if (!Stock_Can_Attack()) return
+			Pub_Shake(id)
+			if (c_recoil[iBteWpn])
+			{
+				new Float:vRec[3]
+				vRec[0] = random_float(-c_recoil[iBteWpn],c_recoil[iBteWpn])
+				vRec[1] = random_float(-c_recoil[iBteWpn],c_recoil[iBteWpn])
+				set_pev(id,pev_punchangle,vRec)
+			}
+			Stock_Weapon_ShootSound(id)
+			iClip--
+			set_pdata_int(iEnt,m_iClip,iClip,4)
+			g_crossbow_timer[id] = get_gametime()+ c_flAttackInterval[iBteWpn][0]
+			SendWeaponAnim(id, 3)
+			//pev(id,pev_v_angle,fAngle)
+			//velocity_by_aim(id, 2400, fVelocity)
+
+
+
+
+
+
+			new iArrow = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"))
+			Stock_Get_Postion(id,c_l_forward[iBteWpn],c_l_right[iBteWpn],c_l_up[iBteWpn],fOrigin)
+
+			new Float:fEnd[3]
+			Stock_Get_Aiming(id, fEnd);
+			Stock_GetSpeedVector(fOrigin, fEnd, 2400.0, fVelocity);
+
+			set_pev(iArrow, pev_classname, "d_coilgun")
+			engfunc(EngFunc_SetModel, iArrow, "models/missile_kraken.mdl")
+			//set_pev(iArrow, pev_angles, fAngle)
+			set_pev(iArrow, pev_origin, fOrigin)
+			/*set_pev(iArrow, pev_mins, {-0.02, -0.02, -0.02})
+			set_pev(iArrow, pev_maxs, {0.02, 0.02, 0.02})*/
+			engfunc(EngFunc_SetSize, iEnt, {-0.1, -0.1, -0.1}, {0.1, 0.1, 0.1});
+			set_pev(iArrow, pev_movetype, MOVETYPE_BOUNCE)
+
+			set_pev(iArrow, pev_solid, SOLID_BBOX)
+			set_pev(iArrow, pev_owner, id)
+			set_pev(iArrow,pev_gravity,0.001)
+			set_pev(iArrow,pev_velocity,fVelocity)
+			Stock_Get_Velocity_Angle(iArrow, fAngle)
+			set_pev(iArrow, pev_angles, fAngle)
+			Set_Ent_Data(iArrow,DEF_ENTID,iBteWpn)
+			Set_Ent_Data(iArrow,DEF_ENTCLASS,ENTCLASS_BOLT)
+			set_pev(iArrow,pev_nextthink,get_gametime()+0.02)
+			//Stock_Weapon_ShootSound(id)
+
+			message_begin( MSG_BROADCAST, SVC_TEMPENTITY )
+			write_byte(TE_BEAMFOLLOW)
+			write_short(iArrow)
+			write_short(g_cache_trail)
+			write_byte(1)
+			write_byte(1)
+			write_byte(244)
+			write_byte(244)
+			write_byte(244)
+			write_byte(100)
+			message_end()
+		}
+		iButton&=~IN_ATTACK
+		set_pev(id,pev_button,iButton)
+	}
+}
+public WE_Musket(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton
+	iButton  = pev(id,pev_button)
+	set_pdata_float(iEnt,m_flNextPrimaryAttack,1.0)
+	if (!Stock_Can_Attack()) return
+	if (iButton & IN_ATTACK && g_musket_timer[id]<get_gametime() && iBpAmmo)
+	{
+		if (g_musket_stat[id] == MUSKET_IDLE)
+		{
+			g_musket_timer[id] = get_gametime()+0.26
+			g_musket_stat[id] = MUSKET_PREFIRE
+		}
+		SendWeaponAnim(id,2)
+		iButton&=~IN_ATTACK
+		set_pev(id,pev_button,iButton)
+	}
+	if (g_musket_timer[id]<get_gametime() && g_musket_stat[id] == MUSKET_PREFIRE)
+	{
+		Pub_Shake(id)
+		SendWeaponShootSound(id, false, true)
+		iBpAmmo --
+		//MH_DrawExtraAmmo(id,WEAPON_AMMOID[iId])
+		if (!iBpAmmo) set_pdata_int(iEnt,m_iClip,0,4)
+		g_musket_stat[id] = MUSKET_IDLE
+		//Stock_Send_WeaponID_Msg(id,CSW_KNIFE,-1)
+		Stock_Config_User_Bpammo(id,iId,iBpAmmo,1)
+		//pev(id,pev_origin,vOrigin)
+		//pev(id,pev_angles,vAngle)
+		//engfunc(EngFunc_PlaybackEvent, (1<<1), id, 17, 0, vOrigin, vAngle, 0.0, 0.0, 0, 0, 0, 0) // CSW_DEAGLE
+		g_musket_timer[id]= get_gametime() + c_flAttackInterval[iBteWpn][0]
+		//Stock_Weapon_ShootSound(id)
+		SendWeaponAnim(id,iBpAmmo?3:4);
+		/*new iEnemy,iBody
+		get_user_aiming(id,iEnemy,iBody)*/
+		set_pdata_float(iEnt, m_flTimeWeaponIdle , 20.0, 4);
+		KnifeAttack(id, false, 8192.0, 60.0);
+
+		new Float:vecSrc[3], Float:vecEnd[3], Float:v_angle[3], Float:vecForward[3];
+		GetGunPosition(id, vecSrc);
+
+		pev(id, pev_v_angle, v_angle);
+		engfunc(EngFunc_MakeVectors, v_angle);
+
+		global_get(glb_v_forward, vecForward);
+		xs_vec_mul_scalar(vecForward, 8192.0, vecForward);
+
+		xs_vec_add(vecSrc, vecForward, vecEnd);
+
+		new tr = create_tr2();
+		engfunc(EngFunc_TraceLine, vecSrc, vecEnd, dont_ignore_monsters, id, tr);
+
+		new Float:flFraction;
+		get_tr2(tr, TR_flFraction, flFraction);
+
+		if (get_tr2(tr, TR_pHit) <= 0 && flFraction < 1.0)
+		{
+			new Float:vecEndPos[3];
+			get_tr2(tr, TR_vecEndPos, vecEndPos);
+
+			message_begin(MSG_BROADCAST, SVC_TEMPENTITY);
+			write_byte(TE_GUNSHOTDECAL);
+			engfunc(EngFunc_WriteCoord,vecEndPos[0]);
+			engfunc(EngFunc_WriteCoord,vecEndPos[1]);
+			engfunc(EngFunc_WriteCoord,vecEndPos[2]);
+			write_short(0);
+			write_byte(DECAL_SHOT[random_num(0,4)]);
+			message_end();
+		}
+
+		////Pub_Fake_Damage_Guns(id,iEnemy,60.0,FAKE_TYPE_TRACEBLEED|FAKE_TYPE_CHECKPHIT,9999.0,1)
+		//Stock_Fake_KnockBack(id,iEnemy,c_knockback[iBteWpn])
+		//recoil
+		PunchAxis(id, -10.0, 0.0);
+		//new Float:fOrigin[3]
+		//Stock_Get_Postion(id,10.0,0.0,-10.0,fOrigin)
+		/*message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
+		write_byte(TE_EXPLOSION)
+		engfunc(EngFunc_WriteCoord, fOrigin[0])
+		engfunc(EngFunc_WriteCoord, fOrigin[1])
+		engfunc(EngFunc_WriteCoord, fOrigin[2])
+		write_short(g_cache_musket_smoke)
+		write_byte(1)
+		write_byte(20)
+		write_byte(TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOSOUND |TE_EXPLFLAG_NOPARTICLES)
+		message_end()*/
+		iButton&=~IN_ATTACK
+		set_pev(id,pev_button,iButton)
+	}
+}
+
+public WE_FlameThrower(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton,Float:vOrigin[3],Float:vAngle[3],Float:vVelocity[3],Float:vViewOfs[3],sKillEntName[32]
+	static Float:vColor[3]
+	iButton = pev(id,pev_button)
+	pev(id, pev_v_angle, vAngle)
+
+
+	if (iButton & IN_ATTACK)
+	{
+		iButton &= ~IN_ATTACK
+		set_pev(id,pev_button,iButton &~ IN_ATTACK)
+
+		if (!g_wpn_flame_isshooting[id] && c_iSpecial[iBteWpn] == SPECIAL_WATERCANNON)
+		{
+			if (!iClip) return
+			set_pdata_float(iEnt,m_flNextPrimaryAttack,0.23,4)
+			SendWeaponAnim(id,1)
+			g_wpn_flame_isshooting[id] = 1
+		}
+		if (get_pdata_int(iEnt,m_flNextPrimaryAttack) >0.0) return
+		if (!iClip/* && !iBpAmmo*/)
+		{
+			SendWeaponAnim(id,WEAPON_TOTALANIM[iId])
+			g_wpn_flame_isshooting[id] = 0
+			return
+		}
+		if (!Stock_Can_Attack()) return
+		// Loop Sound
+		if (g_wpn_flame_timer[id] < get_gametime())
+		{
+			switch (c_iSpecial[iBteWpn])
+			{
+				/*case SPECIAL_POISON: g_wpn_flame_timer[id] = get_gametime()+1.97*/
+				case SPECIAL_WATERCANNON:
+				{
+					g_wpn_flame_timer[id] = get_gametime()
+					SendWeaponShootSound(id, false, true);
+					SendWeaponAnim(id,2)
+				}
+				default :
+				{
+					g_wpn_flame_timer[id] = get_gametime()+0.95
+					SendWeaponShootSound(id, false, true);
+					SendWeaponAnim(id,5)
+				}
+			}
+		}
+		if (c_recoil[iBteWpn])
+		{
+			new Float:vRec[3]
+			vRec[0] = random_float(-c_recoil[iBteWpn],c_recoil[iBteWpn])
+			vRec[1] = random_float(-c_recoil[iBteWpn],c_recoil[iBteWpn])
+			set_pev(id,pev_punchangle,vRec)
+		}
+		iClip--
+		set_pdata_int(iEnt,m_iClip,iClip)
+		set_pdata_float(iEnt,m_flNextPrimaryAttack, c_flAttackInterval[iBteWpn][0],4)
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 10.0, 4)
+		g_wpn_flame_isshooting[id] = 1
+		new iProjectile = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"))
+		Set_Ent_Data(iProjectile,DEF_ENTCLASS,ENTCLASS_FLAME)
+		Set_Ent_Data(iProjectile,DEF_ENTID,iBteWpn)
+		Stock_Get_Postion(id,c_l_forward[iBteWpn],c_l_right[iBteWpn],c_l_up[iBteWpn],vOrigin)
+		Stock_Velocity_By_Aim(vAngle,c_l_angle[iBteWpn],c_l_speed[iBteWpn],vVelocity)
+
+		format(sKillEntName,31,"d_%s",c_sModel[iBteWpn])
+		set_pev(iProjectile, pev_classname, sKillEntName)
+		dllfunc(DLLFunc_Spawn, iProjectile)
+		engfunc(EngFunc_SetSize,iProjectile,{0,0,0},{0,0,0})
+		set_pev(iProjectile, pev_animtime, get_gametime())
+		set_pev(iProjectile, pev_framerate, 1.0)
+		if (c_iSpecial[iBteWpn]!=SPECIAL_WATERCANNON)
+		{
+			vAngle[0] = random_float(-180.0,180.0)
+			vAngle[1] = random_float(-180.0,180.0)
+			vAngle[2] = random_float(-180.0,180.0)
+		}
+		set_pev(iProjectile ,pev_angles,vAngle)
+		set_pev(iProjectile, pev_movetype, MOVETYPE_FLY)
+		set_pev(iProjectile, pev_frame, 1.0)
+		if (c_iSpecial[iBteWpn]==SPECIAL_WATERCANNON) set_pev(iProjectile, pev_scale, 0.35)
+		else set_pev(iProjectile, pev_scale, 0.1)
+
+		set_pev(iProjectile, pev_rendermode, kRenderTransAdd)
+
+		if (c_iSpecial[iBteWpn] == SPECIAL_POISON)
+		{
+			set_pev(iProjectile, pev_renderamt, 150.0)
+			vColor[0] = 18.0
+			vColor[1] = 176.0
+			vColor[2] = 0.0
+			set_pev(iProjectile,pev_rendercolor,vColor)
+			set_pev(iProjectile, pev_framerate, 2.0)
+		}
+		else if (c_iSpecial[iBteWpn] == SPECIAL_WATERCANNON)
+		{
+			vColor[0] = 180.0
+			vColor[1] = 180.0
+			vColor[2] = 180.0
+			set_pev(iProjectile,pev_rendercolor,vColor)
+			set_pev(iProjectile, pev_renderamt, 200.0)
+		}
+		else set_pev(iProjectile, pev_renderamt, 254.0)
+
+		switch (c_iSpecial[iBteWpn])
+		{
+			case SPECIAL_POISON:
+			{
+				engfunc(EngFunc_SetModel, iProjectile, "sprites/ef_smoke_poison.spr")
+				if (g_wpn_poison_lighttimer[id] < get_gametime())
+				{
+					static Float:v2[3]
+					//Stock_Get_Postion(id,140.0,0,0,v2)
+					Stock_Get_Postion(id,0.0,0.0,0.0,v2)
+					static viOrigin[3]
+					FVecIVec(v2,viOrigin)
+					// Nightvision message
+					message_begin(MSG_ONE_UNRELIABLE, SVC_TEMPENTITY, _, id)
+					write_byte(TE_DLIGHT) // TE id
+					write_coord(viOrigin[0]) // x
+					write_coord(viOrigin[1]) // y
+					write_coord(viOrigin[2]) // z
+					write_byte(18) // r
+					write_byte(50) // g
+					write_byte(255) // b
+					write_byte(1) // brightness
+					write_byte(10) // life in 10's
+					write_byte(5) // decay rate in 10's
+					message_end()
+					g_wpn_poison_lighttimer[id] = get_gametime() + 0.1
+				}
+			}
+			case SPECIAL_WATERCANNON: engfunc(EngFunc_SetModel, iProjectile, "sprites/special/holybomb_exp.spr")
+			default : engfunc(EngFunc_SetModel, iProjectile, "sprites/flame_puff01.spr")
+		}
+
+		/*if (c_iSpecial[iBteWpn] == SPECIAL_POISON)
+		{
+			engfunc(EngFunc_SetModel, iProjectile, "sprites/ef_smoke_poison.spr")
+			if (g_wpn_poison_lighttimer[id] < get_gametime())
+			{
+				static Float:v2[3]
+				//Stock_Get_Postion(id,140.0,0,0,v2)
+				Stock_Get_Postion(id,0.0,0,0,v2)
+				static viOrigin[3]
+				FVecIVec(v2,viOrigin)
+				// Nightvision message
+				message_begin(MSG_ONE_UNRELIABLE, SVC_TEMPENTITY, _, id)
+				write_byte(TE_DLIGHT) // TE id
+				write_coord(viOrigin[0]) // x
+				write_coord(viOrigin[1]) // y
+				write_coord(viOrigin[2]) // z
+				write_byte(18) // r
+				write_byte(50) // g
+				write_byte(255) // b
+				write_byte(1) // brightness
+				write_byte(10) // life in 10's
+				write_byte(5) // decay rate in 10's
+				message_end()
+				g_wpn_poison_lighttimer[id] = get_gametime() + 0.1
+			}
+		}
+		else engfunc(EngFunc_SetModel, iProjectile, "sprites/flame_puff01.spr")*/
+		set_pev(iProjectile, pev_mins, Float:{0, 0, 0})
+		set_pev(iProjectile, pev_maxs,  Float:{0, 0, 0})
+		set_pev(iProjectile, pev_origin, vOrigin)
+		static Float:vVel[3]
+		pev(id,pev_velocity,vVel)
+		vVel[0] *=0.95
+		vVel[1] *=0.95
+		vVel[2] *=0.95
+		xs_vec_add(vVel,vVelocity,vVelocity)
+		set_pev(iProjectile, pev_velocity, vVelocity)
+		set_pev(iProjectile,pev_solid,SOLID_TRIGGER)
+		set_pev(iProjectile, pev_owner, id)
+		set_pev(iProjectile, pev_nextthink, get_gametime()+0.05)
+
+		// Search Enemy
+		static iEnemy,iBody,iDistance
+		get_user_aiming(id,iEnemy,iBody,floatround(c_l_radius[iBteWpn]))
+		if (iEnemy)
+		{
+			if (task_exists(iEnemy+TASK_FLAMETHROWER))
+			{
+				remove_task(iEnemy+TASK_FLAMETHROWER)
+				set_task(1.00,"Task_FlameThrower",iEnemy+TASK_FLAMETHROWER,"",0,"a",5)
+			}
+			else
+			{
+				if (can_damage(id, iEnemy) && c_iSpecial[iBteWpn] != SPECIAL_WATERCANNON)
+				set_task(1.00,"Task_FlameThrower",iEnemy+TASK_FLAMETHROWER,"",0,"a",5)
+			}
+			if (/*!is_user_bot(id) && */bte_hms_get_skillstat(id) & (1<<1) && !bte_zb3_is_boomer_skilling(iEnemy))
+			{
+				//Pub_Fake_Damage_Guns(id,iEnemy,40.0,FAKE_TYPE_HITHEAD|FAKE_TYPE_TRACEBLEED,c_l_radius[iBteWpn],id,0,DMG_CLUB)
+			}
+			else //Pub_Fake_Damage_Guns(id,iEnemy,40.0,FAKE_TYPE_TRACEBLEED|FAKE_TYPE_GENER_HEAD,c_l_radius[iBteWpn],id,0,DMG_CLUB)
+		}
+	}
+	else if ( g_wpn_flame_isshooting[id] )
+	{
+		switch (c_iSpecial[iBteWpn])
+		{
+			case SPECIAL_WATERCANNON: SendWeaponAnim(id,3)
+			default : SendWeaponAnim(id,WEAPON_TOTALANIM[iId])
+		}
+		g_wpn_flame_isshooting[id] = 0
+	}
+	iButton &= ~IN_ATTACK
+	set_pev(id,pev_button,iButton &~ IN_ATTACK)
+}
+
+
+
+
+public WE_FG(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	static iButton,Float:vOrigin[3]
+	iButton  = pev(id,pev_button)
+	if (iButton & IN_ATTACK)
+	{
+		if (get_pdata_int(iEnt,m_flNextSecondaryAttack) > 0.0 || !iClip || g_freezetime) return
+
+		Stock_Weapon_ShootSound(id)
+		new Float:vRec[3]
+		vRec[0] = -15.0
+		set_pev(id,pev_punchangle,vRec)
+		SendWeaponAnim(id,1)
+
+		new Float: fOrigin[3], Float:fAngle[3],Float: fVelocity[3],sKillEntName[32]
+		pev(id, pev_v_angle, fAngle)
+		set_pdata_float(iEnt,m_flNextPrimaryAttack, c_flAttackInterval[iBteWpn][0])
+		set_pdata_float(iEnt,m_flNextSecondaryAttack, c_flAttackInterval[iBteWpn][0])
+
+		new iProjectile = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"))
+		format(sKillEntName,31,"d_%s",c_sModel[iBteWpn])
+		set_pev(iProjectile, pev_classname, sKillEntName)
+		engfunc(EngFunc_SetModel, iProjectile, "models/s_grenade_spark.mdl")
+		engfunc(EngFunc_SetSize, iProjectile, {-2.0, -2.0, -2.0}, {2.0, 2.0, 2.0});
+
+		Stock_Get_Postion(id,c_l_forward[iBteWpn],c_l_right[iBteWpn],c_l_up[iBteWpn],fOrigin)
+		Stock_Velocity_By_Aim(fAngle,c_l_angle[iBteWpn],c_l_speed[iBteWpn],fVelocity)
+		set_pev(iProjectile, pev_movetype, MOVETYPE_BOUNCE)
+
+		iClip--
+		set_pdata_int(iEnt,m_iClip,iClip)
+
+		Stock_Get_Postion(id,c_l_forward[iBteWpn],c_l_right[iBteWpn],c_l_up[iBteWpn],vOrigin)
+		vOrigin[2] -= 10.0
+		message_begin(MSG_BROADCAST,SVC_TEMPENTITY)
+		write_byte(TE_EXPLOSION)
+		engfunc(EngFunc_WriteCoord, vOrigin[0])
+		engfunc(EngFunc_WriteCoord, vOrigin[1])
+		engfunc(EngFunc_WriteCoord, vOrigin[2])
+		write_short(g_cache_musket_smoke)
+		write_byte(1)
+		write_byte(10)
+		write_byte(TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOSOUND |TE_EXPLFLAG_NOPARTICLES)
+		message_end()
+
+
+		set_pev(iProjectile, pev_origin, fOrigin)
+		set_pev(iProjectile, pev_velocity, fVelocity)
+		set_pev(iProjectile,pev_gravity,c_l_gravity[iBteWpn])
+		set_pev(iProjectile, pev_angles, fAngle)
+		set_pev(iProjectile, pev_solid, SOLID_BBOX)     //store the enitty id
+		set_pev(iProjectile, pev_owner, id)
+		Set_Ent_Data(iProjectile,DEF_ENTCLASS,ENTCLASS_NADE)
+		Set_Ent_Data(iProjectile,DEF_ENTID,iBteWpn)
+
+		Set_Ent_Data(iProjectile,DEF_ENTSTAT,1)
+		set_pev(iProjectile,pev_nextthink,get_gametime()+0.1)
+
+		message_begin( MSG_BROADCAST, SVC_TEMPENTITY )
+		write_byte(TE_BEAMFOLLOW)
+		write_short(iProjectile)
+		write_short(g_cache_trail)
+		write_byte(3)
+		write_byte(4)
+		write_byte(255)
+		write_byte(110)
+		write_byte(110)
+		write_byte(220)
+		message_end()
+
+
+	}
+	iButton & ~ IN_ATTACK
+	set_pev(id,pev_button,iButton)
+}
+
+public WE_Bow(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+{
+	if (!Stock_Can_Attack())
+		return;
+
+	if (get_pdata_float(iEnt, m_flNextPrimaryAttack) > 0.0)
+		return;
+
+	if (!iClip)
+		return;
+
+	static iButton;
+	iButton = pev(id, pev_button);
+
+	if ((iButton & IN_ATTACK) && !(iButton & IN_ATTACK2))
+	{
+
+
+		iClip --
+		set_pdata_int(iEnt, m_iClip, iClip);
+
+		SendWeaponAnim(id, iClip?2:3);
+
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 0.5);
+		set_pdata_float(iEnt, m_flNextSecondaryAttack, 0.5);
+		set_pdata_float(iEnt, m_flNextPrimaryAttack, 0.5);
+
+		SendWeaponShootSound(id, false, true);
+		OrpheuCall(handleSetAnimation, id, PLAYER_ATTACK1);
+		//engfunc(EngFunc_EmitSound, id, CHAN_WEAPON, "weapons/bow-1.wav", 1.0, ATTN_NORM, 0, 94 + random_num(0, 15));
+
+		new Float:fVelocity[3], Float:fOrigin[3], Float:fAngle[3];
+		velocity_by_aim(id, 3200, fVelocity);
+		new iArrow = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
+		Stock_Get_Postion(id,10.0,0.0,0.0,fOrigin);
+		set_pev(iArrow, pev_classname, "d_bow");
+		engfunc(EngFunc_SetModel, iArrow, "models/arrow.mdl");
+		set_pev(iArrow, pev_origin, fOrigin);
+		set_pev(iArrow, pev_mins, {-0.1, -0.1, -0.1});
+		set_pev(iArrow, pev_maxs, {0.1, 0.1, 0.1});
+		set_pev(iArrow, pev_movetype, MOVETYPE_BOUNCE);
+		set_pev(iArrow, pev_solid, SOLID_BBOX);
+		set_pev(iArrow, pev_owner, id);
+		set_pev(iArrow, pev_gravity,0.15);
+		set_pev(iArrow, pev_velocity,fVelocity);
+		Stock_Get_Velocity_Angle(iArrow, fAngle);
+		set_pev(iArrow, pev_angles, fAngle);
+		Set_Ent_Data(iArrow,DEF_ENTID,iBteWpn);
+
+		Set_Ent_Data(iArrow,DEF_ENTCLASS,ENTCLASS_BOW);
+		set_pev(iArrow,pev_nextthink,get_gametime()+0.15);
+
+
+		set_pev(iArrow, pev_iuser3, 0);
+		set_pev(iArrow, pev_fuser2, g_modruning == BTE_MOD_ZB1?1.175:1.0);
+
+		iButton &= ~IN_ATTACK;
+		set_pev(id, pev_button, iButton);
+
+		set_pev(iEnt, pev_iuser1, 0);
+		set_pev(iEnt, pev_fuser1, 0.0);
+
+
+		// just tset
+		/*new Float:fEnd[3];
+		Stock_Get_Aiming(id, fEnd);
+		engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, fOrigin, 0);
+		write_byte(TE_BEAMPOINTS);
+		engfunc(EngFunc_WriteCoord, fOrigin[0]);
+		engfunc(EngFunc_WriteCoord, fOrigin[1]);
+		engfunc(EngFunc_WriteCoord, fOrigin[2]);
+		engfunc(EngFunc_WriteCoord, fEnd[0]);
+		engfunc(EngFunc_WriteCoord, fEnd[1]);
+		engfunc(EngFunc_WriteCoord, fEnd[2]);
+		write_short(g_cache_trail);
+		write_byte(0); // byte (starting frame)
+		write_byte(10); // byte (frame rate in 0.1's)
+		write_byte(20); // byte (life in 0.1's)
+		write_byte(10); // byte (line width in 0.1's)
+		write_byte(10); // byte (noise amplitude in 0.01's)
+		write_byte(255); // byte,byte,byte (color)
+		write_byte(242);
+		write_byte(0);
+		write_byte(255); // byte (brightness)
+		write_byte(10); // byte (scroll speed in 0.1's)
+		message_end();*/
+
+		return;
+	}
+
+	new Float:fCurTime;
+	global_get(glb_time, fCurTime);
+
+	new iCharging; iCharging = pev(iEnt, pev_iuser1);
+	new Float:fFinshTime; pev(iEnt, pev_fuser1, fFinshTime);
+
+	if (iButton & IN_ATTACK2 && !(iButton & IN_ATTACK))
+	{
+		if (!iCharging)
+		{
+			iCharging = 1;
+			fFinshTime = fCurTime + 1.2;
+			SendWeaponAnim(id, 6);
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 0.65);
+			set_pdata_float(iEnt,m_flNextPrimaryAttack, 0.65);
+			set_pev(iEnt, pev_iuser1, iCharging);
+			set_pev(iEnt, pev_fuser1, fFinshTime);
+
+			//set_pev(id, pev_maxspeed, 185.0);
+			Pub_Set_MaxSpeed(id, 185.0);
+		}
+		if (fCurTime > fFinshTime && iCharging != 2)
+		{
+			iCharging = 2;
+			SendWeaponAnim(id, 7);
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 0.43);
+			set_pdata_float(iEnt,m_flNextPrimaryAttack, 0.43);
+			set_pev(iEnt, pev_iuser1, iCharging);
+		}
+		iButton &= ~IN_ATTACK2;
+		set_pev(id, pev_button, iButton);
+	}
+	else if(!(iButton & IN_RELOAD))
+	{
+		switch (iCharging)
+		{
+			case 1:
+			{
+				Pub_Set_MaxSpeed(id, c_gravity[iBteWpn]);
+				//set_pev(id, pev_maxspeed, c_gravity[iBteWpn]);
+
+				iClip --
+				set_pdata_int(iEnt, m_iClip, iClip);
+
+				SendWeaponAnim(id, iClip?10:11);
+
+				set_pdata_float(iEnt, m_flTimeWeaponIdle, iClip?1.36:0.7);
+				set_pdata_float(iEnt, m_flNextPrimaryAttack, iClip?1.36:0.7);
+
+				engfunc(EngFunc_EmitSound, id, CHAN_WEAPON, iClip?"weapons/bow_charge-2.wav":"weapons/bow_charge-1_empty.wav", 1.0, ATTN_NORM, 0, 94 + random_num(0, 15));
+
+				OrpheuCall(handleSetAnimation, id, PLAYER_ATTACK1);
+
+				new Float:fVelocity[3], Float:fOrigin[3], Float:fEnd[3], Float:fAngle[3];
+				new iArrow = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
+
+				Stock_Get_Postion(id,10.0,12.5,-15.5,fOrigin);
+				Stock_Get_Aiming(id, fEnd);
+				Stock_GetSpeedVector(fOrigin, fEnd, 4000.0, fVelocity);
+				set_pev(iArrow, pev_classname, "d_bow");
+				engfunc(EngFunc_SetModel, iArrow, "models/arrow.mdl");
+				set_pev(iArrow, pev_origin, fOrigin);
+				set_pev(iArrow, pev_mins, {-0.1, -0.1, -0.1});
+				set_pev(iArrow, pev_maxs, {0.1, 0.1, 0.1});
+				set_pev(iArrow, pev_movetype, MOVETYPE_BOUNCE);
+
+				set_pev(iArrow, pev_solid, SOLID_BBOX);
+				set_pev(iArrow, pev_owner, id);
+				set_pev(iArrow, pev_gravity, 0.01);
+				set_pev(iArrow, pev_velocity,fVelocity);
+				Stock_Get_Velocity_Angle(iArrow, fAngle);
+				set_pev(iArrow, pev_angles, fAngle);
+				Set_Ent_Data(iArrow,DEF_ENTID,iBteWpn);
+
+				Set_Ent_Data(iArrow,DEF_ENTCLASS,ENTCLASS_BOW);
+				set_pev(iArrow,pev_nextthink,get_gametime()+0.15);
+
+				set_pev(iArrow, pev_iuser3, 0);
+				set_pev(iArrow, pev_fuser2, g_modruning == BTE_MOD_ZB1?1.175:1.0);
+
+				new Float:vPunchangle[3];
+				pev(id, pev_punchangle, vPunchangle);
+				vPunchangle[0] -= 3.0;
+				set_pev(id, pev_punchangle, vPunchangle);
+
+			}
+			case 2:
+			{
+				Pub_Set_MaxSpeed(id, c_gravity[iBteWpn]);
+				//set_pev(id, pev_maxspeed, c_gravity[iBteWpn]);
+
+				iClip --
+				set_pdata_int(iEnt, m_iClip, iClip);
+
+				SendWeaponAnim(id, iClip?12:13);
+
+				set_pdata_float(iEnt, m_flTimeWeaponIdle, iClip?1.36:0.7);
+				set_pdata_float(iEnt, m_flNextPrimaryAttack, iClip?1.36:0.7);
+
+				engfunc(EngFunc_EmitSound, id, CHAN_WEAPON, iClip?"weapons/bow_charge-2.wav":"weapons/bow_charge-1_empty.wav", 1.0, ATTN_NORM, 0, 94 + random_num(0, 15));
+
+				OrpheuCall(handleSetAnimation, id, PLAYER_ATTACK1);
+
+				new Float:fVelocity[3], Float:fOrigin[3], Float:fEnd[3], Float:fAngle[3];
+				new iArrow = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
+
+				//velocity_by_aim(id, 6000, fVelocity);
+				Stock_Get_Postion(id,10.0,12.5,-7.5,fOrigin);
+				Stock_Get_Aiming(id, fEnd);
+				Stock_GetSpeedVector(fOrigin, fEnd, 6500.0, fVelocity);
+				set_pev(iArrow, pev_classname, "d_bow");
+				engfunc(EngFunc_SetModel, iArrow, "models/arrow.mdl");
+				set_pev(iArrow, pev_origin, fOrigin);
+				set_pev(iArrow, pev_mins, {-0.1, -0.1, -0.1});
+				set_pev(iArrow, pev_maxs, {0.1, 0.1, 0.1});
+				set_pev(iArrow, pev_movetype, MOVETYPE_BOUNCE);
+
+				set_pev(iArrow, pev_solid, SOLID_BBOX);
+				set_pev(iArrow, pev_owner, id);
+				set_pev(iArrow,pev_gravity,0.01);
+				set_pev(iArrow,pev_velocity,fVelocity);
+				Stock_Get_Velocity_Angle(iArrow, fAngle);
+				set_pev(iArrow, pev_angles, fAngle);
+				Set_Ent_Data(iArrow,DEF_ENTID,iBteWpn);
+
+				Set_Ent_Data(iArrow,DEF_ENTCLASS,ENTCLASS_BOW);
+				set_pev(iArrow,pev_nextthink,get_gametime()+2.00);
+
+				set_pev(iArrow, pev_iuser3, 1);
+				set_pev(iArrow, pev_fuser2, g_modruning == BTE_MOD_ZB1?7.475:1.6125);
+
+				engfunc(EngFunc_MessageBegin, MSG_PVS, SVC_TEMPENTITY, fOrigin, 0);
+				write_byte(TE_BEAMFOLLOW);
+				write_short(iArrow);
+				write_short(g_cache_trail);
+				write_byte(12);
+				write_byte(3);
+				write_byte(255);
+				write_byte(110);
+				write_byte(110);
+				write_byte(220);
+				message_end();
+
+				new Float:vPunchangle[3];
+				pev(id, pev_punchangle, vPunchangle);
+				vPunchangle[0] -= 5.0;
+				set_pev(id, pev_punchangle, vPunchangle);
+			}
+		}
+		iCharging = 0;
+		set_pev(iEnt, pev_iuser1, iCharging);
+	}
+	iButton &= ~IN_ATTACK;
+	iButton &= ~IN_ATTACK2;
+	set_pev(id, pev_button, iButton);
+}
