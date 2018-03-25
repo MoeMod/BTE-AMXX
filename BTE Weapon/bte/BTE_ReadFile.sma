@@ -254,6 +254,25 @@ public PrecacheWeapon(iBteWpn, bPrecache)
 		{
 			precache_model("models/p_dualsword_a.mdl");
 			precache_model("models/p_dualsword_b.mdl");
+			
+			new model[64];
+			format(model, 63, "%s/%s_skillfx1.mdl", MODEL_URL, c_sModel[iBteWpn]);
+			precache_model(model);
+			format(model, 63, "%s/%s_skillfx2.mdl", MODEL_URL, c_sModel[iBteWpn]);
+			precache_model(model);
+			
+			new sound[63];
+			new szInApp[32];
+			for (new i = 1; i <= 5; i ++)
+			{
+				format(szInApp, 31, "CustomSound%d", i);
+				GetPrivateProfile(c_sModel[iBteWpn], szInApp, "-", "cstrike/weapons_res.ini", BTE_STRING, sound, charsmax(sound));
+				if (sound[0] != '-')
+				{
+					format(sound, 63, "%s/%s", SOUND_URL, sound);
+					precache_sound(sound);
+				}
+			}
 			precache_model(c_sModel_V[iBteWpn]);
 		}
 		else
