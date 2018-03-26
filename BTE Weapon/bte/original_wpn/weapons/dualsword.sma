@@ -85,7 +85,7 @@ public DualSword_WeaponIdle(id, iEnt, iBteWpn)
 {
 	if(get_pdata_float(iEnt, m_flTimeWeaponIdle) > 0.0) 
 		return
-	
+		
 	ExecuteHamB(Ham_Weapon_ResetEmptySound, iEnt);
 	//OrpheuCall(OrpheuGetFunctionFromEntity(id, "GetAutoaimVector", "CBasePlayer"), id, AUTOAIM_10DEGREES)
 		
@@ -117,7 +117,7 @@ public DualSword_ItemPostFrame(id, iEnt, iBteWpn)
 	new Float:flNextThink;
 	pev(iEnt, pev_nextthink, flNextThink);
 	if(get_gametime() < flNextThink)
-		return HAM_IGNORED;
+		return;
 	
 	new iAttackRecord = pev(iEnt, pev_iuser1);  // 648
 	new iThinkType = pev(iEnt, pev_sequence);  // 644
@@ -131,19 +131,20 @@ public DualSword_ItemPostFrame(id, iEnt, iBteWpn)
 		{
 			// TEMPENTITY HERE, AFTER SECONDARYATTACK
 			new iSkillRecord = pev(iEnt, pev_iuser3); // 548
-			if(iSkillRecord == 11)
+			if(iSkillRecord == 4)
 			{
 				PLAYBACK_EVENT_FULL(FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, g_vecZero, g_vecZero, 0.0, 0.0, 2, EV_DUALSWORD_STAB_END, FALSE, FALSE);
 				
 				iThinkType = 7;
-				set_pev(iEnt, pev_sequence, 7);
+				set_pev(iEnt, pev_sequence, iThinkType);
 				set_pev(iEnt, pev_nextthink, get_gametime() + (0.65 - 0.53));
 			}
 			else
 			{
 				PLAYBACK_EVENT_FULL(FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, g_vecZero, g_vecZero, 0.0, 0.0, 1, EV_DUALSWORD_STAB_END, FALSE, FALSE);
 				
-				set_pev(iEnt, pev_sequence, 3);
+				iThinkType = 3;
+				set_pev(iEnt, pev_sequence, iThinkType);
 				set_pev(iEnt, pev_nextthink, get_gametime() + 0.77);
 			}
 		}
@@ -167,29 +168,42 @@ public DualSword_ItemPostFrame(id, iEnt, iBteWpn)
 			
 			new iSkillRecord = pev(iEnt, pev_iuser3); // 548
 			new iPrimaryAttackRecord = pev(iEnt, pev_iuser4);  // 636
-			
-			new int_Skill = -1;
-			switch (iSkillRecord)
+			if(iPrimaryAttackRecord)
 			{
-				case 0:
+				if(iSkillRecord == 4 || iAttackRecord != 3)
 				{
-					if (iPrimaryAttackRecord)
-						int_Skill = 1;
+					iAttackRecord = 0;
+					set_pev(iEnt, pev_iuser1, iAttackRecord);
+					set_pev(iEnt, pev_iuser1, iSkillRecord != 4);
+					
+					iPrimaryAttackRecord = (iPrimaryAttackRecord == 0);
+					set_pev(iEnt, pev_iuser4, iPrimaryAttackRecord);
 				}
-				case 5:
+				else
 				{
-					if (iPrimaryAttackRecord)
-						int_Skill = 6;
+					iAttackRecord = 4;
+					set_pev(iEnt, pev_iuser1, iAttackRecord);
+					
+					iPrimaryAttackRecord = (iPrimaryAttackRecord == 0);
+					set_pev(iEnt, pev_iuser4, iPrimaryAttackRecord);
 				}
-				case 6:
-				{
-					if (!iPrimaryAttackRecord)
-						int_Skill = 7;
-				}
+			} // else if(iSkillRecord == 4 || iAttackRecord != 4)
+			else if(iSkillRecord == 4 || iAttackRecord != 4)
+			{
+				iAttackRecord = 0;
+				set_pev(iEnt, pev_iuser1, iAttackRecord);
+				
+				iPrimaryAttackRecord = 1;
+				set_pev(iEnt, pev_iuser4, iPrimaryAttackRecord);
 			}
-			
-			set_pev(iEnt, pev_iuser3, (int_Skill == -1) ? 0 : int_Skill);
-			set_pev(iEnt, pev_iuser4, 1 - iPrimaryAttackRecord);
+			else
+			{
+				iAttackRecord = 5;
+				set_pev(iEnt, pev_iuser1, iAttackRecord);
+				
+				iPrimaryAttackRecord = 1;
+				set_pev(iEnt, pev_iuser4, iPrimaryAttackRecord);
+			}
 		}
 		case 6:
 		{
@@ -217,7 +231,7 @@ public DualSword_ItemPostFrame(id, iEnt, iBteWpn)
 			
 			iThinkType = 9;
 			set_pev(iEnt, pev_sequence, iThinkType);
-			set_pev(iEnt, pev_nextthink, get_gametime() + 12.48); // ???
+			set_pev(iEnt, pev_nextthink, get_gametime() + 10.0 + 1.49 + 0.59 + 1.4 - 1.0); // ???
 		}
 		case 9:
 		{
@@ -234,8 +248,6 @@ public DualSword_ItemPostFrame(id, iEnt, iBteWpn)
 			set_pev(iEnt, pev_sequence, iThinkType);
 		}
 	}
-	
-	return HAM_IGNORED;
 }
 
 public DualSword_PrimaryAttack(id, iEnt, iBteWpn)
@@ -265,6 +277,8 @@ public DualSword_PrimaryAttack(id, iEnt, iBteWpn)
 		set_pev(iEnt, pev_sequence, 4);
 		UTIL_WeaponDelay(iEnt, 99999.992, 99999.992, 99999.992);
 	}
+	
+	
 }
 
 public DualSword_DelayPrimaryAttack(iEnt)
@@ -277,7 +291,7 @@ public DualSword_DelayPrimaryAttack(iEnt)
 	{
 		SendWeaponAnim(id, 9);
 		set_pev(iEnt, pev_weaponanim, 9);
-		SendKnifeSound(id, 1, 1);
+		SendKnifeSound(id, 1, 0);
 	}
 	else
 	{
@@ -285,7 +299,10 @@ public DualSword_DelayPrimaryAttack(iEnt)
 		set_pev(iEnt, pev_weaponanim, 8);
 		SendKnifeSound(id, 1, 0);
 	}
+	
+	
 
+	set_pev(iEnt, pev_iuser3, 2);
 	set_pev(iEnt, pev_sequence, 5);
 	
 	UTIL_WeaponDelay(iEnt, 999999.992, 999999.992, 999999.992);
@@ -294,6 +311,8 @@ public DualSword_DelayPrimaryAttack(iEnt)
 
 public DualSword_ActPrimaryAttack(id, iEnt, iBteWpn, iType)
 {
+	// 50伤害 130长度 90度 0.15时间
+	// 770伤害 140长度 180度 0.65时间
 	if(iType)
 	{
 		new Float:flDamage = 50.0 * (IS_ZBMODE ? 4.5:1.0);
@@ -304,11 +323,7 @@ public DualSword_ActPrimaryAttack(id, iEnt, iBteWpn, iType)
 			case RESULT_HIT_WORLD : SendKnifeSound(id, 3, 0);
 		}
 		
-		new Float:fDelaySec = 0.0;
-		if (pev(iEnt, pev_iuser3))
-			fDelaySec = 0.15;
-		
-		UTIL_WeaponDelay(iEnt, 0.15, fDelaySec, 999999.992);
+		UTIL_WeaponDelay(iEnt, 0.15, 0.15, 999999.992);
 		set_pev(iEnt, pev_nextthink, get_gametime() + 0.42); // 0x3ED70A3E
 		set_pev(iEnt, pev_fuser1, get_gametime() + 0.15);
 	}
@@ -323,11 +338,7 @@ public DualSword_ActPrimaryAttack(id, iEnt, iBteWpn, iType)
 			case RESULT_HIT_WORLD : SendKnifeSound(id, 3, 0);
 		}
 		
-		new Float:fDelaySec = 0.0;
-		if (pev(iEnt, pev_iuser3))
-			fDelaySec = 0.65;
-		
-		UTIL_WeaponDelay(iEnt, 0.65, fDelaySec, 999999.992);
+		UTIL_WeaponDelay(iEnt, 0.65, 0.65, 999999.992);
 		set_pev(iEnt, pev_nextthink, get_gametime() + 0.65); // 0x3F266666
 		set_pev(iEnt, pev_fuser1, get_gametime() + 0.65);
 	}
@@ -335,6 +346,8 @@ public DualSword_ActPrimaryAttack(id, iEnt, iBteWpn, iType)
 	OrpheuCall(handleSetAnimation, id, PLAYER_ATTACK1);
 	// Next think will end attack
 	set_pev(iEnt, pev_sequence, 6);
+	
+	
 }
 
 public DualSword_SecondaryAttack(id, iEnt, iBteWpn)
@@ -346,6 +359,8 @@ public DualSword_SecondaryAttack(id, iEnt, iBteWpn)
 		SendWeaponAnim(id, 13);
 		set_pev(iEnt, pev_weaponanim, 13);
 		
+		set_pev(iEnt, pev_iuser3, 1);
+		
 		UTIL_WeaponDelay(iEnt, 99999.992, 99999.992, 99999.992);
 		
 		set_pev(iEnt,pev_sequence, 1);
@@ -353,16 +368,28 @@ public DualSword_SecondaryAttack(id, iEnt, iBteWpn)
 		return;
 	}
 	
-	new int_check = -1;
-	switch (pev(iEnt, pev_iuser3))
-	{
-		case 1:int_check = 1;
-		case 7:int_check = 1;
-	}
-	if (int_check == -1)
-		set_pev(iEnt, pev_iuser3, 0);
+	DualSword_DelaySecondaryAttack(iEnt)
 	
-	DualSword_DelaySecondaryAttack(iEnt);
+	if(pev(iEnt, pev_iuser3) == 4)
+	{
+		set_pev(iEnt, pev_iuser1, 0);
+		return;
+	}
+	
+	if(pev(iEnt, pev_iuser1) == 5)
+	{
+		set_pev(iEnt, pev_iuser1, 6);
+		return;
+	}
+	
+	if(pev(iEnt, pev_iuser3) == 4 || pev(iEnt, pev_iuser1) != 1)
+	{
+		set_pev(iEnt, pev_iuser1, 0);
+	}
+	else
+	{
+		set_pev(iEnt, pev_iuser1, 2);
+	}
 }
 
 public DualSword_DelaySecondaryAttack(iEnt)
@@ -372,19 +399,11 @@ public DualSword_DelaySecondaryAttack(iEnt)
 	
 	new iSecondaryAttackCount = pev(iEnt, pev_waterlevel);
 	
+	set_pev(iEnt, pev_iuser3, 3);
+	
 	new v8 = iSecondaryAttackCount % 4;
 	SendWeaponAnim(id, v8 + 1);
 	set_pev(iEnt, pev_weaponanim, v8 + 1);
-	
-	if (pev(iEnt, pev_iuser3))
-	{
-		if (v8 == pev(iEnt, pev_iuser3) - 1)
-			set_pev(iEnt, pev_iuser3, v8 + 2);
-		else if (v8 == pev(iEnt, pev_iuser3) - 7)
-			set_pev(iEnt, pev_iuser3, v8 + 8);
-		else
-			set_pev(iEnt, pev_iuser3, 0);
-	}
 	
 	iSecondaryAttackCount++;
 	set_pev(iEnt, pev_waterlevel, iSecondaryAttackCount);
@@ -403,17 +422,17 @@ public DualSword_DelaySecondaryAttack(iEnt)
 	// 距离120.0 角度330.0
 	new Float:vecEnd[3];
 	new iHitResult = KnifeAttack2(id, TRUE, c_flDistance[iBteWpn][2], c_flAngle[iBteWpn][2], flDamage, c_flKnockback[iBteWpn][2], -1, TRUE, _, _, vecEnd);
-	
+	/*
 	switch (iHitResult)
 	{
-		case RESULT_HIT_NONE : PLAYBACK_EVENT_FULL(FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, g_vecZero, g_vecZero, 0.0, 0.0, v8, EV_DUALSWORD_STAB, FALSE, FALSE);
-		case RESULT_HIT_PLAYER : PLAYBACK_EVENT_FULL(FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, g_vecZero, g_vecZero, 0.0, 0.0, v8, EV_DUALSWORD_STAB, TRUE, FALSE);
-		case RESULT_HIT_WORLD :
-		{
-			PLAYBACK_EVENT_FULL(FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, g_vecZero, g_vecZero, 0.0, 0.0, v8, EV_DUALSWORD_STAB, FALSE, TRUE);
-			//SendKnifeSound(id, 3, 0);
-		}
-	}
+		case RESULT_HIT_PLAYER : SendKnifeSound(id, 5, 0);
+		case RESULT_HIT_WORLD : SendKnifeSound(id, 3, 0);
+	}*/
+	
+	// Sound
+	PLAYBACK_EVENT_FULL(FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, g_vecZero, g_vecZero, 0.0, 0.0, v8, EV_DUALSWORD_STAB, iHitResult == RESULT_HIT_PLAYER, iHitResult == RESULT_HIT_WORLD);
+	
+	// SVC_TEMPENTITY? 第二个v模型的特效在这里发送
 	
 	if(iSecondaryAttackCount < 4)
 	{
@@ -436,9 +455,9 @@ public DualSword_DelaySecondaryAttack(iEnt)
 			return;
 		}
 		
-		if(iSkillRecord == 11)
+		if(pev(iEnt, pev_iuser1) == 6)
 		{
-			//set_pev(iEnt, pev_iuser1, 7);
+			set_pev(iEnt, pev_iuser1, 7);
 			DualSword_SpawnEffect(iEnt, id);
 			return;
 		}
@@ -464,6 +483,7 @@ public DualSword_SpawnEffect(iEnt, id)
 	
 	//client_print(id, print_chat, "DualSword_SpawnEffect");
 	
+	set_pev(iEnt, pev_iuser3, 4);
 	set_pev(iEnt, pev_iuser1, 0);
 	UTIL_WeaponDelay(iEnt, 99999.992, 99999.992, 99999.992);
 }
@@ -588,181 +608,6 @@ public CDualSwordSpecialEffect_Attack1(this)
 	//new Float:flRange = 150.0;
 	// 40.0 10.0
 	// size 0.3*10.0
-	
-	new id = pev(this, pev_owner);
-	new pWeapon = get_pdata_cbase(id, m_pActiveItem);
-	new iBteWpn = WeaponIndex(pWeapon);
-	
-	new Float:vecOrigin3[2][3], Float:vecOrigin[3];
-	pev(id, pev_origin, vecOrigin3[0]);
-	pev(id, pev_origin, vecOrigin);
-	//client_print(id, print_chat, "%dDebug: %f, %f, %f", random_num(0,99), vecOrigin3[0][0], vecOrigin3[0][1], vecOrigin3[0][2]);
-	xs_vec_copy(vecOrigin3[0], vecOrigin3[1]);
-	
-	g_anim[id] = (g_anim[id]+1)%4
-	new Float:fFloat = random_float(c_flDistance[iBteWpn][3]*0.1, c_flDistance[iBteWpn][3] * 0.85);
-	new Float:fFloat2 = random_float(c_flDistance[iBteWpn][3]*0.1, c_flDistance[iBteWpn][3] * 0.85);
-	vecOrigin3[0][2] = vecOrigin3[0][2] + random_float(-5.0, 65.0);
-	vecOrigin3[1][2] = vecOrigin3[0][2] + random_float(-5.0, 65.0);
-	switch (g_anim[id])
-	{
-		case 0:
-		{
-			vecOrigin3[0][0] += fFloat*random_float(0.5, 1.0);
-			vecOrigin3[0][1] += fFloat2*random_float(0.5, 1.0);
-			
-			vecOrigin3[1][0] -= fFloat*random_float(0.5, 1.0);
-			vecOrigin3[1][1] -= fFloat2*random_float(0.5, 1.0);
-		}
-		case 1:
-		{
-			vecOrigin3[0][0] += fFloat*random_float(0.5, 1.0);
-			vecOrigin3[0][1] -= fFloat2*random_float(0.5, 1.0);
-			
-			vecOrigin3[1][0] -= fFloat*random_float(0.5, 1.0);
-			vecOrigin3[1][1] += fFloat2*random_float(0.5, 1.0);
-		}
-		case 2:
-		{
-			vecOrigin3[0][0] -= fFloat*random_float(0.5, 1.0);
-			vecOrigin3[0][1] += fFloat2*random_float(0.5, 1.0);
-			
-			vecOrigin3[1][0] += fFloat*random_float(0.5, 1.0);
-			vecOrigin3[1][1] -= fFloat2*random_float(0.5, 1.0);
-		}
-		case 3:
-		{
-			vecOrigin3[0][0] -= fFloat*random_float(0.5, 1.0);
-			vecOrigin3[0][1] -= fFloat2*random_float(0.5, 1.0);
-			
-			vecOrigin3[1][0] += fFloat*random_float(0.5, 1.0);
-			vecOrigin3[1][1] += fFloat2*random_float(0.5, 1.0);
-		}
-	}
-	
-	new string[64];
-	if (random_num(0,5) > 3)
-	{
-		new Float:vecAngle2[3];
-		vecAngle2[0] = random_float(15.0, 30.0);
-		vecAngle2[1] = random_float(0.0, 180.0);
-		
-		new pEnt = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
-		
-		if (pev_valid(pEnt))
-		{
-			set_pev(pEnt, pev_classname, "d_dualsword");
-			set_pev(pEnt, pev_owner, id);
-			
-			format(string, 63, "%s/%s_skillfx1.mdl", MODEL_URL, c_sModel[iBteWpn]);
-			engfunc(EngFunc_SetModel, pEnt, string);
-			
-			set_pev(pEnt, pev_origin, vecOrigin3[0]);
-			set_pev(pEnt, pev_movetype, MOVETYPE_NOCLIP);
-			
-			set_pev(pEnt, pev_angles, vecAngle2);
-			set_pev(pEnt, pev_velocity, Float:{0.0,0.0,0.0});
-			set_pev(pEnt, pev_rendermode, kRenderTransAdd);
-			set_pev(pEnt, pev_renderamt, 255.0);
-			set_pev(pEnt, pev_solid, SOLID_NOT);
-			set_pev(pEnt, pev_animtime, get_gametime());
-			set_pev(pEnt, pev_framerate, 1.0);
-			set_pev(pEnt, pev_sequence, 0);
-			set_pev(pEnt, pev_fuser1, get_gametime()+0.5);
-			set_pev(pEnt, pev_nextthink, get_gametime() + 0.01);
-			set_pev(pEnt, pev_oldorigin, vecOrigin);
-			BTE_SetThink(pEnt, "CDualSwordEffect_Think12");
-		}
-	}
-	
-	new pEnt = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
-	if (pev_valid(pEnt))
-	{
-		set_pev(pEnt, pev_classname, "d_dualsword");
-		set_pev(pEnt, pev_owner, id);
-		
-		format(string, 63, "%s/%s_skillfx2.mdl", MODEL_URL, c_sModel[iBteWpn]);
-		engfunc(EngFunc_SetModel, pEnt, string);
-		
-		new Float:vecVelocity[3], Float:vecAngle[3];
-		Stock_GetSpeedVector(vecOrigin3[0], vecOrigin3[1], 1000.0, vecVelocity);
-		vector_to_angle(vecVelocity, vecAngle);
-		
-		set_pev(pEnt, pev_origin, vecOrigin3[0]);
-		set_pev(pEnt, pev_movetype, MOVETYPE_NOCLIP);
-		set_pev(pEnt, pev_velocity, vecVelocity);
-		set_pev(pEnt, pev_angles, vecAngle);
-		set_pev(pEnt, pev_rendermode, kRenderTransAdd);
-		set_pev(pEnt, pev_renderamt, 255.0);
-		set_pev(pEnt, pev_solid, SOLID_NOT);
-		set_pev(pEnt, pev_animtime, get_gametime());
-		set_pev(pEnt, pev_framerate, 1.0);
-		set_pev(pEnt, pev_sequence, 0);
-		set_pev(pEnt, pev_iuser1, 1);
-		set_pev(pEnt, pev_fuser1, get_gametime()+1.0);
-		set_pev(pEnt, pev_nextthink, get_gametime() + 0.01);
-		set_pev(pEnt, pev_oldorigin, vecOrigin);
-		BTE_SetThink(pEnt, "CDualSwordEffect_Think12");
-	}
-}
-
-public CDualSwordEffect_Think12(this)
-{
-	set_pev(this, pev_nextthink, get_gametime() + 0.01);
-	
-	new Float:fTimeLast;
-	pev(this, pev_fuser1, fTimeLast);
-	if (fTimeLast <= get_gametime())
-	{
-		if (!pev(this, pev_iuser1))
-		{
-			new Float:fRenderAmount;
-			pev(this, pev_renderamt, fRenderAmount);
-			fRenderAmount -= 10.0;
-			if (fRenderAmount <= 5.0)
-			{
-				BTE_SetThink(this, "");
-				SUB_Remove(this, 0.0);
-				return;
-			}
-			set_pev(this, pev_renderamt, fRenderAmount);
-		}
-		else
-		{	
-			BTE_SetThink(this, "");
-			SUB_Remove(this, 0.0);
-		}
-		return;
-	}
-	
-	new Float:vecOrigin[3];
-	GetGunPosition(pev(this, pev_owner), vecOrigin);
-	pev(pev(this, pev_owner), pev_origin, vecOrigin);
-	new Float:fOldOrigin[3];
-	pev(this, pev_oldorigin, fOldOrigin);
-	
-	new Float:vecNewOrigin[3];
-	pev(this, pev_origin, vecNewOrigin);
-	
-	new Float:vecfff[3];
-	xs_vec_sub(vecOrigin, fOldOrigin, vecfff);
-	xs_vec_add(vecNewOrigin, vecfff, vecNewOrigin);
-	
-	set_pev(this, pev_origin, vecNewOrigin);
-	set_pev(this, pev_oldorigin, vecOrigin);
-	if (pev(this, pev_iuser1) == 1)
-	{
-		new Float:fDist = get_distance_f(vecOrigin, vecNewOrigin);
-		
-		new pWeapon = get_pdata_cbase(pev(this, pev_owner), m_pActiveItem);
-		new iBteWpn = WeaponIndex(pWeapon);
-		if (fDist > c_flDistance[iBteWpn][3])
-		{
-			BTE_SetThink(this, "");
-			SUB_Remove(this, 0.0);
-			return;
-		}
-	}
 }
 
 public CDualSwordSpecialEffect_Attack2(this)
@@ -770,18 +615,6 @@ public CDualSwordSpecialEffect_Attack2(this)
 	// 70.0 -20.0
 	//new Float:flRange = 1200.0;
 	// size 0.3*10.0
-	
-	new iBteWpn = WeaponIndex(get_pdata_cbase(pev(this, pev_owner), m_pActiveItem));
-	new sound[63], szInApp[32];
-	format(szInApp, 31, "CustomSound%d", random_num(1, 5));
-	GetPrivateProfile(c_sModel[iBteWpn], szInApp, "-", "cstrike/weapons_res.ini", BTE_STRING, sound, charsmax(sound));
-	if (sound[0] != '-')
-	{
-		format(sound, 63, "%s/%s", SOUND_URL, sound);
-		emit_sound(pev(this, pev_owner), CHAN_VOICE, sound, 1.0, ATTN_NORM, 0, PITCH_NORM)
-		//precache_sound(sound);
-	}
-	//SendKnifeSound(id, 5, random_num(0, 4));
 }
 
 public CDualSwordSpecialEffect_Attack3(this)

@@ -238,7 +238,6 @@ public ChangeModel(id)
 	set_player_class(id, 0)
 }
 
-
 public Event_CurWeapon(id)
 {
 	new wpn = get_user_weapon(id)
@@ -252,6 +251,7 @@ public Event_CurWeapon(id)
 		}
 	}
 }
+
 public message_SayText(fuck,you,id)
 {
 	static text[64]
@@ -277,8 +277,6 @@ public plugin_precache()
 	engfunc(EngFunc_PrecacheModel,"models/v_knife_w.mdl")
 	//makeui()
 }
-
-
 
 native bte_get_zombie_sex(id)
 
@@ -309,7 +307,6 @@ public message_SendAudio(msg_id, msg_dest, msg_entity)
 }
 
 #if 0
-
 
 public message_SendAudio(msg_id, msg_dest, msg_entity)
 {
@@ -399,6 +396,7 @@ send_radio_all(audio[])
 		message_end()
 	}
 }*/
+
 public register_ham_czbots(id)
 {
 	if (g_bot_init || !is_user_connected(id)) return
@@ -407,6 +405,7 @@ public register_ham_czbots(id)
 	g_bot_init = 1
 
 }
+
 public client_putinserver(id)
 {
 	if (is_user_bot(id) && !g_bot_init)
@@ -416,6 +415,7 @@ public client_putinserver(id)
 	g_init_player[id] = 0
 	reset_value(id)
 }
+
 public fw_ClientDisconnect(id)
 {
 	reset_value(id)
@@ -429,6 +429,7 @@ reset_value(id)
 	// Random Player
 	set_player_class(id, 0)
 }
+
 public fw_EmitSound(id, channel, const sample[], Float:volume, Float:attn, flags, pitch)
 {
 	if (g_bBlockEmitSound)
@@ -474,9 +475,9 @@ public fw_EmitSound(id, channel, const sample[], Float:volume, Float:attn, flags
 	}
 	return FMRES_IGNORED;
 }
+
 #include "offset.inc"
 #define TASK_RESETMODEL 56255
-
 
 public Event_HLTV()
 {
@@ -485,6 +486,10 @@ public Event_HLTV()
 	set_task(1.0,"set_model_new_round")
 	for (new id = 1; id < 33; id++)
 	{
+		if (!is_user_connected(id))
+		continue;
+		MH_DrawFontText(id,"Author : New BTE Team",1,0.10,0.69,255,255,255,15,5.0,1.0,0,9999)
+		
 		g_bHasCustomModel[id] = 0;
 		//reset_model(id + TASK_RESETMODEL);
 	}
