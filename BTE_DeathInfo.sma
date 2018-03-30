@@ -81,7 +81,7 @@ public MsgFunc_DeathMsg(id, iVictim, iHeadShot, szWeapon[], iAssist)
 {
 	param_convert(4);
 	
-	new att = id;
+	/*new att = id;
 	new vic = iVictim;
 	new para[2]
 	para[0]=att;
@@ -101,7 +101,28 @@ public MsgFunc_DeathMsg(id, iVictim, iHeadShot, szWeapon[], iAssist)
 	g_DeathInfo[para[0]][para[1]][iVictim] = para[1];
 	g_DeathInfo[para[0]][para[1]][iAttacker] = para[0];
 	copy(g_DeathInfo[para[0]][para[1]][WeaponName], 31, sWeapon);
-	
+	*/
+}
+
+public get_wpname(msgid,dest,id)
+{
+	static att,vic,para[2],sWeapon[32]
+	att=get_msg_arg_int(1)
+	vic=get_msg_arg_int(2)
+	para[0]=att
+	para[1]=vic
+	get_msg_arg_string(4, sWeapon, charsmax(sWeapon));
+
+	if (strlen(sWeapon) < 2)
+		return;
+
+	if (sWeapon[strlen(sWeapon) - 2] == '_')
+		sWeapon[strlen(sWeapon) - 2] = 0;
+
+	g_DeathInfo[para[0]][para[1]][bCanSend] = 1;
+	g_DeathInfo[para[0]][para[1]][iVictim] = para[1];
+	g_DeathInfo[para[0]][para[1]][iAttacker] = para[0];
+	copy(g_DeathInfo[para[0]][para[1]][WeaponName], 31, sWeapon);
 }
 
 public bte_zb_infected(victim,attacker)
@@ -208,27 +229,7 @@ public event_round_start()
 			reset_result(id, 0)
 	}
 }
-public get_wpname(msgid,dest,id)
-{
-	static att,vic,para[2],sWeapon[32]
-	att=get_msg_arg_int(1)
-	vic=get_msg_arg_int(2)
-	para[0]=att
-	para[1]=vic
-	get_msg_arg_string(4, sWeapon, charsmax(sWeapon));
 
-	if (strlen(sWeapon) < 2)
-		return;
-
-	if (sWeapon[strlen(sWeapon) - 2] == '_')
-		sWeapon[strlen(sWeapon) - 2] = 0;
-
-	//bte_wpn_deathinfo_weaponname(sWeapon, att_wpn[att]);
-	g_DeathInfo[para[0]][para[1]][bCanSend] = 1;
-	g_DeathInfo[para[0]][para[1]][iVictim] = para[1];
-	g_DeathInfo[para[0]][para[1]][iAttacker] = para[0];
-	//copy(g_DeathInfo[para[0]][para[1]][WeaponName], 31, sWeapon);
-}
 /*
 public Display_att(para[])
 {
@@ -517,7 +518,7 @@ public Display_vic(para[])
 		write_short(floatround(hp));
 		write_short(floatround(ap));
 		message_end();
-
+		
 		//if(MH_IsMetaHookPlayer(vic))
 		//	MH_DrawFontText(vic,message,0,HUD_X2,HUD_Y2,R2,G2,B2,14,6.0,0.0,0,2)
 	}
