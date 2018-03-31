@@ -12,9 +12,10 @@ native bte_setname(id,name[])
 new const URL[]="addons/amxmodx/configs/randname/last.txt"
 new const URL2[]="addons/amxmodx/configs/randname/first.txt"
 
-new szNamelist[33][32],szNamelist2[33][32],szNamelistCout[33][32]
-new iNameCheck[33]
-new g_NameUse[33]
+new szNamelist[33][32],szNamelist2[33][32]
+new g_bNameUsed[33], g_bNameUsed2[33]
+new g_iPlayerUseName[33], g_iPlayerUseName2[33]
+new g_iUsedNum, g_iUsedNum2
 new iAllNum,iAllNum2
 public plugin_precache()
 {
@@ -32,24 +33,21 @@ public client_connect(id) //client_putinserver
 }
 public client_disconnect(id)
 {
-	iNameCheck[g_NameUse[id]]=0
-	g_NameUse[id] = 0
+	if(!is_user_bot(id)) return
+	g_iUsedNum--;
+	g_iUsedNum2--;
+	g_bNameUsed[g_iPlayerUseName[id]] = 0;
+	g_bNameUsed2[g_iPlayerUseName2[id]] = 0;
 }
 
 public ChangeName(id)
 {
-	randname(id);
-	for(new i=1;i<=iAllNum;i++)
-	{
-		if(CheckName(id,i))
-		{
-			//bte_setname(id,szNamelist[i]) // in fakemeta (modified)
-			set_user_info(id, "name", szNamelistCout[id]);
-			iNameCheck[i] = 1
-			g_NameUse[id]=i
-			break
-		}
-	}
+	new szName[32];
+	randname(id, szName, 31);
+	
+	//bte_setname(id,szNamelist[i]) // in fakemeta (modified)
+	set_user_info(id, "name", szName);
+
 }
 public loadnamelist()
 {
@@ -58,6 +56,8 @@ public loadnamelist()
 	{
 		log_amx("文件读取错误")
 		set_fail_state("文件读取错误")
+		fclose(hFile)
+		fclose(hFile2)
 	}
 	new szLine[128],iLine=1,szLine2[128],iLine2=1;
 	while (!feof(hFile))
@@ -82,15 +82,26 @@ public loadnamelist()
 		if(iLine2>NAME_MAX) break
 	}
 	iAllNum2 = iLine2-1
+	fclose(hFile)
+	fclose(hFile2)
 }
-public CheckName(id,iRan) //重名检测
+
+public randname(id, szName[], len)
 {
-	if(iNameCheck[iRan]) return 0
-	return 1
-}
-public randname(id)
-{
-	format(szNamelistCout[id],128,"%s%s",szNamelist[random_num(1,iAllNum)],szNamelist2[random_num(1,iAllNum2)])
+	if(g_iUsedNum >= iAllNum || g_iUsedNum2 >= iAllNum2)
+		return;
+	new i, j
+	do
+	{
+		i = random_num(1,iAllNum);
+		j = random_num(1,iAllNum2);
+	} while(!g_bNameUsed[i] && !g_bNameUsed2[j])
+	g_bNameUsed[i] = 1
+	g_bNameUsed2[j] = 1
+	g_iPlayerUseName[id] = i
+	g_iPlayerUseName2[id] = j
+	format(szName,len,"%s%s",szNamelist[i],szNamelist2[j])
+	
 }
 /* AMXX-Studio Notes - DO NOT MODIFY BELOW HERE
 *{\\ rtf1\\ ansi\\ ansicpg936\\ deff0{\\ fonttbl{\\ f0\\ fnil\\ fcharset134 Tahoma;}}\n\\ viewkind4\\ uc1\\ pard\\ lang2052\\ f0\\ fs16 \n\\ par }
