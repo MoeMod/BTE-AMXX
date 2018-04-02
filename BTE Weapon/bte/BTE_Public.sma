@@ -79,6 +79,7 @@ public GetWeaponModeFireBullets3(id, iEnt, iBteWpn, iId, iWeaponState)
 	if (c_iSpecial[iBteWpn] == SPECIAL_INFINITY && (iButton & IN_ATTACK2)) return 1;
 	//if (c_iSpecial[iBteWpn] == SPECIAL_BALROG3 && g_bl3_num[id] > 15) return 1;
 	if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 && pev(iEnt, pev_iuser1) == JANUSMK5_USING) return 1;
+	if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11 && pev(iEnt, pev_iuser1) == JANUSMK5_USING) return 1;
 	if (c_iSpecial[iBteWpn] == SPECIAL_BUFFM4A1) return get_pdata_int(id, m_iFOV) != 90;
 	if (c_iSpecial[iBteWpn] == SPECIAL_BUFFAWP) return CBuffAWP_GetWeaponCharged(iEnt)
 	return 0;

@@ -110,13 +110,13 @@ native bte_zb4_is_using_accshoot(id);
 
 public message_DeathMsg(msgid, msgdest, id)
 {
-	static iKiller, sWeapon[32],iAttackerWeapon
+	new sWeapon[32],iAttackerWeapon
 	new sWeaponChange[32],sSprites[32]
-	iKiller = get_msg_arg_int(1)
 	
-	static iVictim, bIsHeadShot;
-	iVictim = get_msg_arg_int(2);
-	bIsHeadShot = get_msg_arg_int(3);
+	new iKiller = get_msg_arg_int(1)
+	new iVictim = get_msg_arg_int(2);
+	new bIsHeadShot = get_msg_arg_int(3);
+	get_msg_arg_string(4, sWeapon, charsmax(sWeapon))
 	
 	if (0 < get_pdata_int(iVictim, m_iTeam) < 3 && (0 < iKiller < 33))
 	{
@@ -160,11 +160,11 @@ public message_DeathMsg(msgid, msgdest, id)
 		new bIsUsingSkill = bte_zb4_is_using_accshoot(iKiller);
 		if (bte_zb4_get_day_status() != 1)
 		{
-			set_msg_arg_int(3, get_msg_argtype(3), bIsUsingSkill);
+			bIsHeadShot = bIsUsingSkill;
 		}
 		else
 		{
-			set_msg_arg_int(3, get_msg_argtype(3), 0);
+			bIsHeadShot = 0;
 		}
 	}
 	
@@ -195,75 +195,43 @@ public message_DeathMsg(msgid, msgdest, id)
 	new iAssist = GetAssist(iKiller, iVictim);
 	if (iKiller < 1 || iKiller >32)
 	{
-		new sz[33];
-		get_msg_arg_string(3, sz, charsmax(sz));
-		message_begin(msgdest, msgid, _, id);
-		write_byte(iKiller);
-		write_byte(iVictim);
-		write_byte(bIsHeadShot);
-		write_string(g_szKillWeapon[0] ? g_szKillWeapon : sz);
-		write_byte(iAssist);
-		message_end();
 		
-		BTE_DeathMsg(iKiller, iVictim, bIsHeadShot, g_szKillWeapon[0] ? g_szKillWeapon : sz, iAssist);
-		
-		return PLUGIN_HANDLED;
 	}
-
-	get_msg_arg_string(4, sWeapon, charsmax(sWeapon))
 
 	if (sWeapon[0] == 'g' && sWeapon[1] == 'r' && sWeapon[2] == 'e' && sWeapon[3] == 'n')  // grenade
 	{
 		format(sWeapon, charsmax(sWeapon),"%s", c_sModel[g_lasthe[iKiller]])
-		//set_msg_arg_string(4, sWeapon)
-		message_begin(msgdest, msgid, _, id);
-		write_byte(iKiller);
-		write_byte(iVictim);
-		write_byte(bIsHeadShot);
-		write_string(g_szKillWeapon[0] ? g_szKillWeapon : sWeapon);
-		write_byte(iAssist);
-		message_end();
-		BTE_DeathMsg(iKiller, iVictim, bIsHeadShot, g_szKillWeapon[0] ? g_szKillWeapon : sWeapon, iAssist);
-		
-		return PLUGIN_HANDLED; 
 	}
 
 	if (sWeapon[0] == 'd' && sWeapon[1] == '_')
 	{
-		format(sWeaponChange, 31, "%s",sWeapon[2])
-		//set_msg_arg_string(4, sWeaponChange)
-		message_begin(msgdest, msgid, _, id);
-		write_byte(iKiller);
-		write_byte(iVictim);
-		write_byte(bIsHeadShot);
-		write_string(g_szKillWeapon[0] ? g_szKillWeapon : sWeaponChange);
-		write_byte(iAssist);
-		message_end();
-		
-		BTE_DeathMsg(iKiller, iVictim, bIsHeadShot, g_szKillWeapon[0] ? g_szKillWeapon : sWeaponChange, iAssist);
-		
-		return PLUGIN_HANDLED;
+		format(sWeapon, 31, "%s",sWeapon[2])
 	}
 
 	iAttackerWeapon = g_weapon[iKiller][0];
 
 	if (c_iType[iAttackerWeapon] == WEAPONS_DOUBLE && g_double[iKiller][0])
-		format(sSprites, charsmax(sSprites), "%s_2", c_sModel[iAttackerWeapon])
+		format(sWeapon, charsmax(sWeapon), "%s_2", c_sModel[iAttackerWeapon])
 	else
-		format(sSprites, charsmax(sSprites), "%s", c_sModel[iAttackerWeapon])
+		format(sWeapon, charsmax(sWeapon), "%s", c_sModel[iAttackerWeapon])
 
-	//set_msg_arg_string(4, sSprites)
+	if(g_szKillWeapon[0])
+		format(sWeapon, charsmax(sWeapon), "%s", g_szKillWeapon)
+	
+	set_msg_arg_int(3, get_msg_argtype(3), bIsHeadShot);
+	set_msg_arg_string(4, sWeapon);
 	
 	message_begin(msgdest, msgid, _, id);
 	write_byte(iKiller);
 	write_byte(iVictim);
 	write_byte(bIsHeadShot);
-	write_string(g_szKillWeapon[0] ? g_szKillWeapon : sSprites);
+	write_string(sWeapon);
 	write_byte(iAssist);
 	message_end();
 	
-	BTE_DeathMsg(iKiller, iVictim, bIsHeadShot, g_szKillWeapon[0] ? g_szKillWeapon : sSprites, iAssist);
-
+	BTE_DeathMsg(iKiller, iVictim, bIsHeadShot, sWeapon, iAssist);
+	
+	//client_print(0, print_chat, "%i %i %i %s %i", iKiller, iVictim, bIsHeadShot, sWeapon, iAssist);
 	return PLUGIN_HANDLED;
 }
 
