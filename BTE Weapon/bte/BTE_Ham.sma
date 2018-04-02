@@ -1585,7 +1585,7 @@ public Float:TakeDamageSpecialWeapons(id, iVictim, iInflictor, bitsDamageType, i
 		message_end()
 	}*/
 
-	 if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
+	 if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11 && !CheckTeammate(id, iVictim))
 	{
 		if (!is_user_alive(id)) return 1.0;
 
@@ -1603,7 +1603,7 @@ public Float:TakeDamageSpecialWeapons(id, iVictim, iInflictor, bitsDamageType, i
 #if defined _DEBUG
 		if (iShootTime >= 1 && iState != JANUSMK5_USING)
 #else
-		if (iShootTime >= 9 && iState != JANUSMK5_USING)
+		if (iShootTime >= 15 && iState != JANUSMK5_USING)
 #endif
 		{
 			iState = JANUSMK5_CANUSE;
@@ -1611,6 +1611,7 @@ public Float:TakeDamageSpecialWeapons(id, iVictim, iInflictor, bitsDamageType, i
 			MH_SpecialEvent(id, 50 + iState);
 			set_pev(iEnt, pev_iuser1, iState);
 			set_pev(iEnt, pev_fuser1, fNextReset);
+			SendWeaponAnim(id, 16)
 		}
 		if (iState != JANUSMK5_USING)
 			set_pev(iEnt, pev_iuser2, iShootTime);
@@ -2706,12 +2707,8 @@ public HamF_Weapon_Reload_Shotgun(iEnt)
 			flTimeWeaponIdle = flReload + 0.5;
 
 		OrpheuCall(handleSetAnimation, id, PLAYER_RELOAD);
-		if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
-		{	
-			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][iState] + 2); // start reload
-		}
-		else																  
-		    SendWeaponAnim(id, c_iReloadAnim[iBteWpn][0]);
+																		  
+		SendWeaponAnim(id, c_iReloadAnim[iBteWpn][0]);
 
 		set_pdata_float(id, m_flNextAttack, flReload);
 		set_pdata_float(iEnt, m_flTimeWeaponIdle, flTimeWeaponIdle);
@@ -2820,9 +2817,9 @@ public ShotgunReload(iEnt, iId, iMaxClip, iClip, iBpAmmo, id, iBteWpn, fInSpecia
 	{
 		OrpheuCall(handleSetAnimation, id, PLAYER_RELOAD);
 				
-		if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11) // insert
+		if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11) // start reload
 		{
-			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][iState]);
+			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][iState] + 2);
 		}
 		else														  
 		    SendWeaponAnim(id, c_iReloadAnim[iBteWpn][2]);
@@ -2839,9 +2836,9 @@ public ShotgunReload(iEnt, iId, iMaxClip, iClip, iBpAmmo, id, iBteWpn, fInSpecia
 			return;
 
 		set_pdata_int(iEnt, m_fInSpecialReload, 2);
-		if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11 && iState == JANUSMK5_CANUSE)
+		if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11) // insert
 		{
-			SendWeaponAnim(id, 13);
+			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][iState]);
 		}
 		else															  
             SendWeaponAnim(id, c_iReloadAnim[iBteWpn][0]);
@@ -3443,7 +3440,7 @@ public DeploySpecialWeapon(id, iEnt, iId, iBteWpn)
 		new iType = pev(iEnt, pev_iuser1);
 		MH_SpecialEvent(id, 50 + iType);
 	}
-		if (c_iSpecial[g_weapon[id][0]] == SPECIAL_JANUS11)
+	if (c_iSpecial[g_weapon[id][0]] == SPECIAL_JANUS11)
 	{
 		new iType = pev(iEnt, pev_iuser1);
 		MH_SpecialEvent(id, 50 + iType);
