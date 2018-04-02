@@ -12,6 +12,7 @@
 #include "bte/weapons/janus7.sma"
 #include "bte/weapons/janusmk5.sma"
 #include "bte/weapons/janus1.sma"
+#include "bte/weapons/janus11.sma"
 #include "bte/weapons/bloodhunter.sma"
 #include "bte/weapons/chainsaw.sma"
 #include "bte/weapons/infinity.sma"
@@ -191,6 +192,10 @@ public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 	{
 		CAugEX_ItemPostFrame(id, iEnt, iClip, iBteWpn)
 	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
+	{
+		CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
+	}												  
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_ItemPostFrame(id, iEnt, iClip, iBteWpn)

@@ -145,9 +145,10 @@ public Forward_PlaybackEvent(iFlags, id, iEvent, Float:fDelay, Float:vecOrigin[3
 		bParam2 = (get_pdata_int(iEnt, m_iClip) <= 0);
 	}
 
-	if(c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 || c_iSpecial[iBteWpn] == SPECIAL_JANUS7)
+	if(c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 || c_iSpecial[iBteWpn] == SPECIAL_JANUS7 || c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
 	{
 		bParam1 = !!pev(iEnt, pev_iuser1);//format(sound, charsmax(sound), "%s", "weapons/janusmk5-2.wav")
+		bParam2 = pev(iEnt, pev_iuser1) == JANUSMK5_USING;
 	}
 
 	if (c_iSpecial[iBteWpn] == SPECIAL_DESTROYER)
