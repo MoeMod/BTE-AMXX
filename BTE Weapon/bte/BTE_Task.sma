@@ -47,9 +47,11 @@ public Task_Bot_Weapon(iTaskid)
 			{
 				iWpn = g_wpn_menu[wpn_type][random_num(0, g_wpn_menu_count[wpn_type] - 1)];
 				Pub_Give_Named_Wpn(id, c_sModel[iWpn]);
+				break;
 			}
+			bitAvailableType &= ~(1 << wpn_type)
 		}
-		while(!(bitAvailableType & (1 << wpn_type)))
+		while(bitAvailableType);
 	}
 	
 	// pistol

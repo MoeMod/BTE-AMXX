@@ -12,6 +12,28 @@ public CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 	if (!iState)
 		return;	
 
+	new iButton;
+	iButton = pev(id,pev_button);
+	if (iButton & IN_ATTACK2 && iState == JANUSMK5_CANUSE) // 按下右键切换充能模式
+	{
+		set_pdata_float(iEnt, m_flTimeWeaponIdle, 2.0);
+		set_pdata_float(iEnt, m_flNextSecondaryAttack, 2.0);
+		set_pdata_float(iEnt, m_flNextPrimaryAttack, 2.0);
+		SendWeaponAnim(id, 7);
+
+		
+		set_pev(iEnt,pev_iuser1,1);
+
+		iState = JANUSMK5_USING;
+		fNextReset = fCurTime + 11.0;
+		MH_SpecialEvent(id, 50 + iState);
+		set_pev(iEnt, pev_iuser1, iState);
+		set_pev(iEnt, pev_fuser1, fNextReset);
+		set_pev(iEnt, pev_iuser2, 0);
+
+		SetCanReload(id, FALSE);
+	}
+	
 	if (fCurTime > fNextReset && fNextReset)
 	{
 		if (iState == JANUSMK5_CANUSE)
@@ -40,27 +62,7 @@ public CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 		return;
 	}
 
-	new iButton;
-	iButton = pev(id,pev_button);
-	if (iButton & IN_ATTACK2 && iState == JANUSMK5_CANUSE) // 按下右键切换充能模式
-	{
-		set_pdata_float(iEnt, m_flTimeWeaponIdle, 2.0);
-		set_pdata_float(iEnt, m_flNextSecondaryAttack, 2.0);
-		set_pdata_float(iEnt, m_flNextPrimaryAttack, 2.0);
-		SendWeaponAnim(id, 7);
-
-		
-		set_pev(iEnt,pev_iuser1,1);
-
-		iState = JANUSMK5_USING;
-		fNextReset = fCurTime + 11.0;
-		MH_SpecialEvent(id, 50 + iState);
-		set_pev(iEnt, pev_iuser1, iState);
-		set_pev(iEnt, pev_fuser1, fNextReset);
-		set_pev(iEnt, pev_iuser2, 0);
-
-		SetCanReload(id, FALSE);
-	}
+	
 
 }
 

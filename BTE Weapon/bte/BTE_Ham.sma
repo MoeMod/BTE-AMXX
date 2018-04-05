@@ -1,9 +1,9 @@
 // [BTE Hamsandwich FORWARD FUNCTION]
-#define ITEM_FLAG_SELECTONEMPTY       1
-#define ITEM_FLAG_NOAUTORELOAD        2
+#define ITEM_FLAG_SELECTONEMPTY	   1
+#define ITEM_FLAG_NOAUTORELOAD		2
 #define ITEM_FLAG_NOAUTOSWITCHEMPTY   4
-#define ITEM_FLAG_LIMITINWORLD        8
-#define ITEM_FLAG_EXHAUSTIBLE        16
+#define ITEM_FLAG_LIMITINWORLD		8
+#define ITEM_FLAG_EXHAUSTIBLE		16
 
 #include "bte/weapons/gauss.sma"
 
@@ -1345,7 +1345,7 @@ stock GetWeaponModeIdle(id, iEnt, iBteWpn)
 	if (c_iSpecial[iBteWpn] == SPECIAL_INFINITY) return (iClip <= 1);
 	if (iWeaponState & WPNSTATE_M4A1_SILENCED) return 1;
 	if (iWeaponState & WPNSTATE_USP_SILENCED) return 1;
-if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 || c_iSpecial[iBteWpn] == SPECIAL_JANUS7 || c_iSpecial[iBteWpn] == SPECIAL_JANUS1 || c_iSpecial[iBteWpn] == SPECIAL_JANUS11) return pev(iEnt, pev_iuser1);
+	if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 || c_iSpecial[iBteWpn] == SPECIAL_JANUS7 || c_iSpecial[iBteWpn] == SPECIAL_JANUS1 || c_iSpecial[iBteWpn] == SPECIAL_JANUS11) return pev(iEnt, pev_iuser1);
 	if (c_iSpecial[iBteWpn] == SPECIAL_FIXSHOOT || (c_iSpecial[iBteWpn] == SPECIAL_SKULL3 && g_double[id][0])) return (iClip == 1);
 	if (c_iSpecial[iBteWpn] == SPECIAL_CHAINSAW) return (iClip == 0);
 	if (c_iSpecial[iBteWpn] == SPECIAL_SFSWORD) return pev(iEnt, pev_iuser1);
@@ -1774,8 +1774,8 @@ public HamF_TakeDamage(iVictim, iInflictor, iAttacker, Float:flDamage, bitsDamag
 
 			// multi x8
 			flDamage *= 10;
-        	SetHamParamFloat(4, flDamage);
-        }	
+			SetHamParamFloat(4, flDamage);
+		}	
 
 	}
 	if (iInflictor == iAttacker)
@@ -2632,7 +2632,7 @@ stock CanReload(iEnt, iBteWpn)
 {
 	new bCanReload = (c_iType[iBteWpn] != WEAPONS_LAUNCHER && c_iSpecial[iBteWpn] != SPECIAL_SFSNIPER && c_iSpecial[iBteWpn] != SPECIAL_M200);
 
-    if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 || c_iSpecial[iBteWpn] == SPECIAL_JANUS7  || c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
+	if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 || c_iSpecial[iBteWpn] == SPECIAL_JANUS7  || c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
 	{
 		new iState = pev(iEnt, pev_iuser1);
 		bCanReload = (iState != JANUSMK5_USING);
@@ -2669,7 +2669,7 @@ public HamF_Weapon_Reload_Shotgun(iEnt)
 	iBteWpn = g_weapon[id][0];
 	iMaxClip = c_iClip[iBteWpn];
 
-	new iState = pev(iEnt, pev_iuser1);								
+	//new iState = pev(iEnt, pev_iuser1);								
 	if (c_iSpecial[iBteWpn] == SPECIAL_RAILCANNON)
 	{
 		new iCharge = pev(iEnt, pev_iuser1);
@@ -2742,9 +2742,11 @@ public HamF_Weapon_WeaponIdle_Shotgun(iEnt)
 		{	
 			SendWeaponAnim(id, c_iIdleAnim[iBteWpn][iState]);
 		}
-        else 															  
-		    SendWeaponAnim(id, SHOTGUN_idle);
-
+		else
+		{
+			SendWeaponAnim(id, SHOTGUN_idle);
+		}
+		
 		return HAM_SUPERCEDE;
 	}
 
@@ -2767,7 +2769,7 @@ public HamF_Weapon_WeaponIdle_Shotgun(iEnt)
 			}
 			else  // after reload
 			{
-                if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
+				if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
 				{
 					SendWeaponAnim(id, c_iReloadAnim[iBteWpn][iState] + 1);
 				}
@@ -2822,7 +2824,7 @@ public ShotgunReload(iEnt, iId, iMaxClip, iClip, iBpAmmo, id, iBteWpn, fInSpecia
 			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][iState] + 2);
 		}
 		else														  
-		    SendWeaponAnim(id, c_iReloadAnim[iBteWpn][2]);
+			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][2]);
 
 		set_pdata_int(iEnt, m_fInSpecialReload, 1);
 		set_pdata_float(id, m_flNextAttack, c_flReload[iBteWpn][2]);
@@ -2841,7 +2843,7 @@ public ShotgunReload(iEnt, iId, iMaxClip, iClip, iBpAmmo, id, iBteWpn, fInSpecia
 			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][iState]);
 		}
 		else															  
-            SendWeaponAnim(id, c_iReloadAnim[iBteWpn][0]);
+			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][0]);
 
 		set_pdata_float(iEnt, m_flNextReload, c_flReload[iBteWpn][0]);
 		set_pdata_float(iEnt, m_flTimeWeaponIdle, c_flReloadAnimTime[iBteWpn][0]);
@@ -2895,7 +2897,7 @@ public GetWeaponModeReload(id, iId, iEnt, iBteWpn)
 
 	if (iWeaponState & WPNSTATE_M4A1_SILENCED) return 1;
 	if (iWeaponState & WPNSTATE_USP_SILENCED) return 1;
-    else if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 || c_iSpecial[g_weapon[id][0]] == SPECIAL_JANUS7 || c_iSpecial[iBteWpn] == SPECIAL_JANUS11) return pev(iEnt, pev_iuser1);
+	else if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 || c_iSpecial[g_weapon[id][0]] == SPECIAL_JANUS7 || c_iSpecial[iBteWpn] == SPECIAL_JANUS11) return pev(iEnt, pev_iuser1);
 	else if (c_iSpecial[iBteWpn] == SPECIAL_M2) return g_iWeaponMode[id][1];
 	else if (c_iSpecial[iBteWpn] == SPECIAL_SKULL3 && iId == c_iId[g_weapon[id][0] + 1]) return 1;
 	//else if (g_bl1_mode[id] == 1) return 1;
