@@ -6,7 +6,7 @@ Client-side plugin (MetaHook Plus) is now closed-source.
 
 ## About Counter-Strike:BreakThrough Edition
 CSBTE is a CS1.6 mod that is modified to act like CSO (aka CS:NZ). \
-Originally it aims to compete against CSO-NST (another CSO-like mod), and now it shows less and less difference with CSO and becomes the most popular CSO-like mod.
+Originally it aims to compete against CSO-NST (another CSO-like mod), and now it shows less and less difference from CSO and becomes the most popular CSO-like mod.
 
 ## Install
 1. Download latest CSBTE on https://tieba.baidu.com/f/good?kw=csoldjb
