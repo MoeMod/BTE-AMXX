@@ -509,6 +509,10 @@ public PrecacheSpecialWeapon(iBteWpn, bPrecache)
 	{
 		CAugEX_Precache();
 	}
+	else if(c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
+	{
+		CGunkata_Precache();
+	}
 	
 
 	// !!!

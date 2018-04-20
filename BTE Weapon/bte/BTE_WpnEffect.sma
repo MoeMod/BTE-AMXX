@@ -24,6 +24,7 @@
 #include "bte/weapons/sterlingbayonet.sma"
 #include "bte/weapons/augex.sma"
 #include "bte/weapons/desperado.sma"
+#include "bte/weapons/gunkata.sma"
 
 public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 {
@@ -199,6 +200,10 @@ public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_ItemPostFrame(id, iEnt, iClip, iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
+	{
+		CGunkata_ItemPostFrame(id, iEnt, iClip, iBteWpn)
 	}
 	else if (iId == CSW_KNIFE)
 	{
