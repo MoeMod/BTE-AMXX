@@ -1400,21 +1400,21 @@ public HamF_Weapon_WeaponIdle(iEnt)
 	if (c_iSpecial[iBteWpn] == SPECIAL_GAUSS)
 	{
 		CGauss_WeaponIdle(id, iEnt, iBteWpn);
-
 		return HAM_SUPERCEDE;
 	}
-	
-	if (c_iSpecial[iBteWpn] == SPECIAL_CANNONEX)
+	else if (c_iSpecial[iBteWpn] == SPECIAL_CANNONEX)
 	{
 		CCannonex_WeaponIdle(id, iEnt, iId, iBteWpn);
-
 		return HAM_SUPERCEDE;
 	}
-	
-	if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
+	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_WeaponIdle(id, iEnt, iId, iBteWpn);
-
+		return HAM_SUPERCEDE;
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
+	{
+		CGunkata_WeaponIdle(id, iEnt, iId, iBteWpn);
 		return HAM_SUPERCEDE;
 	}
 
@@ -1881,7 +1881,7 @@ public HamF_TakeDamage_Post(iVictim, iInflictor, iAttacker, Float:flDamage, bits
 	}
 
 	if ((pev_valid(iVictim) && pev(iVictim, pev_takedamage)) && IsPlayer(iAttacker))
-		if (c_iSpecial[iBteWpn] == SPECIAL_BUFFM4A1 || c_iSpecial[iBteWpn] == SPECIAL_BUFFAK47 || c_iSpecial[iBteWpn] == SPECIAL_BUFFSG552 || c_iSpecial[iBteWpn] == SPECIAL_BUFFAWP || c_iSpecial[iBteWpn] == SPECIAL_BLOODHUNTER|| c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
+		if (c_iSpecial[iBteWpn] == SPECIAL_BUFFM4A1 || c_iSpecial[iBteWpn] == SPECIAL_BUFFAK47 || c_iSpecial[iBteWpn] == SPECIAL_BUFFSG552 || c_iSpecial[iBteWpn] == SPECIAL_BUFFAWP || c_iSpecial[iBteWpn] == SPECIAL_BLOODHUNTER|| c_iSpecial[iBteWpn] == SPECIAL_DESPERADO|| c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
 			PLAYBACK_EVENT_FULL(FEV_HOSTONLY, iAttacker, WEAPON_EVENT[CSW_KNIFE], 0.0, g_vecZero, g_vecZero, 0.0, 0.0, (1<<7), 0, FALSE, FALSE);
 
 	if (c_flVelocityModifier[iBteWpn][GetWeaponModeKnockback(iAttacker, iBteWpn)])
@@ -2360,6 +2360,11 @@ public PrimaryAttackSpecialWeapon(id, iEnt, iClip, iBteWpn)
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_PrimaryAttack(id, iEnt, iClip, iBteWpn);
+		return HAM_SUPERCEDE;
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
+	{
+		CGunkata_PrimaryAttack(id, iEnt, iClip, iBteWpn);
 		return HAM_SUPERCEDE;
 	}
 
@@ -2954,6 +2959,12 @@ public HamF_Weapon_Reload(iEnt)
 		CDesperado_Reload(id, iEnt, iClip, iBteWpn);
 		return HAM_SUPERCEDE;
 	}
+	
+	if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
+	{
+		CGunkata_Reload(id, iEnt, iClip, iBteWpn);
+		return HAM_SUPERCEDE;
+	}
 
 	if (iAmmo <= 0)
 		return HAM_IGNORED;
@@ -3306,6 +3317,7 @@ stock GetWeaponModeDeploy(iEnt, iBteWpn)
 	else if (c_iSpecial[iBteWpn] == SPECIAL_BLOODHUNTER) return pev(iEnt, pev_iuser1);
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO) return pev(iEnt, pev_iuser1);
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DUALSWORD) return pev(iEnt, pev_iuser3);
+	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA) return !CGunkata_GetLRMode(iEnt);
 	return 0;
 }
 
@@ -3515,6 +3527,11 @@ public DeploySpecialWeapon(id, iEnt, iId, iBteWpn)
 	if (c_iSpecial[iBteWpn] == SPECIAL_DUALSWORD)
 	{
 		DualSword_Deploy(id, iEnt, iId, iBteWpn)
+	}
+	
+	if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
+	{
+		CGunkata_Deploy(iEnt);
 	}
 }
 
