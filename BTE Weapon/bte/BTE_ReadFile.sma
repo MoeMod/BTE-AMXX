@@ -513,6 +513,10 @@ public PrecacheSpecialWeapon(iBteWpn, bPrecache)
 	{
 		CGunkata_Precache();
 	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_STARCHASERSR)
+	{
+		CStarchaserSR_Precache();
+	}
 	
 
 	// !!!

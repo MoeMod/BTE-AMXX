@@ -2757,6 +2757,67 @@ stock CreateEntity2(id, iBteWpn, iType = 0)
 	return pEntity;
 }
 
+stock CreateEntity3(id, iBteWpn, model[], Float:StartOrigin[3], Float:EndOrigin[3], Float:speed, Float:gravity, movetype, Classname)
+{
+	new pEntity = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "info_target"));
+
+	// Set info for ent
+	set_pev(pEntity, pev_movetype, movetype);
+	set_pev(pEntity, pev_owner, id);
+
+	engfunc(EngFunc_SetModel, pEntity, model);
+
+	new sKillEntName[32];
+	format(sKillEntName, charsmax(sKillEntName), "d_%s", c_sModel[iBteWpn]);
+	set_pev(pEntity, pev_classname, sKillEntName);
+	set_pev(pEntity, pev_scale, 0.1);
+	set_pev(pEntity, pev_mins, Float:{-1.0, -1.0, -1.0});
+	set_pev(pEntity, pev_maxs, Float:{1.0, 1.0, 1.0});
+	set_pev(pEntity, pev_origin, StartOrigin);
+	set_pev(pEntity, pev_gravity, gravity);
+	set_pev(pEntity, pev_solid, SOLID_BBOX);
+	set_pev(pEntity, pev_frame, 0.0);
+
+	static Float:Velocity[3];
+	Stock_Get_Speed_Vector(StartOrigin, EndOrigin, speed, Velocity);
+	set_pev(pEntity, pev_velocity, Velocity);
+
+	new Float:vecVAngle[3]
+
+	pev(id, pev_v_angle, vecVAngle);
+	vector_to_angle(Velocity, vecVAngle)
+	if(vecVAngle[0] > 90.0) vecVAngle[0] = -(360.0 - vecVAngle[0]);
+	set_pev(pEntity, pev_angles, vecVAngle);
+
+	Set_Ent_Data(pEntity, DEF_ENTCLASS, Classname);
+	Set_Ent_Data(pEntity, DEF_ENTID, iBteWpn);
+
+	return pEntity;
+}
+
+stock CreateEntity4(id, model[], body, iBteWpn, entclass)
+{
+	new pEntity = engfunc(EngFunc_CreateNamedEntity, engfunc(EngFunc_AllocString, "env_sprite"));
+
+	engfunc(EngFunc_SetModel, pEntity, model);
+	set_pev(pEntity, pev_nextthink, get_gametime() + 0.001);
+	set_pev(pEntity, pev_body, body);
+	set_pev(pEntity, pev_movetype, MOVETYPE_FOLLOW);
+	set_pev(pEntity, pev_rendermode, kRenderTransAdd);
+	set_pev(pEntity, pev_renderamt, 0.0);
+	set_pev(pEntity, pev_aiment, id);
+	set_pev(pEntity, pev_owner, id);
+	set_pev(pEntity, pev_scale, 1.0);
+	set_pev(pEntity, pev_frame, 0.0);
+	Set_Ent_Data(pEntity, DEF_ENTCLASS, entclass);
+	Set_Ent_Data(pEntity, DEF_ENTID, iBteWpn);
+
+	set_pev(pEntity, pev_solid, SOLID_NOT);
+	dllfunc(DLLFunc_Spawn, pEntity);
+
+	return pEntity;
+}
+
 stock SetGreadeEntity(pEntity, iBteWpn, iBeam = 0, iType = 0, Float:flDelay = 0.1)
 {
 	if (!IS_ZBMODE)

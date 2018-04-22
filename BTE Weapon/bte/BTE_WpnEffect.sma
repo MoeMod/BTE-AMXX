@@ -25,6 +25,7 @@
 #include "bte/weapons/augex.sma"
 #include "bte/weapons/desperado.sma"
 #include "bte/weapons/gunkata.sma"
+#include "bte/weapons/starchasersr.sma"
 
 public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 {
@@ -204,6 +205,10 @@ public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
 	{
 		CGunkata_ItemPostFrame(id, iEnt, iClip, iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_STARCHASERSR)
+	{
+		CStarchaserSR_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 	}
 	else if (iId == CSW_KNIFE)
 	{
