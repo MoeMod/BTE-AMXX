@@ -4,8 +4,8 @@
 #include <fakemeta>
 #include <rage>
 
-#include <BTE_API>
-#include <bte_wpn2.inc>
+#include "../BTE_API.inc"
+#include "../bte_wpn2.inc"
 #include "inc/metahook.inc"
 
 #include <cstrike>
