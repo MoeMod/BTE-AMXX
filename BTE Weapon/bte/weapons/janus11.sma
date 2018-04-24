@@ -1,7 +1,7 @@
 public CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 {
 	if (get_pdata_float(iEnt,m_flNextPrimaryAttack) > 0.0)
-		return;
+	return
 
 	new Float:fCurTime;
 	global_get(glb_time, fCurTime);
@@ -10,22 +10,21 @@ public CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 	new Float:fNextReset; pev(iEnt, pev_fuser1, fNextReset);
 
 	if (!iState)
-		return;	
+	return;
 
 	new iButton;
 	iButton = pev(id,pev_button);
-	if (iButton & IN_ATTACK2 && iState == JANUSMK5_CANUSE) // Êåâ‰∏ãÂè≥ÈîÆÂàáÊç¢ÂÖÖËÉΩÊ®°Âºè
+	if (iButton & IN_ATTACK2 && iState == JANUSMK5_CANUSE) // ∞¥œ¬”“º¸«–ªª≥‰ƒ‹ƒ£ Ω
 	{
 		set_pdata_float(iEnt, m_flTimeWeaponIdle, 2.0);
 		set_pdata_float(iEnt, m_flNextSecondaryAttack, 2.0);
 		set_pdata_float(iEnt, m_flNextPrimaryAttack, 2.0);
 		SendWeaponAnim(id, 7);
 
-		
 		set_pev(iEnt,pev_iuser1,1);
 
 		iState = JANUSMK5_USING;
-		fNextReset = fCurTime + 11.0;
+		fNextReset = fCurTime + 8.0;
 		MH_SpecialEvent(id, 50 + iState);
 		set_pev(iEnt, pev_iuser1, iState);
 		set_pev(iEnt, pev_fuser1, fNextReset);
@@ -33,7 +32,6 @@ public CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 
 		SetCanReload(id, FALSE);
 	}
-	
 	if (fCurTime > fNextReset && fNextReset)
 	{
 		if (iState == JANUSMK5_CANUSE)
@@ -41,7 +39,7 @@ public CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 			set_pdata_float(iEnt, m_flTimeWeaponIdle, 0.0, 4);
 			
 		}
-		if (iState == JANUSMK5_USING) // ÂÖÖËÉΩÁªìÊùü
+		if (iState == JANUSMK5_USING) // ≥‰ƒ‹Ω· ¯
 		{
 			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.67, 4);
 			set_pdata_float(iEnt, m_flNextSecondaryAttack, 1.67);
@@ -61,14 +59,98 @@ public CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 		set_pev(iEnt, pev_fuser1, fNextReset);
 		return;
 	}
-
-	
-
 }
 
-// ‰ª•‰∏ãÂÜÖÂÆπBTE.dllÂÆûÁé∞„ÄÇ
+public CJanus11_PrimaryAttack2(id, iEntity, iClip, iBteWpn)
+{
+	if (pev(id, pev_waterlevel) == 3)
+	{
+		ExecuteHam(Ham_Weapon_PlayEmptySound, iEntity)
+		set_pdata_float(iEntity, 46, 0.15, 4)
+		return
+	}
+
+	set_pdata_int(id, 239, 1000)
+	set_pdata_int(id, 241, 512)
+
+	set_pev(id, pev_effects, (pev(id, pev_effects) | EF_MUZZLEFLASH))
+	OrpheuCall(handleSetAnimation, id, PLAYER_ATTACK1)
+
+	//UTIL_PlayWeaponAnimation(id, ANIM_SHOOTC)
+	engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, 0.0, 0.0, 0, 0, FALSE, FALSE);
+
+	new Float:vecVAngle[3], Float:vecPunchangle[3], Float:vecTemp[3]
+	pev(id, pev_v_angle, vecVAngle)
+	pev(id, pev_punchangle, vecPunchangle)
+	xs_vec_add(vecVAngle, vecPunchangle, vecTemp)
+	engfunc(EngFunc_MakeVectors, vecTemp)
+
+	new Float:vecSrc[3], Float:vecForward[3]
+	GetGunPosition(id, vecSrc)
+	global_get(glb_v_forward, vecForward)
+	FireBulletsEx(id, 8, vecSrc, vecForward, Float:{0.07, 0.07, 0.0})
+
+	set_pdata_float(iEntity, 46, 0.43, 4)
+	set_pdata_float(iEntity, 47, 0.43, 4)
+	set_pdata_float(iEntity, 48, 1.9, 4)
+
+	new Float:vecVelocity[3]
+	pev(id, pev_velocity, vecVelocity)
+	vecVelocity[2] = 0.0
+
+	if (!(pev(id, pev_flags) & FL_ONGROUND))
+		vecPunchangle[0] -= random_float(7.0, 10.0)
+	else
+		vecPunchangle[0] -= random_float(3.0, 5.0)
+	set_pev(id, pev_punchangle, vecPunchangle)
+	
+	new iState = pev(iEntity, pev_iuser1);
+	PLAYBACK_EVENT_FULL(FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, g_vecZero, g_vecZero, 0.0, 0.0, 0, 0, !!iState, iState == JANUSMK5_USING);
+}
+
+public FireBulletsEx(id, cShots, Float:vecSrc[3], Float:vecForward[3], Float:vecSpread[3])
+{
+	new tr = create_tr2()
+	new Float:vecRight[3], Float:vecUp[3]
+	global_get(glb_v_right, vecRight)
+	global_get(glb_v_up, vecUp)
+
+	new Float:vecVAngle[3], Float:vecPunchangle[3], Float:vecTemp[3]
+	pev(id, pev_v_angle, vecVAngle)
+	pev(id, pev_punchangle, vecPunchangle)
+	xs_vec_add(vecVAngle, vecPunchangle, vecTemp)
+	engfunc(EngFunc_MakeVectors, vecTemp)
+
+	for (new iShot = 1; iShot <= cShots; iShot++)
+	{
+		new Float:x,Float:y, Float:z
+		do
+		{
+			x = random_float(-0.5, 0.5) + random_float(-0.5, 0.5)
+			y = random_float(-0.5, 0.5) + random_float(-0.5, 0.5)
+			z = x * x + y * y
+		}
+		while (z > 1.0)
+
+		/*new Float:vecDir[3], Float:vecRightOffset[3], Float:vecUpOffset[3]
+		xs_vec_mul_scalar(vecRight, x * vecSpread[0], vecRightOffset)
+		xs_vec_mul_scalar(vecUp, y * vecSpread[1], vecUpOffset)
+		xs_vec_add(vecForward, vecRightOffset, vecDir)
+		xs_vec_add(vecDir, vecUpOffset, vecDir)
+		xs_vec_normalize(vecDir, vecDir)*/
+
+		static Float:vecDir[3]
+		vecDir[0] = vecForward[0] + x * vecSpread[0] * vecRight[0] + y * vecSpread[1] * vecUp[0]
+		vecDir[1] = vecForward[1] + x * vecSpread[0] * vecRight[1] + y * vecSpread[1] * vecUp[1]
+		vecDir[2] = vecForward[2] + x * vecSpread[0] * vecRight[2] + y * vecSpread[1] * vecUp[2]
+
+		FireBullets3(id, vecSrc, vecForward, 0.07, 8192.0, 7, BULLET_PLAYER_338MAG, 80, 1.0, id, false, random(233), vecDir)
+	}
+}
+
+// “‘œ¬ƒ⁄»›BTE.dll µœ÷°£
 /*
-//‰∏ãÈù¢ÂÖ®ÈÉ®Êù•Ëá™Csoldjb_WeaponSystem.sma‰ΩÜÊòØ‰∏çÁü•ÈÅì‰∏∫‰ªÄ‰πàÊ≤°ÊúâÁî®Âë¢
+//œ¬√Ê»´≤ø¿¥◊‘Csoldjb_WeaponSystem.smaµ´ «≤ª÷™µ¿Œ™ ≤√¥√ª”–”√ƒÿ
 public TraceAttack(iEnt, iAttacker, Float:flDamage, Float:fDir[3], ptr, iDamageType)
 {
 	

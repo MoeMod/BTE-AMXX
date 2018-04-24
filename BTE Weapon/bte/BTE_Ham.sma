@@ -2357,6 +2357,10 @@ public PrimaryAttackSpecialWeapon(id, iEnt, iClip, iBteWpn)
 	{
 		return CJanus7_PrimaryAttack(id, iEnt, iClip, iBteWpn);
 	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
+	{
+		return CJanus11_PrimaryAttack2(id, iEnt, iClip, iBteWpn);
+	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_PrimaryAttack(id, iEnt, iClip, iBteWpn);
