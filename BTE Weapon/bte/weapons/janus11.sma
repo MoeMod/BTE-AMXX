@@ -141,7 +141,7 @@ public FireBulletsEx(id, cShots, Float:vecSrc[3], Float:vecForward[3], Float:vec
 		//vecDir[1] = vecForward[1] + x * vecSpread[0] * vecRight[1] + y * vecSpread[1] * vecUp[1]
 		//vecDir[2] = vecForward[2] + x * vecSpread[0] * vecRight[2] + y * vecSpread[1] * vecUp[2]
 
-	new Float:flDamage = 60.0
+		new Float:flDamage = IS_ZBMODE ? 85.0 : 30.0
 		FireBullets3(id, vecSrc, vecForward, 0.07, 8192.0, 7, BULLET_PLAYER_338MAG, floatround(flDamage), 1.0, id, false, random(233), vecDir)
 	}
 }

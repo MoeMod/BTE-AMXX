@@ -47,8 +47,8 @@ public CBalrog11_SecondaryAttack(id, iEnt, iClip, iBteWpn)
 	Balrog11BcsFire(id, 0.0, iSign)
 	for (new i = 1; i <= 2; i++)
 	{
-		Balrog11BcsFire(id, i * 7.0, iSign)
-		Balrog11BcsFire(id, -i * 7.0, iSign)
+		Balrog11BcsFire(id, i * 6.0, iSign)
+		Balrog11BcsFire(id, -i * 6.0, iSign)
 	}
 	engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, c_flDistance[iBteWpn][0], c_flAngle[iBteWpn][0], 0, 0, FALSE, TRUE);
 }
@@ -203,7 +203,7 @@ public Attack(iEntity, pOther)
 
 	set_tr2(ptr, TR_iHitgroup, HIT_CHEST)
 	ClearMultiDamage()
-	ExecuteHamB(Ham_TraceAttack, pOther, pOwner, flDamage, vecDirection, ptr, DMG_NEVERGIB | DMG_EXPLOSION)
+	ExecuteHamB(Ham_TraceAttack, pOther, pOwner, flDamage, vecDirection, ptr, DMG_NEVERGIB | DMG_BULLET)
 	ApplyMultiDamage(iEntity, pOwner)
 	
 	free_tr2(ptr)
