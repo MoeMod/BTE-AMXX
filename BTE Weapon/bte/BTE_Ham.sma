@@ -1410,7 +1410,7 @@ public HamF_Weapon_WeaponIdle(iEnt)
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_WeaponIdle(id, iEnt, iId, iBteWpn);
-		return HAM_SUPERCEDE;
+		return HAM_SUPERCEDE
 	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
 	{
@@ -3789,31 +3789,31 @@ public HamF_Weapon_SecondaryAttack(iEnt)
 	iClip = get_pdata_int(iEnt, m_iClip, 4);
 
 	if (c_iSpecial[iBteWpn] == SPECIAL_GAUSS)
-		return HAM_SUPERCEDE;
+	return HAM_SUPERCEDE
 
 	if (c_iSpecial[iBteWpn] == SPECIAL_BUFFAWP)
 	{
-		return CBuffAWP_SecondaryAttack(iEnt);
+		return CBuffAWP_SecondaryAttack(iEnt)
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_INFINITY)
 	{
-		CInfinity_SecondaryAttack(id,iEnt,iClip,iBteWpn);
-		return HAM_SUPERCEDE;
+		CInfinity_SecondaryAttack(id,iEnt,iClip,iBteWpn)
+		return HAM_SUPERCEDE
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_CROW1)
 	{
 		CCrow1_SecondaryAttack(id,iEnt,iClip,iBteWpn);
-		return HAM_SUPERCEDE;
+		return HAM_SUPERCEDE
 	}
-	
 	if (c_iType[iBteWpn] == WEAPONS_BLOCK_RIGHT)
 	{
-		set_pdata_float(iEnt, m_flNextSecondaryAttack, 1.0);
-
-		return HAM_SUPERCEDE;
+		set_pdata_float(iEnt, m_flNextSecondaryAttack, 1.0)
+		return HAM_SUPERCEDE
 	}
-
+	if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
+	{
+		CDesperado_SecondaryAttack(id,iEnt,iClip,iBteWpn)
+		return HAM_SUPERCEDE
+	}
 	return HAM_IGNORED;
 }

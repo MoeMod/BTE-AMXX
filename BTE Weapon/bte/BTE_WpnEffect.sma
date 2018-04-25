@@ -205,7 +205,7 @@ public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
-		CDesperado_ItemPostFrame(id, iEnt, iClip, iBteWpn)
+		//CDesperado_ItemPostFrame(id, iEnt, iClip, iBteWpn)
 	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
 	{
