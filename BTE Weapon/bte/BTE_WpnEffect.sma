@@ -26,6 +26,7 @@
 #include "bte/weapons/desperado.sma"
 #include "bte/weapons/gunkata.sma"
 #include "bte/weapons/starchasersr.sma"
+#include "bte/weapons/balrog11.sma"
 
 public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 {
@@ -197,7 +198,11 @@ public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 	else if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
 	{
 		CJanus11_ItemPostFrame(id,iEnt,iClip,iAmmo,iId,iBteWpn)
-	}												  
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_BALROG11)
+	{
+		CBalrog11_ItemPostFrame(id,iEnt,iClip,iBteWpn)
+	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_ItemPostFrame(id, iEnt, iClip, iBteWpn)
@@ -259,10 +264,6 @@ public WpnEffect_Shotguns(id,iEnt,iClip,iAmmo,iId)
 	static iBteWpn;
 	iBteWpn = g_weapon[id][0] + g_double[id][0];
 
-	if (c_iSpecial[iBteWpn] == SPECIAL_BALROG11)
-	{
-		WE_Balrog11(id,iEnt,iClip,iAmmo,iId,iBteWpn)
-	}
 }
 
 public CBuffAK47Ammo_AnimationThink(iEnt)
@@ -1750,45 +1751,3 @@ public WE_SpearGun(id,iEnt,iClip,iAmmo,iId,iBteWpn)
 
 }
 */
-public WE_Balrog11(id,iEnt,iClip,iAmmo,iId,iBteWpn)
-{
-	static iButton;
-	iButton = pev(id,pev_button);
-
-	if (!(iButton & IN_ATTACK))
-		set_pev(iEnt, pev_iuser1, 0);
-
-	if (get_pdata_float(iEnt, m_flNextSecondaryAttack) > 0.0)
-		return;
-
-	if (!(iButton & IN_ATTACK2))
-		return;
-
-	iClip = GetExtraAmmo(iEnt);
-
-	if (!iClip)
-	{
-		PlayEmptySound(id);
-		set_pdata_float(iEnt, m_flNextSecondaryAttack, 0.2);
-
-		return;
-	}
-
-	iClip --;
-
-	SetExtraAmmo(id, iEnt, iClip);
-	set_pev(id, pev_effects, pev(id, pev_effects) | EF_MUZZLEFLASH);
-	OrpheuCall(handleSetAnimation, id, PLAYER_ATTACK1);
-
-	set_pdata_float(iEnt, m_flNextPrimaryAttack, c_flAttackInterval[iBteWpn][1]);
-	set_pdata_float(iEnt, m_flNextSecondaryAttack, c_flAttackInterval[iBteWpn][1]);
-	set_pdata_float(iEnt, m_flTimeWeaponIdle, c_flShootAnimTime[iBteWpn][1]);
-
-	set_pdata_int(iEnt, m_fInSpecialReload, FALSE);
-
-	PunchAxis(id, -6.5, 0.0, -10.5);
-
-	RangeAttack(id, c_flDistance[iBteWpn][0], c_flAngle[iBteWpn][0], (!IS_ZBMODE) ? c_flDamage[iBteWpn][1] : c_flDamageZB[iBteWpn][1], c_flKnockback[iBteWpn][4], DMG_NEVERGIB | DMG_EXPLOSION, TRUE, FALSE, HITGROUP_CHEST, c_flAngle[iBteWpn][1]);
-
-	engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, c_flDistance[iBteWpn][0], c_flAngle[iBteWpn][0], 0, 0, FALSE, TRUE);
-}
