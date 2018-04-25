@@ -322,7 +322,10 @@ public PrecacheSpecialWeapon(iBteWpn, bPrecache)
 		precache_model("sprites/hotglow.spr");
 	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_BALROG11)
+	{
 		precache_sound("weapons/balrog9_charge_finish1.wav");
+		CBalrog11_Precache();
+	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_RAILCANNON)
 		precache_model("sprites/hotglow_railcannon.spr")
 	else if (c_iSpecial[iBteWpn] == SPECIAL_BUFFAK47)
@@ -940,7 +943,7 @@ public ReadWeaponData(szName[], iBteWpn)
 	GetPrivateProfile(szName, "EntitySpawnOrigin", "5", "cstrike/weapons.ini", BTE_INT, iEntitySpawnOrigin);
 	if (iEntitySpawnOrigin < 5)
 	{
-		// å¤±è´¥ QAQ æ”¾å¼ƒ
+		// Ê§°Ü QAQ ·ÅÆú
 		GetModelAttachment(c_model_v[iBteWpn], 0, c_vecViewAttachment[iBteWpn]);
 		Util_Log("GetModelAttachment: Origin[%d]: %f %f %f", iEntitySpawnOrigin, c_vecViewAttachment[iBteWpn][0], c_vecViewAttachment[iBteWpn][1], c_vecViewAttachment[iBteWpn][2]);
 	}*/

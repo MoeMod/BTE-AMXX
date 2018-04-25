@@ -1059,7 +1059,7 @@ public HamF_InfoTarget_Touch(iPtr,iPtd)
 			engfunc(EngFunc_EmitSound, iPtr, CHAN_WEAPON, sound, 1.0, ATTN_NORM, 0, PITCH_NORM);
 		}
 
-		RemoveEntity(iPtr); // å¦‚æžœè¦è€ƒè™‘æ¢å¤ä»¥å‰çš„æ•ˆæžœ é‚£ä¹ˆ @BTE.DLL @temp entity
+		RemoveEntity(iPtr); // Èç¹ûÒª¿¼ÂÇ»Ö¸´ÒÔÇ°µÄÐ§¹û ÄÇÃ´ @BTE.DLL @temp entity
 
 		return HAM_IGNORED;
 	}
@@ -1269,7 +1269,7 @@ public HamF_InfoTarget_Touch(iPtr,iPtd)
 			xs_vec_sub(vecOrigin, vecOrigin2, vecOrigin);
 			set_pev(iPtr, pev_vuser2, vecOrigin);
 
-			//set_pev(iPtr, pev_movetype, MOVETYPE_FOLLOW); // ä¼¼ä¹Žä¸å¥½
+			//set_pev(iPtr, pev_movetype, MOVETYPE_FOLLOW); // ËÆºõ²»ºÃ
 
 
 			return HAM_IGNORED;
@@ -1410,7 +1410,7 @@ public HamF_Weapon_WeaponIdle(iEnt)
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_WeaponIdle(id, iEnt, iId, iBteWpn);
-		return HAM_SUPERCEDE;
+		return HAM_SUPERCEDE
 	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
 	{
@@ -1762,21 +1762,6 @@ public HamF_TakeDamage(iVictim, iInflictor, iAttacker, Float:flDamage, bitsDamag
 			if (bte_get_user_zombie(iVictim) != 1)
 				return HAM_SUPERCEDE;
 		}
-	}
-
-	if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
-	{
-
-		// Multiplay damage only for Shoot mode B
-		new iEnt;
-		if (pev(iEnt, pev_iuser1) == 1)
-		{	
-
-			// multi x8
-			flDamage *= 10;
-			SetHamParamFloat(4, flDamage);
-		}	
-
 	}
 	if (iInflictor == iAttacker)
 	{
@@ -2357,10 +2342,6 @@ public PrimaryAttackSpecialWeapon(id, iEnt, iClip, iBteWpn)
 	{
 		return CJanus7_PrimaryAttack(id, iEnt, iClip, iBteWpn);
 	}
-	else if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11)
-	{
-		return CJanus11_PrimaryAttack2(id, iEnt, iClip, iBteWpn);
-	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_PrimaryAttack(id, iEnt, iClip, iBteWpn);
@@ -2371,7 +2352,11 @@ public PrimaryAttackSpecialWeapon(id, iEnt, iClip, iBteWpn)
 		CGunkata_PrimaryAttack(id, iEnt, iClip, iBteWpn);
 		return HAM_SUPERCEDE;
 	}
-
+	else if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11 && pev(iEnt, pev_iuser1) == JANUSMK5_USING)
+	{
+		CJanus11_PrimaryAttack2(id, iEnt, iClip, iBteWpn)
+		return HAM_SUPERCEDE
+	}
 	return HAM_IGNORED
 }
 
@@ -2499,7 +2484,7 @@ public GetWeaponModePrimaryAttack(id, iEnt, iWeaponState, iBteWpn)
 
 	if (c_iSpecial[iBteWpn] == SPECIAL_JANUSMK5 && pev(iEnt, pev_iuser1) == JANUSMK5_USING) return 1;
 	if (c_iSpecial[iBteWpn] == SPECIAL_JANUS7 && pev(iEnt, pev_iuser1) == JANUSMK5_USING) return 1;
-	if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11 && pev(iEnt, pev_iuser1) == JANUSMK5_USING) return 1;																							 
+	if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11 && pev(iEnt, pev_iuser1) == JANUSMK5_USING) return 1;
 	if (c_iSpecial[iBteWpn] == SPECIAL_M2 && g_iWeaponMode[id][1]) return 1;
 
 	//if (g_bl3_num[id] > 15) return 1;
@@ -2508,20 +2493,11 @@ public GetWeaponModePrimaryAttack(id, iEnt, iWeaponState, iBteWpn)
 }
 
 public PrimaryAttackPostSpecialWeapon(id, iEnt, iId, iClip, iBteWpn)
-{
-	if (c_iSpecial[iBteWpn] == SPECIAL_JANUS11 && pev(iEnt, pev_iuser1) == JANUSMK5_USING)
-	{
-		iClip += 1;
-		set_pdata_int(iEnt, m_iClip, iClip);
-
-		//LaserBeam(id , 2 , 0 , 40 , 200)
-
-	}																				   
+{																			   
 	if (c_iSpecial[iBteWpn] == SPECIAL_BALROG3)
 	{
 		//WE_Balrog3(id,iEnt,iId)
 	}
-
 	if (c_iSpecial[iBteWpn] == SPECIAL_BALROG7)
 	{
 		CBalrog7_PrimaryAttack_Post(id, iEnt, iId, iClip, iBteWpn)
@@ -2823,7 +2799,7 @@ public ShotgunReload(iEnt, iId, iMaxClip, iClip, iBpAmmo, id, iBteWpn, fInSpecia
 	if (get_pdata_int(iEnt, m_flNextPrimaryAttack, 4) > 0.0)
 		return;
 
-	new iState = pev(iEnt, pev_iuser1);							 
+	new iState = pev(iEnt, pev_iuser1);
 	if (!fInSpecialReload)
 	{
 		OrpheuCall(handleSetAnimation, id, PLAYER_RELOAD);
@@ -2832,7 +2808,7 @@ public ShotgunReload(iEnt, iId, iMaxClip, iClip, iBpAmmo, id, iBteWpn, fInSpecia
 		{
 			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][iState] + 2);
 		}
-		else														  
+		else
 			SendWeaponAnim(id, c_iReloadAnim[iBteWpn][2]);
 
 		set_pdata_int(iEnt, m_fInSpecialReload, 1);
@@ -3462,7 +3438,7 @@ public DeploySpecialWeapon(id, iEnt, iId, iBteWpn)
 	{
 		new iType = pev(iEnt, pev_iuser1);
 		MH_SpecialEvent(id, 50 + iType);
-	}										 
+	}
 
 	if (c_iSpecial[g_weapon[id][0]] == SPECIAL_SKULL3)
 	{
@@ -3813,31 +3789,31 @@ public HamF_Weapon_SecondaryAttack(iEnt)
 	iClip = get_pdata_int(iEnt, m_iClip, 4);
 
 	if (c_iSpecial[iBteWpn] == SPECIAL_GAUSS)
-		return HAM_SUPERCEDE;
+	return HAM_SUPERCEDE
 
 	if (c_iSpecial[iBteWpn] == SPECIAL_BUFFAWP)
 	{
-		return CBuffAWP_SecondaryAttack(iEnt);
+		return CBuffAWP_SecondaryAttack(iEnt)
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_INFINITY)
 	{
-		CInfinity_SecondaryAttack(id,iEnt,iClip,iBteWpn);
-		return HAM_SUPERCEDE;
+		CInfinity_SecondaryAttack(id,iEnt,iClip,iBteWpn)
+		return HAM_SUPERCEDE
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_CROW1)
 	{
 		CCrow1_SecondaryAttack(id,iEnt,iClip,iBteWpn);
-		return HAM_SUPERCEDE;
+		return HAM_SUPERCEDE
 	}
-	
 	if (c_iType[iBteWpn] == WEAPONS_BLOCK_RIGHT)
 	{
-		set_pdata_float(iEnt, m_flNextSecondaryAttack, 1.0);
-
-		return HAM_SUPERCEDE;
+		set_pdata_float(iEnt, m_flNextSecondaryAttack, 1.0)
+		return HAM_SUPERCEDE
 	}
-
+	if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
+	{
+		CDesperado_SecondaryAttack(id,iEnt,iClip,iBteWpn)
+		return HAM_SUPERCEDE
+	}
 	return HAM_IGNORED;
 }
