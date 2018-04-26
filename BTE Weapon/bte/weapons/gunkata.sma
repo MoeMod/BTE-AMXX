@@ -52,10 +52,11 @@ stock Float:CGunkata_GetDamage(iMode)
 			}
 			else
 			{
-				if(0/* && IS_ZBS*/)
+				/*if(IS_ZBS)
 					return 239.0;
 				else
-					return 22.0
+					*/
+				return 22.0
 			}
 		}
 		else if(iMode == 2)
@@ -66,10 +67,11 @@ stock Float:CGunkata_GetDamage(iMode)
 			}
 			else
 			{
-				if(0/* && IS_ZBS*/)
+				/*if(IS_ZBS)
 					return 265.0;
 				else
-					return 30.0
+					*/
+				return 30.0
 			}
 		}
 		else
@@ -85,10 +87,11 @@ stock Float:CGunkata_GetDamage(iMode)
 		}
 		else
 		{
-			if(0/* && IS_ZBS*/)
-				return 240.0;
-			else
-				return 34.0
+			/*if(IS_ZBS)
+					return 240.0;
+				else
+					*/
+			return 34.0
 		}
 	}
 	return 0.0;
@@ -544,7 +547,7 @@ public CGunkata_GunkataFire(this, flSpread, Float:flCycleTime, bool:fUseAutoAim)
 	
 	//if ( !(((*(int (__thiscall **)(int))(*(_DWORD *)this + 600))(this) - *(_DWORD *)(this + 172)) % (signed int)ffloor(3.0)) )
 	if(!((c_iClip[iBteWpn] - iClip) % 3))
-    {
+	{
 		//flCycleTime =  c_flAttackInterval[iBteWpn][1];
 		flCycleTime = 0.31; // this+148
 		set_pdata_float(id, m_flNextAttack, flCycleTime);
@@ -552,7 +555,7 @@ public CGunkata_GunkataFire(this, flSpread, Float:flCycleTime, bool:fUseAutoAim)
 		++iShootAnim; //++v8;
 		set_pdata_float(this, m_flTimeWeaponIdle, 0.53); // this+156  //v9 = sub_105E0FB0() + 0.52999997; *(float *)(this + 156) = v9;
 		//client_print(id, print_chat, "!((c_iClip[iBteWpn] - iClip) % 3)");
-    }
+	}
 	set_pev(id, pev_effects, (pev(id, pev_effects) | EF_MUZZLEFLASH));
 	
 	new Float:vecVAngle[3], Float:vecPunchangle[3], Float:vecTemp[3];

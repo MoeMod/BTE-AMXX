@@ -2,10 +2,8 @@
 
 public CBalrog11_Precache()
 {
-	precache_model("sprites/flame_puff01_blue.spr");
+	precache_model("sprites/flame_puff01.spr");
 }
-
-#define	WEAPON_FIRECLASSNAME		"d_balrog11"
 
 public CBalrog11_ItemPostFrame(id,iEnt,iClip,iBteWpn)
 {
@@ -92,10 +90,10 @@ public CreateSGMissileCannon(id, Float:vecSrc[3], Float:vecDir[3], Float:vecAngl
 		set_pev(iEntity, pev_origin, vecSrc)
 		engfunc(EngFunc_MakeVectors, vecAngles)
 		set_pev(iEntity, pev_angles, vecAngles)
-		set_pev(iEntity, pev_classname, WEAPON_FIRECLASSNAME)
+		set_pev(iEntity, pev_classname, "d_balrog11")
 		set_pev(iEntity, pev_movetype, MOVETYPE_FLYMISSILE)
 		set_pev(iEntity, pev_solid, SOLID_TRIGGER)
-		engfunc(EngFunc_SetModel, iEntity, "sprites/flame_puff01_blue.spr")
+		engfunc(EngFunc_SetModel, iEntity, "sprites/flame_puff01.spr")
 		engfunc(EngFunc_SetSize, iEntity, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0})
 		set_pev(iEntity, pev_nextthink, get_gametime() + 0.01)
 
@@ -172,7 +170,7 @@ public CBalrog11_BCSTouch(iEntity, pOther)
 					{
 						Attack(iEntity, pOther)
 						new i
-						while ((i = engfunc(EngFunc_FindEntityByString, i, "classname", WEAPON_FIRECLASSNAME)) && pev(i, pev_iuser3) == pev(iEntity, pev_iuser3))
+						while ((i = engfunc(EngFunc_FindEntityByString, i, "classname", "d_balrog11")) && pev(i, pev_iuser3) == pev(iEntity, pev_iuser3))
 						{
 							if (pev_valid(i))
 								set_pev(i, pev_iuser2, pev(i, pev_iuser2) | (1<<pOther))
