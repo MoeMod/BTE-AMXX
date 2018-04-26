@@ -531,6 +531,108 @@ public HamF_InfoTarget_Think(iEnt)
 		message_end()
 		set_pev(iEnt,pev_nextthink,get_gametime()+10.0)
 	}
+	
+	else if (iEntClass == ENTCLASS_FIRE)
+	{
+		new Float:fFrame, Float:fNextThink, Float:fScale, Float:fTimeRemove
+		pev(iEnt, pev_fuser1, fTimeRemove)
+		pev(iEnt, pev_frame, fFrame)
+		pev(iEnt, pev_scale, fScale)
+		
+		new iMoveType = pev(iEnt, pev_movetype)
+		if (iMoveType == MOVETYPE_NONE)
+		{
+			
+			if (c_iSpecial[iBteWpn] == SPECIAL_STARCHASERSR)
+			{
+				if (pev(iEnt, pev_iuser1) == 2)
+					fFrame += 0.21;
+				else
+					fFrame += 0.12;
+				
+				if (fFrame/float(engfunc(EngFunc_ModelFrames,pev(iEnt, pev_modelindex))) > 1.0)
+				{
+					RemoveEntity(iEnt);
+					return;
+				}
+				set_pev(iEnt, pev_renderamt, 200.0*(1.0-fFrame/float(engfunc(EngFunc_ModelFrames,pev(iEnt, pev_modelindex)))));
+				
+				fNextThink = 0.01;
+			}			
+			else
+			{
+				fNextThink = 0.0015;
+				fFrame += 0.5;
+			}
+			
+			if (fFrame > 21.0 && c_iSpecial[iBteWpn] != SPECIAL_STARCHASERSR)
+			{
+				RemoveEntity(iEnt);
+				return;
+			}
+		}
+		else
+		{
+			fNextThink = 0.025
+			
+			if (c_iSpecial[iBteWpn] == SPECIAL_STARCHASERSR)
+			{
+				if (pev(iEnt, pev_iuser1) == 2)
+					fFrame += 0.3;
+				else
+					fFrame += 0.2;
+				
+				fNextThink = 0.02;
+				
+				if (fFrame > float(engfunc(EngFunc_ModelFrames,pev(iEnt, pev_modelindex))))
+					fFrame = 0.0;
+			}
+			/* else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+			{
+				new Float:vecOrigin22[3];
+				pev(iEnt, pev_origin, vecOrigin22);
+				engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, pev(iEnt, pev_owner), EVENT_ENTITY, 0.0, vecOrigin22, {0.0, 0.0, 0.0}, 0.0, 0.0, SPECIAL_SGMISSILE, 0, FALSE, FALSE);
+				
+				new Float:fFrameAmount;
+				pev(iEnt, pev_fuser2, fFrameAmount);
+				fFrame += fFrameAmount;
+				fNextThink = 0.05;
+				
+				if (fTimeRemove - get_gametime() / 1.0 < 0.25)
+				{
+					new Float:fRenderAmount;
+					pev(iEnt, pev_renderamt, fRenderAmount);
+					fRenderAmount = 200.0 * (fTimeRemove - get_gametime()) / 0.25;
+					set_pev(iEnt, pev_renderamt, fRenderAmount);
+					
+					if (fTimeRemove < get_gametime())
+					{
+						RemoveEntity(iEnt);
+						return;
+					}
+				}
+			} */
+		}
+		
+		set_pev(iEnt, pev_frame, fFrame)
+		set_pev(iEnt, pev_scale, fScale)
+		set_pev(iEnt, pev_nextthink, get_gametime() + fNextThink)
+		
+		if (fTimeRemove <= get_gametime())
+		{
+			static Float:Amount;
+			pev(iEnt, pev_renderamt, Amount);
+			
+			Amount -= 0.025;
+			if (Amount <= 0.0)
+			{
+				RemoveEntity(iEnt);
+				return;
+			}
+			set_pev(iEnt, pev_renderamt, Amount);
+		}
+	}
+	
 	else if (iEntClass == ENTCLASS_SPEARGUN)
 	{
 		switch (Get_Ent_Data(iEnt, DEF_ENTSTAT))
@@ -1279,7 +1381,61 @@ public HamF_InfoTarget_Touch(iPtr,iPtd)
 
 		return HAM_IGNORED;
 	}
-
+	
+	else if (iClass == ENTCLASS_FIRE)
+	{
+		
+		/* if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+		{
+			new Float:flDamage = (!IS_ZBMODE) ? c_flEntityDamage[iBteWpn][0] : c_flEntityDamageZB[iBteWpn][0];
+			RadiusDamage(vecOrigin, iPtr, iOwner, flDamage, c_flEntityRange[iBteWpn][0], c_flEntityKnockBack[iBteWpn][0], DMG_BULLET, TRUE, TRUE, FALSE);
+			engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, iPtr, EVENT_ENTITY, 0.0, vecOrigin, {0.0, 0.0, 0.0}, 0.0, 0.0, SPECIAL_SGMISSILE, 1, FALSE, FALSE);
+			
+			message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
+			write_byte(TE_EXPLOSION)
+			engfunc(EngFunc_WriteCoord, vecOrigin[0])
+			engfunc(EngFunc_WriteCoord, vecOrigin[1])
+			engfunc(EngFunc_WriteCoord, vecOrigin[2])
+			write_short(engfunc(EngFunc_ModelIndex, "sprites/ef_sgmissile.spr"))
+			write_byte(10)
+			write_byte(15)
+			write_byte(TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOSOUND |TE_EXPLFLAG_NOPARTICLES)
+			message_end()
+			
+			RemoveEntity(iPtr);
+		} */
+		if (c_iSpecial[iBteWpn] == SPECIAL_STARCHASERSR)
+		{
+			if (pev(iPtr, pev_iuser1) == 1)
+			{
+				engfunc(EngFunc_SetModel, iPtr, "sprites/ef_starchasersr.spr");
+				set_pev(iPtr, pev_modelindex, engfunc(EngFunc_ModelIndex, "sprites/ef_starchasersr.spr"));
+				set_pev(iPtr, pev_scale, 0.5);
+				set_pev(iPtr, pev_frame, 0.0);
+				set_pev(iPtr, pev_iuser1, 2);
+				
+				if (iPtd)
+				{
+					if (is_user_alive(iPtd))
+					{
+						if (can_damage(iOwner, iPtd))
+							ExecuteHamB(Ham_TakeDamage, iPtd, iPtr, iOwner, (!IS_ZBMODE) ? c_flDamage[iBteWpn][1] : c_flDamageZB[iBteWpn][1], DMG_CLUB | DMG_NEVERGIB);
+					}
+					else
+					{
+						new classnameptd[32];
+						pev(iPtd, pev_classname, classnameptd, 31);
+						if (equali(classnameptd, "func_breakable"))
+							EntityTouchDamage_SME(iPtr, iOwner, (!IS_ZBMODE) ? c_flDamage[iBteWpn][1] : c_flDamageZB[iBteWpn][1], DMG_GENERIC);//ExecuteHamB(Ham_TakeDamage, iPtd, 0, 0, (!IS_ZBMODE) ? c_flDamage[iBteWpn][1] : c_flDamageZB[iBteWpn][1], DMG_GENERIC);
+					}
+				}
+			}
+		}
+		
+		set_pev(iPtr, pev_movetype, MOVETYPE_NONE);
+		set_pev(iPtr, pev_solid, SOLID_NOT);
+	}
+	
 	return HAM_IGNORED
 }
 

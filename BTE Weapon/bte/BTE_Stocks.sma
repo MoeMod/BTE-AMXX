@@ -2397,6 +2397,41 @@ stock EntityTouchDamage(pevInflictor, pevAttacker, Float:flDamage)
 	return bIsPlayer;
 }
 
+stock EntityTouchDamage_SME(pevInflictor, pevAttacker, Float:flDamage, bitsDamageType)
+{
+	new Float:vecOrigin[3], Float:vecVelocity[3], Float:vecDirection[3], Float:vecForward[3];
+	pev(pevInflictor, pev_origin, vecOrigin);
+	pev(pevInflictor, pev_velocity, vecVelocity);
+
+	if (xs_vec_len(vecVelocity) <= 0.0)
+		return FALSE;
+
+	new Float:vecStart[3], Float:vecEnd[3];
+
+	xs_vec_normalize(vecVelocity, vecDirection);
+	xs_vec_mul_scalar(vecDirection, 100.0, vecForward);
+	xs_vec_copy(vecOrigin, vecStart);
+	xs_vec_add(vecOrigin, vecForward, vecEnd);
+
+	new tr = create_tr2();
+
+	engfunc(EngFunc_TraceLine, vecStart, vecEnd, dont_ignore_monsters, pevInflictor, tr);
+
+	new pEntity = get_tr2(tr, TR_pHit);
+	new bIsPlayer = IsPlayer(pEntity);
+
+	if (IsAlive(pEntity))
+	{
+		ClearMultiDamage();
+		ExecuteHamB(Ham_TraceAttack, pEntity, pevAttacker, flDamage, /*vecForward*/vecEnd, tr, bitsDamageType);
+		ApplyMultiDamage(pevInflictor, pevAttacker);
+	}
+
+	free_tr2(tr);
+
+	return bIsPlayer;
+}
+
 stock EntityTouchGetHitGroup(pevInflictor)
 {
 	new Float:vecOrigin[3], Float:vecVelocity[3], Float:vecDirection[3], Float:vecForward[3];
