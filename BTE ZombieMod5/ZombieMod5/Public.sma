@@ -1,5 +1,54 @@
 new iInGame
 new bHeroCheck;
+new g_pGameRules;
+
+public OrpheuHookReturn:OnInstallGameRules()
+{
+	g_pGameRules = OrpheuGetReturn();
+	
+	OrpheuRegisterHook(OrpheuGetFunctionFromObject(g_pGameRules, "CheckWinConditions", "CGameRules"), "OnCheckWinConditions")
+	OrpheuRegisterHook(OrpheuGetFunctionFromObject(g_pGameRules, "FPlayerCanRespawn", "CGameRules"), "OnFPlayerCanRespawn")
+}
+
+public OrpheuHookReturn:OnCheckWinConditions(this)
+{
+	CheckWinCondition();
+	
+	return OrpheuSupercede;
+}
+
+public CheckWinCondition()
+{
+	if(!g_bGameStarted)
+	{
+		if(Stock_PlayerCount() >= 2)
+		{
+			g_bGameStarted = 1;
+			//TerminateRound( RoundEndType_Draw,TeamWinning_None );
+			server_cmd("sv_restart 1");
+		}
+	}
+	else
+	{
+		if (Stock_GetPlayer(0) == 0)
+		{
+			TerminateRound( RoundEndType_TeamExtermination,TeamWinning_Terrorist )
+		}
+		else if (!CheckRespawning() && !Stock_GetPlayer(1))
+		{
+			TerminateRound( RoundEndType_TeamExtermination,TeamWinning_Ct )
+		}
+	}
+}
+
+public OrpheuHookReturn:OnFPlayerCanRespawn(this, id)
+{
+	if (g_newround || g_endround)
+		OrpheuSetReturn(false)
+	else
+		OrpheuSetReturn(true)
+	return OrpheuSupercede
+}
 
 public HumanWin()
 {
@@ -545,20 +594,6 @@ public ZombieRespawn(id)
 
 	//SetTeam(id, 1);
 	return
-}
-
-public CheckWinCondition()
-{
-	if (Stock_GetPlayer(0) == 0)
-	{
-		SetBlockRound(0)
-		TerminateRound( RoundEndType_TeamExtermination,TeamWinning_Terrorist )
-	}
-	else if (!CheckRespawning() && !Stock_GetPlayer(1))
-	{
-		SetBlockRound(0)
-		TerminateRound( RoundEndType_TeamExtermination,TeamWinning_Ct )
-	}
 }
 
 public CheckRespawning()

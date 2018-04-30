@@ -208,6 +208,8 @@ public LogEvent_RoundEnd()
 }
 public LogEvent_RoundStart()
 {
+	if(!g_bGameStarted || g_endround)
+		return;
 //	g_freezetime = 0
 	if (g_rount_count)
 	{
@@ -219,7 +221,6 @@ public LogEvent_RoundStart()
 
 		set_task(round_time,"HumanWin",TASK_FORCEWIN);
 
-		SetBlockRound(1);
 		PlaySound(0, SND_ROUND_START);
 
 		g_count_down = COUNT_DOWN_START;

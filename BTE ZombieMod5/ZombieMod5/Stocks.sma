@@ -63,6 +63,18 @@ stock UpdateScoreBoard()
 		}
 	}*/
 }
+
+public Stock_PlayerCount()
+{
+	new iCount=0;
+	for(new i=1;i<33;i++)
+	{
+		if(is_user_connected(i))
+			iCount++
+	}
+	return iCount;
+}
+
 stock Stock_GetPlayer(iZombie = 0)
 {
 	new iNum

@@ -53,6 +53,7 @@ new const SND_COUNT[][] = {"vox/one.wav", "vox/two.wav", "vox/three.wav", "vox/f
 new /*cache_spr_restore_health,*/cache_spr_zombie_respawn,cache_spr_zombiebomb_exp
 
 new	/*g_freezetime,*/g_newround,g_endround,g_startcount,g_rount_count,g_supplybox_count,g_count_down,g_hamczbots
+new g_bGameStarted
 new g_score_human,g_score_zombie
 new Float:g_c_zombie_swing_range = 28.0,Float:g_c_zombie_stab_range = 40.0
 

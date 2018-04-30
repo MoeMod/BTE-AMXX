@@ -28,7 +28,7 @@ public plugin_init()
 {
 	register_plugin(PLUGIN, VERSION, AUTHOR);
 
-	register_clcmd("z5_zbskill", "z5_zbskill");
+	register_clcmd("BTE_ZombieSkill3", "z5_zbskill");
 
 	register_forward(FM_PlayerPostThink, "PlayerPostThink");
 }
