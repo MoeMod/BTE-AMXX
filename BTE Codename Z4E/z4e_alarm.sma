@@ -55,12 +55,11 @@ new g_iForwards[TOTAL_FORWARDS]
 new g_iForwardResult
 
 #define TASK_ALARM 10086
-#define TASK_TIMER 23333
 
 new g_iHudAlarm
 new g_bitsAlarm, any:g_sAlarmInfo[33][STRUCT_ALARMINFO]
 
-new g_iTimerTip, g_szTimerTip[32]
+new gmsgTimerTip
 
 #define HUD_ALARM_X -1.0
 #define HUD_ALARM_Y 0.15
@@ -75,6 +74,8 @@ public plugin_init()
 	g_iForwards[FW_ALARM_SHOW_POST] = CreateMultiForward("z4e_fw_alarm_show_post", ET_IGNORE, FP_CELL, FP_ARRAY, FP_ARRAY, FP_ARRAY, FP_ARRAY, FP_FLOAT)
 	
 	g_iHudAlarm = CreateHudSyncObj()
+	
+	gmsgTimerTip = engfunc(EngFunc_RegUserMsg, "TimerTip", -1);
 }
 
 public plugin_natives()
@@ -154,13 +155,18 @@ SendAlarm(iAlarmType, const szTitle[], const szSubTitle[], const szSound[], cons
 
 SendTimerTip(iTime, const szText[])
 {
-	g_iTimerTip = iTime
+	/*g_iTimerTip = iTime
 	copy(g_szTimerTip, 31, szText)
 	remove_task(TASK_TIMER)
 	set_task(0.999999, "Task_Timer", TASK_TIMER, _, _, "b");
 	
 	remove_task(TASK_ALARM)
-	CheckAlarm()
+	CheckAlarm()*/
+	
+	engfunc(EngFunc_MessageBegin, MSG_BROADCAST, gmsgTimerTip, Float:{0.0,0.0,0.0}, 0);
+	write_string(szText)
+	write_long(iTime)
+	message_end()
 }
 
 CheckAlarm()
@@ -185,18 +191,9 @@ CheckAlarm()
 	else
 	{
 		format(szSubTitle,127, "")
-		if(g_iTimerTip)
-		{
-			iType = ALARMTYPE_TIP
-			copy(iColor, 3, cfg_iAlarmColor[iType])
-			format(szTitle,127, "%s [%i]", g_szTimerTip[0], g_iTimerTip)
-		}
-		else
-		{
-			iType = ALARMTYPE_IDLE
-			copy(iColor, 3, cfg_iAlarmColor[iType])
-			format(szTitle,127, cfg_szTextAlarmTimer)
-		}
+		iType = ALARMTYPE_IDLE
+		copy(iColor, 3, cfg_iAlarmColor[iType])
+		format(szTitle,127, cfg_szTextAlarmTimer)
 		flAlarmTime = 1.0
 	}
 	
@@ -211,7 +208,7 @@ CheckAlarm()
 	if(szTitle[0])		
 	{
 		set_hudmessage(iColor[0], iColor[1], iColor[2], HUD_ALARM_X, HUD_ALARM_Y, 0, 1.0, flAlarmTime + 0.1, 0.1, 0.4,3)
-		ShowSyncHudMsg(0, g_iHudAlarm, "^n [Thanatos Zone] ^n^n%s", szSubTitle)
+		ShowSyncHudMsg(0, g_iHudAlarm, "^n  ^n^n%s", szSubTitle)
 		set_dhudmessage(iColor[0], iColor[1], iColor[2], HUD_ALARM_X, HUD_ALARM_Y + 0.05, 0, 1.2, flAlarmTime + 0.1, 0.1, 0.4, false)
 		show_dhudmessage(0, szTitle)
 	}
@@ -228,8 +225,6 @@ CheckAlarm()
 public Event_NewRound()
 {
 	remove_task(TASK_ALARM)
-	remove_task(TASK_TIMER)
-	g_iTimerTip = 0
 	
 	CheckAlarm()
 }
@@ -238,24 +233,11 @@ public Event_RoundStart()
 {
 	remove_task(TASK_ALARM)
 	set_task(0.05, "Task_Alarm", TASK_ALARM)
-	remove_task(TASK_TIMER)
-	set_task(1.0, "Task_Timer", TASK_TIMER, _, _, "b");
 }
 
 public Task_Alarm()
 {
 	CheckAlarm()
-}
-
-public Task_Timer()
-{
-	if(!g_iTimerTip)
-	{
-		g_szTimerTip[0] = 0
-		return;
-	}
-	
-	g_iTimerTip--;
 }
 
 stock PlaySound(index, const szSound[], stop_sounds_first = 0)

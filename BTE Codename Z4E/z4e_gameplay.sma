@@ -1,21 +1,19 @@
 #include <amxmodx>
 #include <fakemeta_util>
 #include <hamsandwich>
-#include <dhudmessage>
 
 #include <orpheu>
 #include <orpheu_memory>
 
-
+#include <round_terminator>
 
 #include "z4e_bits.inc"
 #include "z4e_team.inc"
 #include "z4e_api.inc"
-#include "z4e_alarm.inc"
 #include "z4e_zombie.inc"
 #include "z4e_deathmatch.inc"
 
-#include <x_thanatos>
+#include "../cdll_dll.h"
 
 #define PLUGIN "[Z4E] GamePlay"
 #define VERSION "1.0"
@@ -28,13 +26,6 @@ enum _:MAX_GAMESTATUS
 	Z4E_GAMESTATUS_GAMESTARTED,
 	Z4E_GAMESTATUS_INFECTIONSTART,
 	Z4E_GAMESTATUS_ROUNDENDED,
-}
-
-enum
-{
-	Z4E_ALARMTYPE_ZOMBIEWIN = 2000,
-	Z4E_ALARMTYPE_HUMANWIN,
-	Z4E_ALARMTYPE_ROUNDDRAW
 }
 
 new const SOUND_AMBIENCE[] = "zombie_plague/ambience.wav"
@@ -56,9 +47,6 @@ new const SOUND_WIN[3][] = {
 	"zombie_plague/win_humans1.wav",
 	"zombie_plague/the_horror1.wav"
 }
-
-#define HUD_ALARM_X -1.0
-#define HUD_ALARM_Y 0.30
 
 #define TASK_TIMER 8888
 
@@ -85,6 +73,8 @@ new g_bitsGameStatus, g_iTimer
 // OffSet
 #define PDATA_SAFE 2
 
+new gmsgTextMsg;
+
 public plugin_init()
 {
 	register_plugin(PLUGIN, VERSION, AUTHOR)
@@ -107,6 +97,8 @@ public plugin_init()
 	g_iForwards[FW_ROUNDEND_PRE] = CreateMultiForward("z4e_fw_gameplay_roundend_pre", ET_CONTINUE, FP_CELL)
 	g_iForwards[FW_ROUNDEND_POST] = CreateMultiForward("z4e_fw_gameplay_roundend_post", ET_IGNORE, FP_CELL)
 	g_iForwards[FW_TIMER] = CreateMultiForward("z4e_fw_gameplay_timer", ET_IGNORE)
+	
+	gmsgTextMsg = get_user_msgid("TextMsg");
 }
 
 public z4e_fw_api_bot_registerham(id)
@@ -115,52 +107,11 @@ public z4e_fw_api_bot_registerham(id)
 	RegisterHamFromEntity(Ham_TakeDamage, id, "HamF_TakeDamage")
 }
 
-public z4e_fw_alarm_show_pre(iType, szTitle[128], szSubTitle[128], szSound[128], iColor[3], Float:flAlarmTime)
-{
-	if(iType != Z4E_ALARMTYPE_IDLE)
-		return Z4E_ALARM_IGNORED
-		
-	if(!BitsGet(g_bitsGameStatus, Z4E_GAMESTATUS_GAMESTARTED))
-	{
-		format(szTitle, 127, "等待其他玩家进入...")
-	}
-	else if(!BitsGet(g_bitsGameStatus, Z4E_GAMESTATUS_INFECTIONSTART))
-	{
-		if(0 <= g_iTimer <= g_iCountDownTime - 1)
-		{
-			new iCountDown = g_iCountDownTime - g_iTimer
-			format(szTitle, 127, "首例感染将在 %i 秒后出现", iCountDown)
-			format(szSound, 127, iCountDown <= 10 ? SOUND_COUNTDOWN[iCountDown - 1]:"")
-		}
-		else
-		{
-			format(szTitle, 127, "...")
-		}
-	}
-	return Z4E_ALARM_IGNORED
-}
-
-public z4e_fw_alarm_show_post(iType, const szTitle[], const szSubTitle[], const szSound[], const iColor[], Float:flAlarmTime)
-{
-	if(iType == Z4E_ALARMTYPE_HUMANWIN)
-	{
-		z4e_api_terminate_round(5.0, WINSTATUS_CT)
-	}
-	else if(iType == Z4E_ALARMTYPE_ZOMBIEWIN)
-	{
-		z4e_api_terminate_round(5.0, WINSTATUS_TERRORIST)
-	}
-	else if(iType == Z4E_ALARMTYPE_ROUNDDRAW)
-	{
-		z4e_api_terminate_round(5.0, WINSTATUS_DRAW)
-	}
-}
-
 public plugin_precache()
 {
 	OrpheuRegisterHook(OrpheuGetFunction("InstallGameRules"), "OnInstallGameRules", OrpheuHookPost)
 	
-	new szBuffer[64]
+	//new szBuffer[64]
 	//format(szBuffer, charsmax(szBuffer), "sound/%s", SOUND_AMBIENCE)
 	//engfunc(EngFunc_PrecacheGeneric, szBuffer)
 	engfunc(EngFunc_PrecacheSound, SOUND_AMBIENCE)
@@ -244,7 +195,6 @@ public OrpheuHookReturn:OnCheckWinConditions(this)
 		BitsSet(g_bitsGameStatus, Z4E_GAMESTATUS_GAMESTARTED)
 		BitsUnSet(g_bitsGameStatus, Z4E_GAMESTATUS_INFECTIONSTART)
 		server_cmd("sv_restart 1")
-		z4e_alarm_push(_, "游戏即将开始", "", "", { 255,255,255 }, 3.0)
 	}
 	
 	if(BitsGet(g_bitsGameStatus, Z4E_GAMESTATUS_INFECTIONSTART) && !BitsGet(g_bitsGameStatus, Z4E_GAMESTATUS_ROUNDENDED))
@@ -254,7 +204,9 @@ public OrpheuHookReturn:OnCheckWinConditions(this)
 			ExecuteForward(g_iForwards[FW_ROUNDEND_PRE], g_iForwardResult, Z4E_TEAM_HUMAN)
 			if(!g_iForwardResult)
 			{
-				z4e_alarm_push(Z4E_ALARMTYPE_HUMANWIN, "人类战胜了僵尸...", "", SOUND_WIN[0], { 50,50,250 }, 6.0)
+				//z4e_alarm_push(Z4E_ALARMTYPE_HUMANWIN, "人类战胜了僵尸...", "", SOUND_WIN[0], { 50,50,250 }, 6.0)
+				TerminateRound( RoundEndType_TeamExtermination,TeamWinning_Ct )
+				//z4e_api_terminate_round(5.0, WINSTATUS_CT)
 				BitsSet(g_bitsGameStatus, Z4E_GAMESTATUS_ROUNDENDED)
 				ExecuteForward(g_iForwards[FW_ROUNDEND_POST], g_iForwardResult, Z4E_TEAM_HUMAN)
 			}
@@ -264,7 +216,9 @@ public OrpheuHookReturn:OnCheckWinConditions(this)
 			ExecuteForward(g_iForwards[FW_ROUNDEND_PRE], g_iForwardResult, Z4E_TEAM_ZOMBIE)
 			if(!g_iForwardResult)
 			{
-				z4e_alarm_push(Z4E_ALARMTYPE_ZOMBIEWIN, "僵尸统治了世界...", "", SOUND_WIN[1], { 250,50,50 }, 6.0)
+				//z4e_alarm_push(Z4E_ALARMTYPE_ZOMBIEWIN, "僵尸统治了世界...", "", SOUND_WIN[1], { 250,50,50 }, 6.0)
+				TerminateRound( RoundEndType_TeamExtermination,TeamWinning_Terrorist )
+				//z4e_api_terminate_round(5.0, WINSTATUS_TERRORIST)
 				BitsSet(g_bitsGameStatus, Z4E_GAMESTATUS_ROUNDENDED)
 				ExecuteForward(g_iForwards[FW_ROUNDEND_POST], g_iForwardResult, Z4E_TEAM_ZOMBIE)
 			}
@@ -274,7 +228,9 @@ public OrpheuHookReturn:OnCheckWinConditions(this)
 			ExecuteForward(g_iForwards[FW_ROUNDEND_PRE], g_iForwardResult, Z4E_TEAM_INVALID)
 			if(!g_iForwardResult)
 			{
-				z4e_alarm_push(Z4E_ALARMTYPE_ROUNDDRAW, "午时已到...", "", SOUND_WIN[2], { 50,50,50 }, 6.0)
+				//z4e_alarm_push(Z4E_ALARMTYPE_ROUNDDRAW, "午时已到...", "", SOUND_WIN[2], { 50,50,50 }, 6.0)
+				TerminateRound( RoundEndType_TeamExtermination,TeamWinning_Ct )
+				//z4e_api_terminate_round(5.0, WINSTATUS_DRAW)
 				BitsSet(g_bitsGameStatus, Z4E_GAMESTATUS_ROUNDENDED)
 				ExecuteForward(g_iForwards[FW_ROUNDEND_POST], g_iForwardResult, Z4E_TEAM_INVALID)
 			}
@@ -444,6 +400,23 @@ Ckeck_Timer()
 	if(!BitsGet(g_bitsGameStatus, Z4E_GAMESTATUS_GAMESTARTED) || BitsGet(g_bitsGameStatus, Z4E_GAMESTATUS_ROUNDENDED))
 		return
 		
+	if(!BitsGet(g_bitsGameStatus, Z4E_GAMESTATUS_GAMESTARTED))
+	{
+		ClientPrint(0, HUD_PRINTCENTER, "#CSO_WaitEnemy");
+	}
+	else if(!BitsGet(g_bitsGameStatus, Z4E_GAMESTATUS_INFECTIONSTART))
+	{
+		if(0 <= g_iTimer <= g_iCountDownTime - 1)
+		{
+			new iCountDown = g_iCountDownTime - g_iTimer
+			new number[10];
+			format(number, 9, "%d", iCountDown);
+			ClientPrint(0, HUD_PRINTCENTER, "#CSO_ZombiSelectCount", number);
+			if(iCountDown <= 10)
+				PlaySound(0, SOUND_COUNTDOWN[iCountDown - 1])
+		}
+	}
+		
 	if(g_iTimer == g_iCountDownTime)
 	{
 		Check_InfectionStart()
@@ -510,4 +483,26 @@ stock PlaySound(index, const szSound[], stop_sounds_first = 0)
 		else
 			client_cmd(index, "spk ^"%s^"", szSound)
 	}
+}
+
+stock ClientPrint(id, type, message[], str1[] = "", str2[] = "", str3[] = "", str4[] = "")
+{
+	new dest
+	if (id) dest = MSG_ONE_UNRELIABLE
+	else dest = MSG_ALL
+
+	message_begin(dest, gmsgTextMsg, {0, 0, 0}, id)
+	write_byte(type)
+	write_string(message)
+
+	if (str1[0])
+		write_string(str1)
+	if (str2[0])
+		write_string(str2)
+	if (str3[0])
+		write_string(str3)
+	if (str4[0])
+		write_string(str4)
+
+	message_end()
 }
