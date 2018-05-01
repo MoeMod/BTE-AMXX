@@ -7,7 +7,7 @@
 
 public plugin_natives()
 {
-	new config_dir[64], url_none[64], url_td[64], url_ze[64],url_npc[64],url_zb1[64],url_gd[64],url_dr[64],url_zb3[64],url_zb4[64],url_dm[64],url_ghost[64],url_td2[64],url_zb2[64],url_zse[64],url_zb5[64]
+	new config_dir[64], url_none[64], url_td[64], url_ze[64],url_npc[64],url_zb1[64],url_gd[64],url_dr[64],url_zb3[64],url_zb4[64],url_dm[64],url_ghost[64],url_td2[64],url_zb2[64],url_zse[64],url_zb5[64],url_z4e[64]
 	get_configsdir(config_dir, charsmax(config_dir))
 	format(url_none, charsmax(url_none), "%s/plugins-none.ini", config_dir)
 	format(url_td, charsmax(url_td), "%s/plugins-td.ini", config_dir)
@@ -24,6 +24,8 @@ public plugin_natives()
 	format(url_zb2, charsmax(url_zb2), "%s/plugins-zb2.ini", config_dir)
 	format(url_zse, charsmax(url_zse), "%s/plugins-zse.ini", config_dir)
 	format(url_zb5, charsmax(url_zb5), "%s/plugins-zb5.ini", config_dir)
+	format(url_z4e, charsmax(url_z4e), "%s/plugins-z4e.ini", config_dir)
+	
 
 	// get modruning
 	if (file_exists(url_none)) g_modruning = BTE_MOD_NONE
@@ -36,6 +38,7 @@ public plugin_natives()
 	else if (file_exists(url_dr)) g_modruning = BTE_MOD_DR
 	else if (file_exists(url_ghost)) g_modruning = BTE_MOD_GHOST
 	else if (file_exists(url_td2)) g_modruning = BTE_MOD_TD2
+	else if (file_exists(url_z4e)) g_modruning = BTE_MOD_Z4E
 	else if (file_exists(url_zb2))
 	{
 		g_modruning = BTE_MOD_ZB1
@@ -94,7 +97,7 @@ public plugin_natives()
 		register_native("bte_zb4_get_day_status", "Native_None");
 	}
 
-	if(g_modruning != BTE_MOD_ZB1 && g_modruning != BTE_MOD_ZE)
+	if(g_modruning != BTE_MOD_ZB1 && g_modruning != BTE_MOD_ZE && g_modruning != BTE_MOD_Z4E)
 	{
 		register_native("bte_get_user_zombie","Native_NoValue",1)
 	}

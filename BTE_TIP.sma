@@ -1,33 +1,10 @@
 #include <amxmodx>
 #include <amxmisc>
-native	bte_wpn_get_mod_running()
+#include "BTE_API.inc"
+
 native	bte_wpn_get_weapon_limit()
 native	MH_SendClientModRunning2(id,i)
 native	MH_SendClientWeaponLimit(id,i)
-
-enum _:BTE_MOD
-{
-	BTE_MOD_NONE=0,
-	BTE_MOD_TD,
-	BTE_MOD_ZE,
-	BTE_MOD_NPC,
-	BTE_MOD_ZB1,
-	BTE_MOD_ZE,
-	BTE_MOD_GD,
-	BTE_MOD_DR,
-	BTE_MOD_DM,
-	BTE_MOD_GHOST,
-	BTE_MOD_TD2
-}
-
-enum _:BTE_WEAPON_LIMIT
-{
-	WEAPON_LIMIT_NO=0,
-	WEAPON_LIMIT_SNIPER,
-	WEAPON_LIMIT_PISTOL,
-	WEAPON_LIMIT_GRENADE,
-	WEAPON_LIMIT_KNIFE
-}
 
 
 //new const MOD_NAME[][]={"NONE","TD","ZE","NPC","ZB1","GD","DR","","",""}
@@ -87,6 +64,7 @@ public message_msgGameMode()
 		case BTE_MOD_GD :		iMod = 8;
 		case BTE_MOD_DR :		iMod = 9;
 		case BTE_MOD_GHOST :	iMod = 7;
+		case BTE_MOD_Z4E :	iMod = 17;
 		default : iMod = 1;
 	}
 
