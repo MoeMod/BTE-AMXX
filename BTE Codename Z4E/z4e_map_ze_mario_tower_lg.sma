@@ -44,7 +44,7 @@ public Event_NewRound()
 public SpawnPrint()
 {
 		client_print(0, print_chat, "Console: ** ze_Mario_Tower_lg ** Plugin By EmeraldGhost **")
-		z4e_alarm_insert(_, "** 地图: 马里奥高塔 ** 文本: 鬼鬼 **", "难度：***", "", { 50,250,50 }, 2.0);
+		//z4e_alarm_insert(_, "** 地图: 马里奥高塔 ** 文本: 鬼鬼 **", "难度：***", "", { 50,250,50 }, 2.0);
 }
 
 public button_to_target(ent, caller, activator, use_type, Float:value)
@@ -57,8 +57,8 @@ public button_to_target(ent, caller, activator, use_type, Float:value)
 	{
 		client_print(0, print_chat, "Console: ** The cloud is coming ** Defend here! **")
 		
-		z4e_alarm_insert(_, "** 云马上就到 ** 守住这里! **", "", "", { 50,250,50 }, 2.0);
-		z4e_alarm_timertip(22, "浮云运行中……");
+		//z4e_alarm_insert(_, "** 云马上就到 ** 守住这里! **", "", "", { 50,250,50 }, 2.0);
+		z4e_alarm_timertip(22, "#CSBTE_Z4E_MarioTower_CloudRunning");
 		
 		set_task(22.0, "EscapePrint", TASK_ESCAPE)
 		g_bButtonUsed = 1;
@@ -69,5 +69,5 @@ public EscapePrint(taskid)
 {
 		client_print(0, print_chat, "Console: ** Pull down the flag to slay zombies **")
 		
-		z4e_alarm_insert(_, "** 降下旗子来处死安全屋外的所有人 **", "", "", { 50,250,50 }, 2.0);
+		//z4e_alarm_insert(_, "** 降下旗子来处死安全屋外的所有人 **", "", "", { 50,250,50 }, 2.0);
 }
