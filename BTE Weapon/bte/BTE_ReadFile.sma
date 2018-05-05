@@ -261,6 +261,16 @@ public PrecacheWeapon(iBteWpn, bPrecache)
 			format(model, 63, "%s/%s_skillfx2.mdl", MODEL_URL, c_sModel[iBteWpn]);
 			precache_model(model);
 			
+			new string[32];
+			format(string, 31, "sprites/leaf01_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/leaf02_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/petal01_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/petal02_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			
 			new sound[63];
 			new szInApp[32];
 			for (new i = 1; i <= 5; i ++)
