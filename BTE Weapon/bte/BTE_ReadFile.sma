@@ -227,6 +227,11 @@ public PrecacheWeapon(iBteWpn, bPrecache)
 		{
 			CBlockSMG_Precache();
 		}
+		else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+		{
+			CSgmissile_Precache()
+			precache_model(c_sModel_V[iBteWpn])
+		}
 		else if(c_iSpecial[iBteWpn] == SPECIAL_THANATOS9)
 		{
 			precache_model("models/p_thanatos9a.mdl");
