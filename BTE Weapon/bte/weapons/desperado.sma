@@ -210,6 +210,7 @@ public CDesperado_SecondaryAttack(id, iEntity, iClip, iBteWpn)
 
 	vecPunchangle[0]-=c_flPunchangle[iBteWpn]
 	set_pev(id, pev_punchangle, vecPunchangle)
+	ResetRunIdle(iEntity)
 }
 
 public CDesperado_PrimaryAttack(id, this, iClip, iBteWpn)
@@ -313,15 +314,15 @@ public CDesperado_PrimaryAttack(id, this, iClip, iBteWpn)
 	{
 		set_pdata_float(this, m_flNextPrimaryAttack, 0.6);
 		set_pdata_float(this, m_flNextSecondaryAttack, 0.0);
-		set_pdata_float(this, m_flTimeWeaponIdle, 0.6);
+		set_pdata_float(this, m_flTimeWeaponIdle, 1.0);
 	}
 	else
 	{
 		set_pdata_float(this, m_flNextPrimaryAttack, c_flAttackInterval[iBteWpn][0]);
 		set_pdata_float(this, m_flNextSecondaryAttack, 0.0);
-		set_pdata_float(this, m_flTimeWeaponIdle, 0.6);
+		set_pdata_float(this, m_flTimeWeaponIdle, 1.0);
 	}
-	
+	ResetRunIdle(this)
 	vecPunchangle[0]-=c_flPunchangle[iBteWpn];
 	set_pev(id, pev_punchangle, vecPunchangle);
 }
