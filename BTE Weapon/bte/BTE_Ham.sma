@@ -587,31 +587,6 @@ public HamF_InfoTarget_Think(iEnt)
 				if (fFrame > float(engfunc(EngFunc_ModelFrames,pev(iEnt, pev_modelindex))))
 					fFrame = 0.0;
 			}
-			/* else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
-			{
-				new Float:vecOrigin22[3];
-				pev(iEnt, pev_origin, vecOrigin22);
-				engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, pev(iEnt, pev_owner), EVENT_ENTITY, 0.0, vecOrigin22, {0.0, 0.0, 0.0}, 0.0, 0.0, SPECIAL_SGMISSILE, 0, FALSE, FALSE);
-				
-				new Float:fFrameAmount;
-				pev(iEnt, pev_fuser2, fFrameAmount);
-				fFrame += fFrameAmount;
-				fNextThink = 0.05;
-				
-				if (fTimeRemove - get_gametime() / 1.0 < 0.25)
-				{
-					new Float:fRenderAmount;
-					pev(iEnt, pev_renderamt, fRenderAmount);
-					fRenderAmount = 200.0 * (fTimeRemove - get_gametime()) / 0.25;
-					set_pev(iEnt, pev_renderamt, fRenderAmount);
-					
-					if (fTimeRemove < get_gametime())
-					{
-						RemoveEntity(iEnt);
-						return;
-					}
-				}
-			} */
 		}
 		
 		set_pev(iEnt, pev_frame, fFrame)
@@ -1384,26 +1359,6 @@ public HamF_InfoTarget_Touch(iPtr,iPtd)
 	
 	else if (iClass == ENTCLASS_FIRE)
 	{
-		
-		/* if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
-		{
-			new Float:flDamage = (!IS_ZBMODE) ? c_flEntityDamage[iBteWpn][0] : c_flEntityDamageZB[iBteWpn][0];
-			RadiusDamage(vecOrigin, iPtr, iOwner, flDamage, c_flEntityRange[iBteWpn][0], c_flEntityKnockBack[iBteWpn][0], DMG_BULLET, TRUE, TRUE, FALSE);
-			engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, iPtr, EVENT_ENTITY, 0.0, vecOrigin, {0.0, 0.0, 0.0}, 0.0, 0.0, SPECIAL_SGMISSILE, 1, FALSE, FALSE);
-			
-			message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
-			write_byte(TE_EXPLOSION)
-			engfunc(EngFunc_WriteCoord, vecOrigin[0])
-			engfunc(EngFunc_WriteCoord, vecOrigin[1])
-			engfunc(EngFunc_WriteCoord, vecOrigin[2])
-			write_short(engfunc(EngFunc_ModelIndex, "sprites/ef_sgmissile.spr"))
-			write_byte(10)
-			write_byte(15)
-			write_byte(TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOSOUND |TE_EXPLFLAG_NOPARTICLES)
-			message_end()
-			
-			RemoveEntity(iPtr);
-		} */
 		if (c_iSpecial[iBteWpn] == SPECIAL_STARCHASERSR)
 		{
 			if (pev(iPtr, pev_iuser1) == 1)
@@ -1572,6 +1527,11 @@ public HamF_Weapon_WeaponIdle(iEnt)
 	{
 		CGunkata_WeaponIdle(id, iEnt, iId, iBteWpn);
 		return HAM_SUPERCEDE;
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+	{
+		CSgmissile_WeaponIdle(id, iEnt, iId, iBteWpn)
+		return HAM_SUPERCEDE
 	}
 
 	WeaponIdleSpecial(id, iEnt, iBteWpn);
@@ -2513,6 +2473,11 @@ public PrimaryAttackSpecialWeapon(id, iEnt, iClip, iBteWpn)
 		CJanus11_PrimaryAttack2(id, iEnt, iClip, iBteWpn)
 		return HAM_SUPERCEDE
 	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+	{
+		CSgmissile_PrimaryAttack(id, iEnt, iClip, iBteWpn)
+		return HAM_SUPERCEDE
+	}
 	return HAM_IGNORED
 }
 
@@ -3077,29 +3042,30 @@ public HamF_Weapon_Reload(iEnt)
 
 		return HAM_SUPERCEDE;
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_CROW7)
 	{
 		CCrow7_Reload(id, iEnt, iBteWpn);
 		return HAM_SUPERCEDE;
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_CROW1)
 	{
 		CCrow1_Reload(id, iEnt, iBteWpn);
 		return HAM_SUPERCEDE;
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{
 		CDesperado_Reload(id, iEnt, iClip, iBteWpn);
 		return HAM_SUPERCEDE;
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
 	{
 		CGunkata_Reload(id, iEnt, iClip, iBteWpn);
 		return HAM_SUPERCEDE;
+	}
+	if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+	{
+		CSgmissile_Reload(id, iEnt, iClip, iBteWpn)
+		return HAM_SUPERCEDE
 	}
 
 	if (iAmmo <= 0)
@@ -3454,6 +3420,7 @@ stock GetWeaponModeDeploy(iEnt, iBteWpn)
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO) return pev(iEnt, pev_iuser1);
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DUALSWORD) return pev(iEnt, pev_iuser3);
 	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA) return !CGunkata_GetLRMode(iEnt);
+	else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE) return pev(iEnt, pev_iuser1);
 	return 0;
 }
 
@@ -3664,7 +3631,6 @@ public DeploySpecialWeapon(id, iEnt, iId, iBteWpn)
 	{
 		DualSword_Deploy(id, iEnt, iId, iBteWpn)
 	}
-	
 	if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
 	{
 		CGunkata_Deploy(iEnt);
@@ -3765,7 +3731,6 @@ public HamF_Item_Deploy_Post(iEnt)
 			}
 		}
 	}
-
 	if (c_iSpecial[iBteWpn] == SPECIAL_BLOCKAR)
 	{
 		if (pev(iEnt, pev_iuser1))
@@ -3815,6 +3780,11 @@ public HamF_Item_Deploy_Post(iEnt)
 	{
 		set_pev(id, pev_viewmodel2, c_sModel_V[iBteWpn]);
 		set_pev(id, pev_weaponmodel2, "models/p_crow9a.mdl");
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+	{
+		set_pev(id, pev_viewmodel2, c_sModel_V[iBteWpn])
+		CSgmissile_Deploy_Post(id, iEnt, iId, iBteWpn)
 	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
 	{

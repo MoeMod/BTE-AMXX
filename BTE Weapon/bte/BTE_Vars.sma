@@ -242,6 +242,7 @@ new g_isZomMod4, g_isZSE, g_isZomMod5
 new g_szLimitWeapon[MAX_WPN][32];
 new g_bDefaultWeaponLimited[6];
 
+new g_iSpritesExpp[2]
 //new Float:g_flNextAutoReload[33];
 
 new g_szKillWeapon[32];
