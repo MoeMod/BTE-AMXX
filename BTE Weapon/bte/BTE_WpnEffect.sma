@@ -27,6 +27,7 @@
 #include "bte/weapons/gunkata.sma"
 #include "bte/weapons/starchasersr.sma"
 #include "bte/weapons/balrog11.sma"
+#include "bte/weapons/sgmissile.sma"
 
 public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 {
@@ -203,13 +204,13 @@ public WpnEffect(id,iEnt,iClip,iAmmo,iId)
 	{
 		CBalrog11_ItemPostFrame(id,iEnt,iClip,iBteWpn)
 	}
-	else if (c_iSpecial[iBteWpn] == SPECIAL_DESPERADO)
-	{
-		//CDesperado_ItemPostFrame(id, iEnt, iClip, iBteWpn)
-	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_GUNKATA)
 	{
 		CGunkata_ItemPostFrame(id, iEnt, iClip, iBteWpn)
+	}
+	else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+	{
+		CSgmissile_ItemPostFrame(id, iEnt, iClip, iBteWpn)
 	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_STARCHASERSR)
 	{
@@ -892,8 +893,8 @@ public WE_M134(id,iEnt,iClip,iBpAmmo,iId,iBteWpn)
 
 	if (iButton & IN_ATTACK)
 	{
-		//é™æ­¢
-		if (!iClip && iWeaponState == WPNSTATE_M134_SPINNING) //æ²¡å­å¼¹çš„æƒ…å†µ
+		//¾²Ö¹
+		if (!iClip && iWeaponState == WPNSTATE_M134_SPINNING) //Ã»×Óµ¯µÄÇé¿ö
 		{
 			SendWeaponAnim(id, M134_fire_after);
 
@@ -928,7 +929,7 @@ public WE_M134(id,iEnt,iClip,iBpAmmo,iId,iBteWpn)
 
 			set_pdata_int(iEnt, m_iWeaponState, WPNSTATE_M134_SPINNING);
 		}
-		if (iWeaponState == WPNSTATE_M134_SPIN_DOWN && iClip)   // Nice é‡æ–°æŒ¯ä½œèµ·æ¥
+		if (iWeaponState == WPNSTATE_M134_SPIN_DOWN && iClip)   // Nice ÖØĞÂÕñ×÷ÆğÀ´
 		{
 			SendWeaponAnim(id, M134_fire_change);
 
@@ -936,7 +937,7 @@ public WE_M134(id,iEnt,iClip,iBpAmmo,iId,iBteWpn)
 			//Pub_Set_MaxSpeed(id, c_flMaxSpeed[iBteWpn][1]);
 
 			set_pdata_float(iEnt, m_flNextPrimaryAttack,1.0);
-			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.0); // 1.0ç§’åå°±å¯ä»¥å°„äº†
+			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.0); // 1.0Ãëºó¾Í¿ÉÒÔÉäÁË
 			set_pdata_int(iEnt, m_iWeaponState, WPNSTATE_M134_SPIN_UP);
 
 			set_pev(id,pev_button,(iButton & ~ IN_ATTACK))
@@ -944,7 +945,7 @@ public WE_M134(id,iEnt,iClip,iBpAmmo,iId,iBteWpn)
 	}
 	else if (!(iButton & IN_ATTACK2))
 	{
-		//æƒ…å†µ1 åœ¨é¢„çƒ­å‘å°„å‰æ”¾å¼ƒé¢„çƒ­
+		//Çé¿ö1 ÔÚÔ¤ÈÈ·¢ÉäÇ°·ÅÆúÔ¤ÈÈ
 		if (iWeaponState == WPNSTATE_M134_SPIN_UP)
 		{
 			SendWeaponAnim(id, M134_idle_change);
@@ -952,13 +953,13 @@ public WE_M134(id,iEnt,iClip,iBpAmmo,iId,iBteWpn)
 			set_pev(id, pev_maxspeed, c_flMaxSpeed[iBteWpn][0]);
 			//Pub_Set_MaxSpeed(id, c_flMaxSpeed[iBteWpn][0])
 
-			set_pdata_float(iEnt,m_flNextPrimaryAttack, 1.5) // 1.5ç§’å†…æ— æ³•é¢„çƒ­
+			set_pdata_float(iEnt,m_flNextPrimaryAttack, 1.5) // 1.5ÃëÄÚÎŞ·¨Ô¤ÈÈ
 			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.5)
 			set_pdata_int(iEnt, m_iWeaponState, WPNSTATE_M134_IDLE);
 
 			set_pev(id, pev_button, (iButton & ~ IN_ATTACK))
 		}
-		// æƒ…å†µ2 åœ¨å‘å°„çš„æ—¶å€™åœæ­¢
+		// Çé¿ö2 ÔÚ·¢ÉäµÄÊ±ºòÍ£Ö¹
 		if (iWeaponState == WPNSTATE_M134_SPINNING)
 		{
 			SendWeaponAnim(id, M134_fire_after);
@@ -966,7 +967,7 @@ public WE_M134(id,iEnt,iClip,iBpAmmo,iId,iBteWpn)
 			set_pev(id, pev_maxspeed, c_flMaxSpeed[iBteWpn][0]);
 			//Pub_Set_MaxSpeed(id, c_flMaxSpeed[iBteWpn][0])
 
-			set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.0) // ç»™ä½ 1.0ç§’çš„æ—¶é—´é‡æ–°å¯åŠ¨
+			set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.0) // ¸øÄã1.0ÃëµÄÊ±¼äÖØĞÂÆô¶¯
 			set_pdata_float(iEnt, m_flTimeWeaponIdle, 1.0)
 			set_pdata_int(iEnt, m_iWeaponState, WPNSTATE_M134_SPIN_DOWN);
 
@@ -976,7 +977,7 @@ public WE_M134(id,iEnt,iClip,iBpAmmo,iId,iBteWpn)
 		{
 			set_pev(id, pev_maxspeed, c_flMaxSpeed[iBteWpn][0]);
 			//Pub_Set_MaxSpeed(id, c_flMaxSpeed[iBteWpn][0])
-			// 1.3ç§’å·²è¿‡ æ²¡æœºä¼šäº† åªèƒ½é‡æ–°å¯åŠ¨
+			// 1.3ÃëÒÑ¹ı Ã»»ú»áÁË Ö»ÄÜÖØĞÂÆô¶¯
 			set_pdata_int(iEnt, m_iWeaponState, WPNSTATE_M134_IDLE);
 
 			set_pev(id,pev_button,(iButton & ~ IN_ATTACK))
@@ -996,7 +997,7 @@ public WE_M134(id,iEnt,iClip,iBpAmmo,iId,iBteWpn)
 					//Pub_Set_MaxSpeed(id, c_flMaxSpeed[iBteWpn][1]);
 
 					set_pdata_float(iEnt, m_flTimeWeaponIdle, 60.0);
-					set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.8) //é¢„çƒ­æ˜¯2.0ç§’
+					set_pdata_float(iEnt, m_flNextPrimaryAttack, 1.8) //Ô¤ÈÈÊÇ2.0Ãë
 					set_pdata_int(iEnt, m_iWeaponState, WPNSTATE_M134_SPIN_UP);
 
 					set_pev(id, pev_button, (iButton & ~ IN_ATTACK2));
