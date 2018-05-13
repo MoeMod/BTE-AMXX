@@ -11,6 +11,8 @@
 
 public CSgmissile_Precache()
 {
+	precache_model("models/p_sgmissile_a.mdl")
+	precache_model("models/p_sgmissile_b.mdl")
 	precache_sound("weapons/sgmissile-1.wav")
 	precache_sound("weapons/sgmissile-2.wav")
 	precache_sound("weapons/sgmissile_exp.wav")

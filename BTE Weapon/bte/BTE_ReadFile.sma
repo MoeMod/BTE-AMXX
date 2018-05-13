@@ -229,8 +229,8 @@ public PrecacheWeapon(iBteWpn, bPrecache)
 		}
 		else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
 		{
-			CSgmissile_Precache()
-			precache_model(c_sModel_V[iBteWpn])
+			CSgmissile_Precache();
+			precache_model(c_sModel_V[iBteWpn]);
 		}
 		else if(c_iSpecial[iBteWpn] == SPECIAL_THANATOS9)
 		{
@@ -265,6 +265,16 @@ public PrecacheWeapon(iBteWpn, bPrecache)
 			precache_model(model);
 			format(model, 63, "%s/%s_skillfx2.mdl", MODEL_URL, c_sModel[iBteWpn]);
 			precache_model(model);
+			
+			new string[32];
+			format(string, 31, "sprites/leaf01_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/leaf02_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/petal01_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/petal02_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
 			
 			new sound[63];
 			new szInApp[32];
