@@ -296,7 +296,7 @@ public plugin_precache()
 
 	/*while (ent = engfunc(EngFunc_FindEntityByString, -1, "classname", "func_buyzone"))
 engfunc(EngFunc_RemoveEntity, ent)*/
-
+	OrpheuRegisterHook(OrpheuGetFunction("InstallGameRules"), "OnInstallGameRules", OrpheuHookPost);
 }
 public client_putinserver(id)
 {

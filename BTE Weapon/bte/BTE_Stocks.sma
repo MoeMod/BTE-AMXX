@@ -1876,14 +1876,120 @@ stock KnifeAttack2(id, bStab, Float:flRange, Float:fAngle, Float:flDamage, Float
 				ApplyMultiDamage(id, id);
 
 				FakeKnockBack(pEntity, vecSrc, vecEnd, flKnockBack);
+				
+				if(flDamage && can_damage(pEntity, id))
+					KnifeAttackSpecial(pEntity, g_weapon[id][0], iHitResult, id, tr, vecEnd);
 			}
 		}
 		get_tr2(tr, TR_vecEndPos, vecReturnHitEnd);
 		free_tr2(tr);
 
 	}
+	
+	if(iHitResult && flDamage)
+		KnifeAttackSpecial(pEntity, g_weapon[id][0], iHitResult, id, tr, vecEnd);
 
 	return iHitResult;
+}
+
+stock KnifeAttackSpecial(pEntity, iBteWpn, iHitResult, id, tr, Float:vecEnd[3])
+{
+	new Float:fOrigin[3];
+	new iEnt = get_pdata_cbase(id, m_pActiveItem);
+	
+	if (iHitResult == RESULT_HIT_PLAYER)
+	{
+		if (can_damage(id, pEntity))
+		{
+			if (c_iSpecial[iBteWpn] == SPECIAL_DUALSWORD)
+			{
+				pev(pEntity, pev_origin, fOrigin);
+				new sType[8], iMdlIndex[2], iColor[2];
+				//https://github.com/baso88/SC_AngelScript/wiki/Temporary-Entities#engine-palette-1
+				switch(pev(iEnt, pev_weaponanim))
+				{
+					case -1:return;
+					case 5:
+					{
+						format(sType, charsmax(sType), "leaf");
+						iColor[0] = 235;
+						iColor[1] = 105;
+					}
+					default:
+					{
+						format(sType, charsmax(sType), "petal");
+						iColor[0] = 128;
+						iColor[1] = 250;
+					}
+				}
+				
+				new string[32];
+				format(string, 31, "sprites/%s01_%s.spr", sType, c_sModel[g_weapon[id][3]]);
+				iMdlIndex[0] = engfunc(EngFunc_ModelIndex, string);
+				format(string, 31, "sprites/%s02_%s.spr", sType, c_sModel[g_weapon[id][3]]);
+				iMdlIndex[1] = engfunc(EngFunc_ModelIndex, string);
+				
+				for (new i=0;i<2;i++)
+				{
+					message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
+					write_byte(TE_BLOODSPRITE)
+					engfunc(EngFunc_WriteCoord,fOrigin[0])
+					engfunc(EngFunc_WriteCoord,fOrigin[1])
+					engfunc(EngFunc_WriteCoord,fOrigin[2])
+					write_short(iMdlIndex[i])
+					write_short(iMdlIndex[i])
+					write_byte(iColor[i])
+					write_byte(3)
+					message_end()
+				}
+			}
+		}
+	}
+	else if (iHitResult == RESULT_HIT_WORLD)
+	{
+		if (c_iSpecial[iBteWpn] == SPECIAL_DUALSWORD)
+		{
+			get_tr2(tr, TR_vecEndPos, fOrigin);
+			new sType[8], iMdlIndex[2], iColor[2];
+			//https://github.com/baso88/SC_AngelScript/wiki/Temporary-Entities#engine-palette-1
+			switch(pev(iEnt, pev_iuser2))
+			{
+				case -1:return;
+				case 0..1:
+				{
+					format(sType, charsmax(sType), "leaf");
+					iColor[0] = 235;
+					iColor[1] = 105;
+				}
+				default:
+				{
+					format(sType, charsmax(sType), "petal");
+					iColor[0] = 144;
+					iColor[1] = 250;
+				}
+			}
+			
+			new string[32];
+			format(string, 31, "%s/%s01_%s.spr", SPR_URL, sType, c_sModel[g_weapon[id][3]]);
+			iMdlIndex[0] = engfunc(EngFunc_ModelIndex, string);
+			format(string, 31, "%s/%s02_%s.spr", SPR_URL, sType, c_sModel[g_weapon[id][3]]);
+			iMdlIndex[1] = engfunc(EngFunc_ModelIndex, string);
+			
+			for (new i=0;i<2;i++)
+			{
+				message_begin(MSG_BROADCAST, SVC_TEMPENTITY)
+				write_byte(TE_BLOODSPRITE)
+				engfunc(EngFunc_WriteCoord,fOrigin[0])
+				engfunc(EngFunc_WriteCoord,fOrigin[1])
+				engfunc(EngFunc_WriteCoord,fOrigin[2])
+				write_short(iMdlIndex[i])
+				write_short(iMdlIndex[i])
+				write_byte(iColor[i])
+				write_byte(3)
+				message_end()
+			}
+		}
+	}
 }
 
 stock KnifeAttack5(id, bStab, Float:flRange, Float:fAngle, Float:flDamage, Float:flKnockBack=0.0, Float:flPower, iHitgroup = -1, bNoTraceCheck = FALSE, bitsDamageType = DMG_BULLET | DMG_NEVERGIB)
@@ -2389,6 +2495,41 @@ stock EntityTouchDamage(pevInflictor, pevAttacker, Float:flDamage)
 	{
 		ClearMultiDamage();
 		ExecuteHamB(Ham_TraceAttack, pEntity, pevAttacker, flDamage, vecForward/*vecEnd*/, tr, DMG_BULLET | DMG_NEVERGIB);
+		ApplyMultiDamage(pevInflictor, pevAttacker);
+	}
+
+	free_tr2(tr);
+
+	return bIsPlayer;
+}
+
+stock EntityTouchDamage_SME(pevInflictor, pevAttacker, Float:flDamage, bitsDamageType)
+{
+	new Float:vecOrigin[3], Float:vecVelocity[3], Float:vecDirection[3], Float:vecForward[3];
+	pev(pevInflictor, pev_origin, vecOrigin);
+	pev(pevInflictor, pev_velocity, vecVelocity);
+
+	if (xs_vec_len(vecVelocity) <= 0.0)
+		return FALSE;
+
+	new Float:vecStart[3], Float:vecEnd[3];
+
+	xs_vec_normalize(vecVelocity, vecDirection);
+	xs_vec_mul_scalar(vecDirection, 100.0, vecForward);
+	xs_vec_copy(vecOrigin, vecStart);
+	xs_vec_add(vecOrigin, vecForward, vecEnd);
+
+	new tr = create_tr2();
+
+	engfunc(EngFunc_TraceLine, vecStart, vecEnd, dont_ignore_monsters, pevInflictor, tr);
+
+	new pEntity = get_tr2(tr, TR_pHit);
+	new bIsPlayer = IsPlayer(pEntity);
+
+	if (IsAlive(pEntity))
+	{
+		ClearMultiDamage();
+		ExecuteHamB(Ham_TraceAttack, pEntity, pevAttacker, flDamage, /*vecForward*/vecEnd, tr, bitsDamageType);
 		ApplyMultiDamage(pevInflictor, pevAttacker);
 	}
 

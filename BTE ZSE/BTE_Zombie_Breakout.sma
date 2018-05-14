@@ -3,6 +3,7 @@
 #include <fakemeta>
 #include <hamsandwich>
 #include <xs>
+#include <orpheu>
 #include <round_terminator>
 #include "bte_api.inc"
 #include "offset.inc"
@@ -29,6 +30,8 @@ new Float:LASTHUMAN_HEALTH, Float:LASTHUMAN_ARMOR, Float:LASTHUMAN_GRAVITY, Floa
 new Float:ZOMBIE_SPEED, Float:ZOMBIE_HEALTH_MIN, Float:ZOMBIE_HEALTH_MIN_START, ZOMBIE_NUM_PRE, Float:ZOMBIE_HEALTH_PRE_START, Float:ZOMBIE_KILL_AWARD, Float:ZOMBIE_VICTIM_HP, Float:ZOMBIE_GRAVITY, Float:ZOMBIE_KILLED_HP, Float:ZOMBIE_ATTACK_VM, Float:ZOMBIE_ATTACK_AWARD;
 
 new g_EnteredBuyMenu[33];
+
+new g_pGameRules
 
 #define PRINT(%1) client_print(1,print_chat,%1)
 
@@ -93,6 +96,32 @@ public plugin_precache()
 	engfunc(EngFunc_PrecacheModel, "models/v_knife_tank_zombi.mdl");
 	g_zombie_index_host = engfunc(EngFunc_PrecacheModel, "models/player/tank_zombi_host/tank_zombi_host.mdl");
 	g_zombie_index_origin = engfunc(EngFunc_PrecacheModel, "models/player/tank_zombi_origin/tank_zombi_origin.mdl");
+	
+	OrpheuRegisterHook(OrpheuGetFunction("InstallGameRules"), "OnInstallGameRules", OrpheuHookPost)
+}
+
+public OrpheuHookReturn:OnInstallGameRules()
+{
+	g_pGameRules = OrpheuGetReturn();
+	
+	OrpheuRegisterHook(OrpheuGetFunctionFromObject(g_pGameRules, "CheckWinConditions", "CGameRules"), "OnCheckWinConditions")
+	OrpheuRegisterHook(OrpheuGetFunctionFromObject(g_pGameRules, "FPlayerCanRespawn", "CGameRules"), "OnFPlayerCanRespawn")
+}
+
+public OrpheuHookReturn:OnCheckWinConditions(this)
+{
+	if (!g_bRoundStart || !CountPlayer(0, TRUE))
+		return OrpheuIgnored
+	return OrpheuSupercede
+}
+
+public OrpheuHookReturn:OnFPlayerCanRespawn(this, id)
+{
+	if (!g_bRoundStart || !CountPlayer(0, TRUE))
+		OrpheuSetReturn(true)
+	else
+		OrpheuSetReturn(false)
+	return OrpheuSupercede
 }
 
 public plugin_natives()
@@ -150,7 +179,6 @@ public client_putinserver(id)
 
 	if (CountPlayer(0) <= 2)
 	{
-		server_cmd("sv_noroundend 0");
 		TerminateRound(RoundEndType_Draw, TeamWinning_None);
 	}
 }
@@ -181,7 +209,6 @@ public LogEvent_RoundStart()
 	{
 		set_task(20.0, "MakeFirstZombie", TASK_MAKEZOMBIE);
 
-		server_cmd("sv_noroundend 1");
 		client_cmd(0, "zb_roundstart");
 	}
 }
@@ -189,8 +216,6 @@ public LogEvent_RoundStart()
 public LogEvent_RoundEnd()
 {
 	g_bRoundStart = FALSE;
-
-	server_cmd("sv_noroundend 0");
 }
 
 public MakeFirstZombie()
@@ -301,7 +326,6 @@ native BTE_MVPBoard(iWinningTeam, iType, iPlayer = 0);
 
 public ZombieWin()
 {
-	server_cmd("sv_noroundend 0");
 	TerminateRound(RoundEndType_TeamExtermination, TeamWinning_Terrorist);
 	BTE_MVPBoard(1, 0);
 }

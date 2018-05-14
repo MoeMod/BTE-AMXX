@@ -48,9 +48,9 @@ public plugin_init()
 {
 	register_plugin(PLUGIN, VERSION, AUTHOR);
 
-	register_concmd("hms_atkup", "check_atkup")
-	register_concmd("hms_supply", "check_supply")
-	register_concmd("hms_heal", "check_heal")
+	register_concmd("BTE_HumanSkill2", "check_atkup")
+	register_concmd("BTE_HumanSkill1", "check_supply")
+	register_concmd("BTE_HumanSkill3", "check_heal")
 
 	register_event("HLTV", "Event_HLTV", "a", "1=0", "2=0");
 	register_forward(FM_PlayerPostThink, "Forward_PlayerPostThink");

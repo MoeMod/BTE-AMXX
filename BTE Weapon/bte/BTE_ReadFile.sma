@@ -227,6 +227,11 @@ public PrecacheWeapon(iBteWpn, bPrecache)
 		{
 			CBlockSMG_Precache();
 		}
+		else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+		{
+			CSgmissile_Precache();
+			precache_model(c_sModel_V[iBteWpn]);
+		}
 		else if(c_iSpecial[iBteWpn] == SPECIAL_THANATOS9)
 		{
 			precache_model("models/p_thanatos9a.mdl");
@@ -260,6 +265,16 @@ public PrecacheWeapon(iBteWpn, bPrecache)
 			precache_model(model);
 			format(model, 63, "%s/%s_skillfx2.mdl", MODEL_URL, c_sModel[iBteWpn]);
 			precache_model(model);
+			
+			new string[32];
+			format(string, 31, "sprites/leaf01_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/leaf02_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/petal01_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
+			format(string, 31, "sprites/petal02_%s.spr", c_sModel[iBteWpn]);
+			precache_model(string);
 			
 			new sound[63];
 			new szInApp[32];
@@ -322,7 +337,10 @@ public PrecacheSpecialWeapon(iBteWpn, bPrecache)
 		precache_model("sprites/hotglow.spr");
 	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_BALROG11)
+	{
 		precache_sound("weapons/balrog9_charge_finish1.wav");
+		CBalrog11_Precache();
+	}
 	else if (c_iSpecial[iBteWpn] == SPECIAL_RAILCANNON)
 		precache_model("sprites/hotglow_railcannon.spr")
 	else if (c_iSpecial[iBteWpn] == SPECIAL_BUFFAK47)
@@ -940,7 +958,7 @@ public ReadWeaponData(szName[], iBteWpn)
 	GetPrivateProfile(szName, "EntitySpawnOrigin", "5", "cstrike/weapons.ini", BTE_INT, iEntitySpawnOrigin);
 	if (iEntitySpawnOrigin < 5)
 	{
-		// å¤±è´¥ QAQ æ”¾å¼ƒ
+		// Ê§°Ü QAQ ·ÅÆú
 		GetModelAttachment(c_model_v[iBteWpn], 0, c_vecViewAttachment[iBteWpn]);
 		Util_Log("GetModelAttachment: Origin[%d]: %f %f %f", iEntitySpawnOrigin, c_vecViewAttachment[iBteWpn][0], c_vecViewAttachment[iBteWpn][1], c_vecViewAttachment[iBteWpn][2]);
 	}*/

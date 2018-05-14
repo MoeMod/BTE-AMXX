@@ -372,7 +372,7 @@ public cmd_buyammo2(id)
 }
 stock Stock_Check_Buy()
 {
-	if (g_modruning == BTE_MOD_DR || g_modruning == BTE_MOD_ZE || g_modruning == BTE_MOD_ZB1 || g_modruning == BTE_MOD_GD) return 0
+	if (g_modruning == BTE_MOD_DR || g_modruning == BTE_MOD_ZE || g_modruning == BTE_MOD_Z4E || g_modruning == BTE_MOD_ZB1 || g_modruning == BTE_MOD_GD) return 0
 	return 1
 }
 

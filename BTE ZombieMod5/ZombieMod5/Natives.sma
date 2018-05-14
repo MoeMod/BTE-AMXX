@@ -21,10 +21,23 @@ public plugin_natives()
 	register_native("bte_zb3_can_use_skill", "native_can_use_skill2", 1)
 	register_native("bte_zb3_set_next_restore_health", "native_set_next_restore_health", 1)
 
+	register_native("bte_zb3_dna_get", "native_dna_get", 1)
+	register_native("bte_zb3_reset_zombie_property", "native_reset_zombie_property", 1)
 
 	// Read Supplybox
 
 }
+
+public native_dna_get(id, which)
+{
+	return 0;
+}
+
+public native_reset_zombie_property(id)
+{
+	//Activate_ZombieClass(id)
+}
+
 public native_set_next_restore_health(id, Float:fTime)
 {
 	g_fNextRestoreHealth[id] = get_gametime() + fTime;
