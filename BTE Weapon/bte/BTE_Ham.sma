@@ -1412,16 +1412,9 @@ public HamF_InfoTarget_Touch(iPtr,iPtd)
 
 public HamF_Killed(id, idattacker, shouldgib)
 {
-	//set_pev(id, pev_weaponmodel, 0)
-	//set_pev(id, pev_maxspeed, 250.0)
-
-	//if (c_seq[g_weapon[id][0]] && bte_get_user_zombie(id) != 1) InitiateSequence(id,0);
-
 	g_iWeaponMode[id][1] = 0;
 
 	Pub_Killed_Reset(id)
-	//Pub_Holster_Reset(id, 0)
-	//if (is_user_bot(id)) Stock_ResetBotMoney(id)
 	if (pev_valid(g_p_modelent[id]))
 	{
 		Stock_Set_Vis(g_p_modelent[id],0)
@@ -2686,8 +2679,6 @@ public HamF_Item_PostFrame(iEnt)
 			set_pev(id, pev_button, iButton);
 		}
 	}
-
-
 	if (c_iType[g_weapon[id][0]] == WEAPONS_SPSHOOT)
 	{
 		if (get_pdata_int(iEnt, m_iFamasShotsFired) >= 9 + c_iBurstTimes[g_weapon[id][0]])
@@ -2696,13 +2687,11 @@ public HamF_Item_PostFrame(iEnt)
 			set_pdata_float(iEnt, m_flFamasShoot, 0.0);
 		}
 	}
-
 	if (CSWPN_SHOTGUNS & (1<<iId) && c_iType[g_weapon[id][0]] != WEAPONS_SHOTGUN)
 	{
 		WpnEffect_Shotguns(id,iEnt,iClip,iBpAmmo,iId);
 
 	}
-
 	if (iInReload && fNextAttack <= 0.0)
 	{
 		iTemp = min(iMaxClip - iClip, iBpAmmo)
@@ -2723,14 +2712,12 @@ public HamF_Item_PostFrame(iEnt)
 
 		set_pdata_int(iEnt, m_iClip, c_iClip[iBteWpn]);
 	}
-
-
 	if (iButton & IN_ATTACK2 && c_iSpecial[iBteWpn] != SPECIAL_BUFFAWP)
+	{
 		CheckZoom(id, iEnt, iBteWpn);
-
+	}
 	// !! Weapon Effect
 	WpnEffect(id, iEnt, iClip, iBpAmmo, iId);
-
 	return HAM_IGNORED;
 }
 
@@ -3124,7 +3111,7 @@ public HamF_Item_Holster_Post(iEnt)
 	static id ; id = get_pdata_cbase(iEnt, m_pPlayer, 4)
 
 	if (!is_user_alive(id))
-		return HAM_IGNORED
+	return HAM_IGNORED
 
 	static iId ; iId = get_pdata_int(iEnt, m_iId, 4)
 	static iSlot ; iSlot = ExecuteHam(Ham_Item_ItemSlot,iEnt)
@@ -3154,7 +3141,11 @@ public HamF_Item_Holster_Post(iEnt)
 	{
 		CCrow1_Holster(id, iEnt, iBteWpn)
 	}
-	
+	else if (c_iSpecial[iBteWpn] == SPECIAL_SGMISSILE)
+	{
+		CSgmissile_Holster(id, iEnt, iBteWpn)
+	}
+
 	if (iId == CSW_KNIFE)
 		CKnife_Holster(iEnt);
 
