@@ -11,8 +11,8 @@ public CSgmissile_Precache()
 {
 	precache_model("models/p_sgmissile_a.mdl")
 	precache_model("models/p_sgmissile_b.mdl")
-	precache_sound("weapons/sgmissile-1.wav")
-	precache_sound("weapons/sgmissile-2.wav")
+	//precache_sound("weapons/sgmissile-1.wav")
+	//precache_sound("weapons/sgmissile-2.wav")
 	precache_sound("weapons/sgmissile_exp.wav")
 	precache_sound("weapons/sgmissile_reload.wav")
 	precache_model("sprites/ef_sgmissile_line.spr")
@@ -232,9 +232,11 @@ public CSgmissile_SecondaryAttack(id, iEntity, iClip, iBteWpn)
 
 	set_pev(id, pev_effects, (pev(id, pev_effects) | EF_MUZZLEFLASH))
     	OrpheuCall(OrpheuGetFunction("SetAnimation", "CBasePlayer"), id, PLAYER_ATTACK1)
-	SendWeaponAnim(id, iSpecialAmmo ? 9 : 10)
-	engfunc(EngFunc_EmitSound, id, CHAN_WEAPON, "weapons/sgmissile-2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
-
+		
+	//engfunc(EngFunc_EmitSound, id, CHAN_WEAPON, "weapons/sgmissile-2.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
+	engfunc(EngFunc_PlaybackEvent, FEV_GLOBAL, id, m_usFire[iBteWpn][0], 0.0, {0.0, 0.0, 0.0}, {0.0, 0.0, 0.0}, c_flDistance[iBteWpn][0], c_flAngle[iBteWpn][0], 0, iSpecialAmmo, FALSE, TRUE);
+	//SendWeaponAnim(id, iSpecialAmmo ? 9 : 10)
+	
 	new Float:m_flTimeNextCharge; pev(iEntity, pev_fuser1, m_flTimeNextCharge)
 	m_flTimeNextCharge = -1.0
 	set_pev(iEntity, pev_fuser1, m_flTimeNextCharge)
