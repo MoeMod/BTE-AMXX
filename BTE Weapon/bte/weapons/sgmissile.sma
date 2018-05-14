@@ -1,9 +1,7 @@
 // ASS WE CAN
 // pev_fuser1 = -> m_flTimeNextCharge
 // pev_iuser1 = -> iMode
-// pev_iuser4 = -> iClip2 ???
 
-#define	WEAPON_MAXCLIP2			10
 #define	WEAPON_GRENADE_CLASSNAME	"d_sgmissile"
 #define	DMG_EXPLOSION			(1<<24)
 
@@ -25,7 +23,7 @@ public CSgmissile_Precache()
 
 public CSgmissile_Deploy_Post(id, iEntity, iId, iBteWpn)
 {
-	ResetChargeTimer(iEntity)
+	ResetChargeTimer(iEntity, iBteWpn)
 	new m_iChange = pev(iEntity, pev_iuser1)
 	if (m_iChange)
 	{
@@ -39,6 +37,11 @@ public CSgmissile_Deploy_Post(id, iEntity, iId, iBteWpn)
 	}
 }
 
+public CSgmissile_Holster(id, iEnt, iBteWpn)
+{
+	ResetChargeTimer(iEnt, iBteWpn)
+}
+
 public InitChargeState(iEntity)
 {
 	new id = get_pdata_cbase(iEntity, 41, 4)
@@ -50,15 +53,16 @@ public InitChargeState(iEntity)
 	new Float:m_flTimeNextCharge; pev(iEntity, pev_fuser1, m_flTimeNextCharge)
 	m_flTimeNextCharge = -1.0
 	set_pev(iEntity, pev_fuser1, get_gametime() + 2.0)
+	//pev->skin = 0;
 }
 
-public ResetChargeTimer(iEntity)
+public ResetChargeTimer(iEntity, iBteWpn)
 {
-	new id = get_pdata_cbase(iEntity, 41, 4)
 	new iSpecialAmmo = GetExtraAmmo(iEntity)
+	new id = get_pdata_cbase(iEntity, 41, 4)
 
 	new Float:m_flTimeNextCharge; pev(iEntity, pev_fuser1, m_flTimeNextCharge)
-	if (iSpecialAmmo != WEAPON_MAXCLIP2 && m_flTimeNextCharge <= 0.0)
+	if (iSpecialAmmo != c_iExtraAmmo[iBteWpn] && m_flTimeNextCharge <= 0.0)
 	{
 		set_pev(iEntity, pev_fuser1, get_gametime() + 2.0)
 	}
@@ -76,25 +80,24 @@ public CSgmissile_ItemPostFrame(id, iEntity, iClip, iBteWpn)
 		set_pev(iEntity, pev_iuser1, 1)
 		set_pev(id, pev_weaponmodel2, "models/p_sgmissile_b.mdl")
 	}
-	if (iSpecialAmmo != WEAPON_MAXCLIP2)
+	if (iSpecialAmmo != c_iExtraAmmo[iBteWpn])
 	{
-		client_print(id, print_chat, "充能啊")
 		new Float:m_flTimeNextCharge; pev(iEntity, pev_fuser1, m_flTimeNextCharge)
 		if (m_flTimeNextCharge >= 0.0 && m_flTimeNextCharge <= get_gametime())
 		{
 			iSpecialAmmo = iSpecialAmmo += (floatround((get_gametime() - m_flTimeNextCharge) / 2.0 + 1.0))
 			SetExtraAmmo(id, iEntity, iSpecialAmmo)
 
-			if (iSpecialAmmo >= WEAPON_MAXCLIP2)
+			if (iSpecialAmmo >= c_iExtraAmmo[iBteWpn])
 			{
-				iSpecialAmmo = WEAPON_MAXCLIP2
+				iSpecialAmmo = c_iExtraAmmo[iBteWpn]
 				SetExtraAmmo(id, iEntity, iSpecialAmmo)
 			}
 
 			engfunc(EngFunc_EmitSound, id, CHAN_ITEM, "weapons/sgmissile_reload.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
 			m_flTimeNextCharge = get_gametime() + 2.0
 
-			if (iSpecialAmmo == WEAPON_MAXCLIP2)
+			if (iSpecialAmmo == c_iExtraAmmo[iBteWpn])
 			{
 				m_flTimeNextCharge = -1.0
 			}
@@ -114,10 +117,11 @@ public CSgmissile_ItemPostFrame(id, iEntity, iClip, iBteWpn)
 			}
 		}
 	}
-	else if ((pev(id, pev_button) & IN_ATTACK2) && get_pdata_float(id, 83, 5) <= 0.0 && get_pdata_float(iEntity, 47, 4) <= 0.0 && !get_pdata_int(iEntity, 54, 4))
+	if (pev(id, pev_button) & IN_ATTACK2 && get_pdata_float(iEntity, 47, 4) <= 0.0)
 	{
 		CSgmissile_SecondaryAttack(id, iEntity, iClip, iBteWpn)
 		set_pev(id, pev_button, pev(id, pev_button) & ~IN_ATTACK2)
+		return
 	}
 }
 
@@ -125,7 +129,7 @@ public CSgmissile_PrimaryAttack(id, iEntity, iClip, iBteWpn)
 {
 	new iSpecialAmmo = GetExtraAmmo(iEntity)
 
-	ResetChargeTimer(iEntity)
+	ResetChargeTimer(iEntity, iBteWpn)
 	if (pev(id, pev_waterlevel) == 3)
 	{
 		ExecuteHam(Ham_Weapon_PlayEmptySound, iEntity)
@@ -134,17 +138,12 @@ public CSgmissile_PrimaryAttack(id, iEntity, iClip, iBteWpn)
 	}
 	if (iClip <= 0)
 	{
-		/*if (iBpAmmo > 0)
-		{
-			ExecuteHamB(Ham_Weapon_Reload, iEntity)
-		}
-		else
+		CSgmissile_Reload(id, iEntity, iClip, iBteWpn)
+		if (!iClip)
 		{
 			ExecuteHam(Ham_Weapon_PlayEmptySound, iEntity)
 			set_pdata_float(iEntity, 46, 0.2, 4)
-		}*/
-		ExecuteHam(Ham_Weapon_PlayEmptySound, iEntity)
-		set_pdata_float(iEntity, 46, 0.2, 4)
+		}
 		return
 	}
 
@@ -156,10 +155,12 @@ public CSgmissile_PrimaryAttack(id, iEntity, iClip, iBteWpn)
 	set_pev(id, pev_effects, (pev(id, pev_effects) | EF_MUZZLEFLASH))
     	OrpheuCall(OrpheuGetFunction("SetAnimation", "CBasePlayer"), id, PLAYER_ATTACK1)
 
+	/*
 	if (iSpecialAmmo > 0)
 		SendWeaponAnim(id, random_num(0, 1) ? 7 : 8)
 	else
 		SendWeaponAnim(id, 3)
+	*/
 
 	new Float:vecVAngle[3], Float:vecPunchangle[3], Float:vecTemp[3]
 	pev(id, pev_v_angle, vecVAngle)
@@ -173,11 +174,10 @@ public CSgmissile_PrimaryAttack(id, iEntity, iClip, iBteWpn)
 	global_get(glb_v_forward, vecForward)
 
 	new Float:flDamage = (!IS_ZBMODE) ? c_flDamage[iBteWpn][1] : c_flDamageZB[iBteWpn][1]
-	FireBullets(id, c_cShots[iBteWpn], vecSrc, vecForward, Float:{0.04, 0.04, 0.0}, 3184.0, BULLET_PLAYER_BUCKSHOT, 0, floatround(flDamage), id)
+	FireBullets(id, c_cShots[iBteWpn], vecSrc, vecForward, c_vecSpread[iBteWpn], 3148.0, BULLET_PLAYER_BUCKSHOT, 0, floatround(flDamage), id)
 
 	set_pdata_float(iEntity, 46, c_flAttackInterval[iBteWpn][0], 4)
 	set_pdata_float(iEntity, 48, c_flAttackInterval[iBteWpn][0] + 0.7, 4)
-	set_pdata_int(iEntity, 55, 0, 4)
 
 	new Float:vecVelocity[3]
 	pev(id, pev_velocity, vecVelocity)
@@ -197,7 +197,7 @@ public CSgmissile_Reload(id, iEntity, iClip, iBteWpn)
 	new iAnim
 	new iSpecialAmmo = GetExtraAmmo(iEntity)
 
-	if (iSpecialAmmo > 0 && iSpecialAmmo <= WEAPON_MAXCLIP2)
+	if (iSpecialAmmo > 0 && iSpecialAmmo <= c_iExtraAmmo[iBteWpn])
 		iAnim = 5
 	else
 		iAnim = 1
@@ -249,15 +249,15 @@ public CSgmissile_SecondaryAttack(id, iEntity, iClip, iBteWpn)
 
 	if (iSpecialAmmo)
 	{
-		set_pdata_float(iEntity, 46, c_flAttackInterval[iBteWpn][0], 4)
-		set_pdata_float(iEntity, 47, c_flAttackInterval[iBteWpn][0], 4)
+		set_pdata_float(iEntity, 46, c_flAttackInterval[iBteWpn][1], 4)
+		set_pdata_float(iEntity, 47, c_flAttackInterval[iBteWpn][1], 4)
 		set_pdata_float(iEntity, 48, 0.87, 4)
 	}
 	else
 	{
-		set_pdata_float(iEntity, 46, c_flAttackInterval[iBteWpn][0] + c_flAttackInterval[iBteWpn][0], 4)
-		set_pdata_float(iEntity, 47, c_flAttackInterval[iBteWpn][0] + c_flAttackInterval[iBteWpn][0], 4)
-		set_pdata_float(iEntity, 48, c_flAttackInterval[iBteWpn][0] + c_flAttackInterval[iBteWpn][0], 4)
+		set_pdata_float(iEntity, 46, c_flAttackInterval[iBteWpn][1] + c_flAttackInterval[iBteWpn][1], 4)
+		set_pdata_float(iEntity, 47, c_flAttackInterval[iBteWpn][1] + c_flAttackInterval[iBteWpn][1], 4)
+		set_pdata_float(iEntity, 48, c_flAttackInterval[iBteWpn][1] + c_flAttackInterval[iBteWpn][1], 4)
 	}
 }
 
@@ -269,9 +269,9 @@ public CSgmissile_WeaponIdle(id, iEntity, iId, iBteWpn)
 	return HAM_SUPERCEDE
 
 	set_pdata_float(iEntity, 48, 20.0, 4)
-	ResetChargeTimer(iEntity)
+	ResetChargeTimer(iEntity, iBteWpn)
 
-	if (iSpecialAmmo > 0 && iSpecialAmmo <= WEAPON_MAXCLIP2)
+	if (iSpecialAmmo > 0 && iSpecialAmmo <= c_iExtraAmmo[iBteWpn])
 	{
 		SendWeaponAnim(id, 4)
 	}
@@ -373,7 +373,7 @@ public CSgmissile_BCSThink(iEntity)
 	new Float:fFrame; pev(iEntity, pev_frame, fFrame)
 
 	fFrame += 1.5
-	fFrame = floatmin(21.0, fFrame)
+	fFrame = floatmin(50.0, fFrame)
 	set_pev(iEntity, pev_frame, fFrame)
 
 	m_vecOrigin[0] = m_vecOrigin[0] + m_vecVelocity[0] * 0.05
@@ -386,10 +386,10 @@ public CSgmissile_BCSThink(iEntity)
 	// 时间到了删除实体
 	if (flTimeRemove < get_gametime())
 	{
+		client_print(pev(iEntity, pev_owner), print_chat, "TIME REMOVE")
 		fFrame -= 1.5
 		fFrame = floatmax(50.0, fFrame)
 		set_pev(iEntity, pev_frame, fFrame)
-
 		SUB_Remove(iEntity, 0.0)
 	}
 }
@@ -399,27 +399,28 @@ public CSgmissile_BCSTouch(iEntity, pOther)
 	new id = pev(iEntity, pev_owner)
 	if (pOther != id)
 	{
-			if (is_user_connected(pOther))
+		if (is_user_connected(pOther))
+		{
+			if (pev(pOther, pev_takedamage) != DAMAGE_NO)
 			{
-				if (pev(pOther, pev_takedamage) != DAMAGE_NO)
+				if (!(pev(iEntity, pev_iuser2) & (1<<pOther)))
 				{
-					if (!(pev(iEntity, pev_iuser2) & (1<<pOther)))
-					{
-						CSgmissile_Attack(iEntity, pOther)
-						MissileExplode(iEntity)
+					CSgmissile_Attack(iEntity, pOther)
+					MissileExplode(iEntity)
 
-						new i
-						while ((i = engfunc(EngFunc_FindEntityByString, i, "classname", "d_balrog11")) && pev(i, pev_iuser3) == pev(iEntity, pev_iuser3))
-						{
-							if (pev_valid(i))
-								set_pev(i, pev_iuser2, pev(i, pev_iuser2) | (1<<pOther))
-						}
+					new i
+					while ((i = engfunc(EngFunc_FindEntityByString, i, "classname", "d_sgmissile")) && pev(i, pev_iuser3) == pev(iEntity, pev_iuser3))
+					{
+						if (pev_valid(i))
+							set_pev(i, pev_iuser2, pev(i, pev_iuser2) | (1<<pOther))
 					}
 				}
 			}
+		}
 	}
 	if (IsBSPModel(pOther))
 	{
+		//client_print(pev(iEntity, pev_owner), print_chat, "BSP_MODEL REMOVE")
 		CSgmissile_Attack(iEntity, pOther)
 		MissileExplode(iEntity)
 		SUB_Remove(iEntity, 0.0)
@@ -465,6 +466,7 @@ public MissileExplode(iEntity)
 	write_byte(TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOSOUND | TE_EXPLFLAG_NOPARTICLES)
 	message_end()
 
+	/*
 	message_begin(MSG_BROADCAST ,SVC_TEMPENTITY)
 	write_byte(TE_EXPLOSION)
 	engfunc(EngFunc_WriteCoord, vecOrigin[0] + 10.0)
@@ -475,6 +477,7 @@ public MissileExplode(iEntity)
 	write_byte(15)
 	write_byte(TE_EXPLFLAG_NODLIGHTS | TE_EXPLFLAG_NOSOUND | TE_EXPLFLAG_NOPARTICLES)
 	message_end()
+	*/
 
 	engfunc(EngFunc_EmitSound, iEntity, CHAN_WEAPON, "weapons/sgmissile_exp.wav", VOL_NORM, ATTN_NORM, 0, PITCH_NORM)
 
