@@ -394,7 +394,7 @@ public CSgmissile_BCSThink(iEntity)
 	// 时间到了删除实体
 	if (flTimeRemove < get_gametime())
 	{
-		client_print(pev(iEntity, pev_owner), print_chat, "TIME REMOVE")
+		//client_print(pev(iEntity, pev_owner), print_chat, "TIME REMOVE")
 		fFrame -= 1.5
 		fFrame = floatmax(50.0, fFrame)
 		set_pev(iEntity, pev_frame, fFrame)
